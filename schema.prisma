@@ -1,0 +1,144 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  Admin        Admin?   @relation(fields: [adminId], references: [id])
+  adminId      String?
+}
+
+model User {
+  id              String        @id @default(cuid())
+  name            String?
+  email           String?       @unique
+  image           String?
+  metamaskAddress String?
+  Transaction     Transaction[]
+  Collection      Collection[]
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Plan {
+  id                     String  @id @default(cuid())
+  price                  Float   @unique
+  assetsNumber           Float   @unique
+  features               String
+  watermark              Boolean @default(false)
+  priceToRemoveWatermark Float?
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String?
+  label       String
+  amount      Float
+  method      String?
+  currency    String
+  dateCreated DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id String @id @default(cuid())
+
+  watermarkUrl String?
+  watermarkPos String  @default("bottom-right") // top-left top-right bottom-left bottom-right center full
+  logoUrl      String?
+
+  googleAnalyticsTrackingCode String?
+
+  paypalClientId       String?
+  isPaypal             Boolean @default(false)
+  metamaskAddress      String?
+  isMetamask           Boolean @default(false)
+  stripePublishableKey String?
+  stripeSecretKey      String?
+  isStripe             Boolean @default(false)
+  razorpayPublicKey    String?
+  isRazorpay           Boolean @default(false)
+}
+
+model PrivacyPage {
+  id      String @id @default(cuid())
+  title   String @default("Privacy Policy")
+  content String
+}
+
+model TermsPage {
+  id      String @id @default(cuid())
+  title   String @default("Terms and Services")
+  content String
+}
+
+model Collection {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  layers  String @db.VarChar(65535)
+  results String @db.VarChar(65535)
+
+  collectionDesc String
+  collectionName String
+  collectionSize Int
+  creators       String    @db.VarChar(65535)
+  externalUrl    String
+  network        String
+  prefix         String
+  royalties      Float
+  symbol         String
+  size           Int
+  History        History[]
+
+  dateCreated DateTime @default(now())
+  Rule        Rule[]
+}
+
+model History {
+  id             String     @id @default(cuid())
+  collectionId   String
+  collection     Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  dateCreated    DateTime   @default(now())
+  ipfsGateway    String
+  imagesCid      String
+  metaCid        String
+  collectionSize Int
+  layers         String     @db.VarChar(65535)
+  results        String     @db.VarChar(65535)
+}
+
+model Rule {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  trait1       String
+  condition    String
+  trait2       String
+}
+
+model Admin {
+  id       String    @id @default(cuid())
+  name     String?
+  email    String?   @unique
+  password String?
+  isSuper  Boolean   @default(false)
+  sessions Session[]
+}

@@ -1,0 +1,709 @@
+@import "variables";
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+////////////////////////// Loading
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 100px 0;
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: rgba($grey-color, 0.8);
+  }
+  .icon {
+    animation: loadingAnim 0.6s infinite linear;
+    color: $main-color;
+  }
+}
+
+.btn .loading-icon {
+  animation: loadingAnim 0.6s infinite linear;
+  margin-right: 12px;
+}
+
+////////////////////////// App Panel
+.app-panel {
+  position: relative;
+  .container {
+    max-width: 800px;
+  }
+
+  .app-sidebar {
+    background-color: $dark-color;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    margin: 0;
+
+    display: flex;
+    justify-content: space-between;
+    & > ul {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      margin: 0;
+      justify-content: center;
+      li {
+        margin-right: 10px;
+        button,
+        a {
+          color: rgba($white-color, 0.7);
+          background-color: transparent;
+          border: 0;
+          padding: 8px 10px;
+          display: flex;
+          width: 100%;
+          border-radius: 100px;
+          justify-content: center;
+          align-items: center;
+          font-size: 12px;
+          text-decoration: none;
+          transition: all 0.2s ease-in-out;
+          svg {
+            font-size: 16px;
+            margin-right: 8px;
+          }
+          &:disabled {
+            color: rgba($white-color, 0.7) !important;
+            background-color: transparent !important;
+            opacity: 0.6;
+          }
+          &:hover {
+            color: $dark-color;
+            background-color: $white-color;
+          }
+          &.active {
+            color: $dark-color !important;
+            background-color: $white-color !important;
+          }
+        }
+      }
+    }
+
+    .dropdown-item {
+      color: $black-color;
+      display: block;
+      &:hover {
+        color: $main-color;
+      }
+      svg {
+        margin-right: 0px;
+      }
+    }
+    .dropdown-toggle {
+      &:hover {
+        background-color: transparent;
+        color: rgba($white-color, 0.7);
+      }
+    }
+
+    @media (max-width: 768px) {
+      width: 60px;
+      span.text {
+        display: none;
+      }
+      button,
+      a {
+        padding: 10px 5px !important;
+        svg {
+          font-size: 18px !important;
+          margin-bottom: 0 !important;
+        }
+      }
+    }
+  }
+
+  .app-container {
+    padding: 40px 0;
+  }
+
+  .app-container {
+    @media (max-width: 768px) {
+      padding: 0 15px;
+      padding-left: calc(60px + 15px);
+    }
+  }
+
+  .select-payment-methods {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    li {
+      margin-right: 12px;
+      &:last-of-type {
+        margin-right: 0;
+      }
+      button {
+        background-color: $white-color;
+        border: 1px solid rgba($grey-color, 0.2);
+        border-radius: 100px;
+        position: relative;
+        width: 75px;
+        height: 75px;
+        padding: 15px;
+      }
+      &.active {
+        button {
+          border-color: $main-color;
+          .check-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 22px;
+            height: 22px;
+            transform: translate(14%, -30%);
+            background-color: $main-color;
+            border-radius: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            svg {
+              color: $white-color;
+              font-size: 17px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .selected-payment-method {
+    margin: auto;
+    max-width: 400px;
+  }
+
+  @media (max-width: 991px) {
+    .middle-section {
+      padding: 70px 0 50px;
+    }
+  }
+  @media (max-width: 768px) {
+    .select-payment-methods {
+      max-width: none;
+      margin-bottom: 30px;
+      margin-top: 30px;
+      li {
+        margin-bottom: 0;
+        max-width: 100px;
+        margin-right: 5px;
+        &:last-of-type {
+          margin-right: 0;
+        }
+        button {
+          width: 60px;
+          height: 60px;
+          padding: 11px;
+        }
+      }
+    }
+  }
+}
+
+.form-group label .hint {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  margin-left: 5px;
+  font-size: 16px;
+  color: rgba($grey-color, 0.5);
+  &:hover {
+    color: $black-color;
+  }
+}
+
+// app layer
+.layers-panel {
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 20px;
+}
+.app-layer {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  width: 100%;
+  background: $white-color;
+  color: $dark-color;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: $box-shadow;
+  cursor: pointer;
+  .remove-btn {
+    opacity: 0;
+  }
+  &:hover {
+    .remove-btn {
+      opacity: 1;
+    }
+  }
+
+  &.add-layer {
+    cursor: default;
+  }
+  .layer-name {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &.active {
+    background-image: none;
+    background-color: $main-color;
+    color: $white-color;
+  }
+  button {
+    background-color: transparent;
+    border: 0;
+    color: inherit;
+    font-size: 18px;
+    transition: all 0.1s ease-in-out;
+    cursor: pointer;
+    line-height: 15px;
+  }
+  input {
+    outline: none;
+    padding: 4px 8px;
+    font-size: 12px;
+    width: 100%;
+    margin-right: 15px;
+    border-radius: 5px;
+    border: 0;
+  }
+}
+
+////////////////////////// Results Panel
+.results-panel {
+  .filter-panel {
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+    padding-right: 15px;
+    .title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      width: 100%;
+    }
+    .accordion {
+      .accordion-item {
+        background-color: transparent;
+        border: 1px solid rgba($grey-color, 0.2);
+        margin-bottom: 10px;
+        .accordion-button {
+          box-shadow: none !important;
+          font-size: 13px;
+          font-weight: 500;
+          padding: 15px 15px;
+          background-color: transparent !important;
+          &::after {
+            width: 0.8rem;
+            height: 0.8rem;
+            background-size: 0.8rem;
+          }
+        }
+        .accordion-button:not(.collapsed) {
+          color: $black-color;
+          border-bottom: 1px solid rgba($grey-color, 0.2);
+        }
+        .accordion-body {
+          ul {
+            padding: 0;
+            list-style-type: none;
+            li {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 8px;
+              & > div {
+                display: flex;
+              }
+              label {
+                font-size: 13px;
+                font-weight: 400;
+                margin-left: 10px;
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+              p {
+                color: rgba($grey-color, 0.7);
+                font-size: 14px;
+                font-weight: 300;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .options-bar {
+    background-color: $white-color;
+    padding: 10px;
+    border-radius: 5px;
+    @media (max-width: 768px) {
+      button {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+      }
+    }
+  }
+}
+
+.infinite-scroll-component {
+  overflow: unset !important;
+}
+
+.sticky-panel {
+  position: sticky;
+  top: 54px;
+  padding-top: 10px;
+}
+
+.no-data-found {
+  text-align: center;
+  svg {
+    color: $main-color;
+  }
+  h6 {
+    margin-top: 15px;
+  }
+}
+
+.creators-btn {
+  max-width: 100%;
+  padding: 0 !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  text-align: center;
+  svg {
+    margin-right: 0 !important;
+  }
+}
+
+// app-no-settings
+.app-no-settings {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 0 20px;
+  .icon {
+    svg {
+      color: $main-color;
+    }
+  }
+}
+
+// overlay
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background-color: rgba($white-color, 0.5);
+}
+
+////////////////////////// Admin panel
+.admin-panel {
+  padding: 20px;
+  padding-left: calc($sidebar-width + 15px);
+  .admin-sidebar {
+    z-index: 999;
+    background-color: $main-color;
+    padding: 30px 20px;
+    padding-bottom: 0;
+    width: $sidebar-width;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .logo {
+      margin-bottom: 40px;
+      line-height: 22px;
+      a {
+        font-size: 20px;
+        color: $white-color;
+        text-decoration: none;
+      }
+    }
+    .menu {
+      list-style-type: none;
+      padding: 0;
+      li {
+        a {
+          color: $white-color;
+          text-decoration: none;
+          font-size: 15px;
+          font-weight: 400;
+          display: block;
+          padding: 13px 0;
+          opacity: 0.6;
+          transition: all 0.2s ease-in-out;
+          &:hover {
+            opacity: 1;
+          }
+          svg {
+            font-size: 19px;
+            margin-right: 5px;
+          }
+        }
+        &.active a {
+          opacity: 1;
+        }
+      }
+    }
+    .logout-btn {
+      position: relative;
+      display: block;
+      width: 100%;
+      background-color: transparent;
+      padding: 20px 10px;
+      border: 0;
+      text-align: left;
+      color: $white-color;
+      border-top: 1px solid #7f56d9;
+      p {
+        color: inherit;
+        &.name {
+          font-weight: 500;
+        }
+        &.email {
+          color: #e9d7fe;
+        }
+      }
+      .icon {
+        position: absolute;
+        top: 16px;
+        right: 10px;
+        font-size: 20px;
+        color: #d6bbfb;
+      }
+      &:hover {
+        .icon {
+          color: $white-color;
+        }
+      }
+    }
+  }
+  .admin-content {
+    background-color: $white-color;
+    box-shadow: 0 2px 10px rgba($dark-color, 0.1);
+    border-radius: 10px;
+    padding: 35px 60px;
+  }
+
+  @media (max-width: 768px) {
+    $sidebar-width: 62px;
+    padding-left: calc($sidebar-width + 20px);
+    .admin-sidebar {
+      width: $sidebar-width;
+      .menu li a span,
+      .logout-btn p,
+      .logo {
+        display: none;
+      }
+      .logout-btn {
+        padding: 16px 0px;
+        .icon {
+          position: static;
+        }
+      }
+    }
+    .admin-content {
+      padding: 0;
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+.feature-input {
+  position: relative;
+  button {
+    position: absolute;
+    top: 35px;
+    right: 14px;
+  }
+  input {
+    padding-right: 40px;
+  }
+}
+
+// app loader
+.app-loader {
+  display: flex;
+  justify-content: center;
+  .lds-ripple {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-ripple div {
+    position: absolute;
+    border: 4px solid $main-color;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+  .lds-ripple div:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  @keyframes lds-ripple {
+    0% {
+      top: 40px;
+      left: 40px;
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+    4.9% {
+      top: 40px;
+      left: 40px;
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+    5% {
+      top: 40px;
+      left: 40px;
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      top: 0px;
+      left: 0px;
+      width: 80px;
+      height: 80px;
+      opacity: 0;
+    }
+  }
+}
+
+// generation panel
+.generated-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba($grey-color, 0.2);
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin-bottom: 15px;
+
+  h6 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .dropdown {
+    .btn {
+      padding: 0;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: $black-color;
+      background-color: $white-color;
+      border-color: rgba($grey-color, 0.3);
+      border-radius: 100%;
+      &:hover {
+        border-color: $main-color;
+      }
+      svg {
+        margin: 0;
+      }
+      &::after {
+        display: none;
+      }
+    }
+    .dropdown-menu {
+      box-shadow: 0 2px 10px rgba($black-color, 0.09);
+      border: 0;
+      .dropdown-item {
+        font-size: 14px;
+        font-weight: 400;
+        text-decoration: none;
+        padding: 10px 14px;
+        svg {
+          margin-right: 4px;
+        }
+        &:focus {
+          background-color: $main-color;
+          color: $white-color;
+        }
+      }
+    }
+  }
+}
+
+// my-account
+.my-account {
+  padding: 80px 0 100px;
+}
+
+// designer
+.designer {
+  position: relative;
+}
+
+// uploading-folder
+.uploading-folder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background-color: $white-color;
+}
+
+// swal2-container
+.swal2-container {
+  button {
+    box-shadow: none !important;
+    font-size: 14px !important;
+  }
+  .swal2-close {
+    font-size: 34px !important;
+  }
+}
+
+// creating-collection-page
+.creating-collection-page {
+  padding: 100px 0;
+  text-align: center;
+}

@@ -1,0 +1,44 @@
+$main-color: #724bf4;
+$black-color: #212327;
+$dark-color: #1b1642;
+$white-color: #ffffff;
+$grey-color: #4b4b4b;
+$bg-color: #f7fbfe;
+$red-color: #f9655b;
+$green-color: #2cd4a2;
+$bg-gradient: linear-gradient(-48deg, #287dfd 5%, #724bf4 95%);
+$box-shadow: 0 0 6px rgba(27, 22, 66, 0.1), 0 14px 24px rgba(27, 22, 66, 0.06);
+
+$beige-color: #f2e4d7;
+$dark-main-color: #5d568c;
+$light-main-color: #9a80f7;
+
+$sidebar-width: 250px;
+
+// Animation
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.animated-background {
+  animation-duration: 1.25s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: rgba($grey-color, 0.1);
+  background: linear-gradient(
+    to right,
+    rgba($grey-color, 0.1) 8%,
+    rgba($grey-color, 0.2) 18%,
+    rgba($grey-color, 0.1) 33%
+  );
+  background-size: 800px 104px;
+  height: 96px;
+  position: relative;
+}
