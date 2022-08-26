@@ -11,6 +11,8 @@ interface MetamaskProps {
   generate: any
 }
 
+declare const window: any
+
 const myMetamaskAddress = process.env.NEXT_PUBLIC_METAMASK_ADDRESS || ""
 
 const Metamask = ({ amount, generate }: MetamaskProps) => {
