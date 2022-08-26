@@ -6,7 +6,7 @@ import { PrismaClient } from "@prisma/client"
 export async function getServerSideProps(context: any) {
   const prisma = new PrismaClient()
 
-  const termsPage = await prisma.termsPage.findFirst()
+  const termsPage = await prisma.termspage.findFirst()
   const settings = await prisma.settings.findFirst()
 
   return {

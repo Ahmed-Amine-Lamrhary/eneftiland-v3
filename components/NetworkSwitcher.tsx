@@ -6,6 +6,8 @@ import { showToast } from "../helpers/utils"
 import { SUPPORTED_NETWORKS } from "../helpers/wallet/connectors"
 import AppSelect from "./app/AppSelect"
 
+declare const window: any
+
 const NetworkSwitcher = () => {
   const { active, account, deactivate, library } = useWeb3React()
 
