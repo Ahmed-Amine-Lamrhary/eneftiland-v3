@@ -7,26 +7,26 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Session {
+model session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  Admin        Admin?   @relation(fields: [adminId], references: [id])
+  Admin        admin?   @relation(fields: [adminId], references: [id])
   adminId      String?
 }
 
-model User {
+model user {
   id              String        @id @default(cuid())
   name            String?
   email           String?       @unique
   image           String?
   metamaskAddress String?
-  Transaction     Transaction[]
-  Collection      Collection[]
+  Transaction     transaction[]
+  Collection      collection[]
 }
 
-model VerificationToken {
+model verificationtoken {
   id String @id @default(cuid())
 
   identifier String
@@ -36,7 +36,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Plan {
+model plan {
   id                     String  @id @default(cuid())
   price                  Float   @unique
   assetsNumber           Float   @unique
@@ -45,7 +45,7 @@ model Plan {
   priceToRemoveWatermark Float?
 }
 
-model Transaction {
+model transaction {
   id          String   @id @default(cuid())
   userId      String?
   label       String
@@ -53,10 +53,10 @@ model Transaction {
   method      String?
   currency    String
   dateCreated DateTime @default(now())
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        user?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Settings {
+model settings {
   id String @id @default(cuid())
 
   watermarkUrl String?
@@ -78,22 +78,22 @@ model Settings {
   isRazorpay           Boolean @default(false)
 }
 
-model PrivacyPage {
+model privacypage {
   id      String @id @default(cuid())
   title   String @default("Privacy Policy")
   content String
 }
 
-model TermsPage {
+model termspage {
   id      String @id @default(cuid())
   title   String @default("Terms and Services")
   content String
 }
 
-model Collection {
+model collection {
   id     String @id @default(cuid())
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   layers  String @db.VarChar(65535)
   galleryLayers  String @db.VarChar(65535)
@@ -109,16 +109,16 @@ model Collection {
   royalties      Float
   symbol         String
   size           Int
-  History        History[]
+  History        history[]
 
   dateCreated DateTime @default(now())
-  Rule        Rule[]
+  Rule        rule[]
 }
 
-model History {
+model history {
   id             String     @id @default(cuid())
   collectionId   String
-  collection     Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collection     collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   dateCreated    DateTime   @default(now())
   ipfsGateway    String
   imagesCid      String
@@ -128,20 +128,20 @@ model History {
   results        String     @db.VarChar(65535)
 }
 
-model Rule {
+model rule {
   id           String     @id @default(cuid())
   collectionId String
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   trait1       String
   condition    String
   trait2       String
 }
 
-model Admin {
+model admin {
   id       String    @id @default(cuid())
   name     String?
   email    String?   @unique
   password String?
   isSuper  Boolean   @default(false)
-  sessions Session[]
+  sessions session[]
 }
