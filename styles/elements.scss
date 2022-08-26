@@ -8,14 +8,14 @@
   position: sticky;
   top: 0;
   z-index: 999;
-  .user-avatar-name {
-    // max-width: 120px;
-    // display: block;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    // line-height: 18px;
-    // margin-top: -8px;
-  }
+  // .user-avatar-name {
+  //   max-width: 120px;
+  //   display: block;
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  //   line-height: 18px;
+  //   margin-top: -8px;
+  // }
   .navbar-brand {
     font-weight: 700;
     text-decoration: none;
@@ -36,6 +36,7 @@
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
+    margin-top: 2px;
     &.logout-btn {
       color: $red-color;
     }
@@ -60,6 +61,8 @@
       left: auto;
       right: 0;
       position: absolute;
+      max-height: 200px;
+      overflow: auto;
       .dropdown-item {
         font-size: 12px;
         text-decoration: none;
@@ -84,7 +87,16 @@
     }
   }
 
-  @media (max-width: 991px) {
+  @media (max-width: 940px) {
+    .app-navbar-nav button {
+      font-size: 13px !important;
+      svg {
+        display: none;
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
     .navbar-collapse {
       text-align: center;
       .nav-item {
@@ -104,6 +116,74 @@
       }
     }
   }
+
+  // myAccountBtn
+  .myAccountBtn {
+    flex-direction: row;
+  }
+
+  // app navbar
+  .app-navbar-nav {
+    flex-direction: row;
+    align-items: center;
+    @media (max-width: 767px) {
+      .other-collections-dropdown {
+        display: none;
+      }
+    }
+    & > ul {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      list-style-type: none;
+      padding: 0;
+      @media (max-width: 767px) {
+        max-width: 150px;
+        overflow: auto;
+      }
+    }
+    button {
+      text-decoration: none;
+      border: 0;
+      background-color: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba($grey-color, 0.7);
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      text-transform: capitalize;
+      &.active,
+      &:hover {
+        color: $main-color;
+      }
+      &:disabled {
+        &:not(.active):hover {
+          color: rgba($grey-color, 0.7) !important;
+        }
+      }
+      svg {
+        font-size: 18px;
+        margin-right: 6px;
+      }
+    }
+
+    .nav-item.dropdown {
+      border-left: 0 !important;
+      border-right: 1px solid rgba(75, 75, 75, 0.1);
+      padding-right: 14px;
+      margin-right: 10px;
+      .dropdown-toggle {
+        padding-left: 0 !important;
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .dropdown-menu {
+        right: auto;
+        left: 0;
+      }
+    }
+  }
 }
 
 // FormGroup
@@ -111,7 +191,8 @@ label {
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 5px;
-  display: block;
+  display: flex;
+  align-items: center;
 }
 .form-title {
   font-size: 13px;
@@ -148,6 +229,7 @@ label {
 
   .form-select {
     cursor: pointer;
+    padding-right: 30px;
   }
   textarea {
     min-height: 150px;
@@ -209,6 +291,7 @@ label {
   box-shadow: none !important;
   transition: all 0.25s ease;
   width: auto;
+  max-width: 100%;
   &:hover {
     border-color: transparent;
   }
@@ -469,14 +552,18 @@ label {
 }
 
 // Toastify
+.Toastify__toast-container {
+  width: auto !important;
+}
 .Toastify__toast {
   font-family: "Poppins", sans-serif !important;
-  font-size: 14px !important;
-  // min-height: auto !important;
-  height: 50px !important;
+  font-size: 13px !important;
+  min-height: auto !important;
   border-radius: 3px !important;
   color: $white-color !important;
   text-align: center !important;
+  padding: 4px 8px !important;
+  margin: 0 !important;
 
   .Toastify__close-button {
     font-size: 29px !important;
@@ -510,11 +597,32 @@ label {
 // react-select-box
 .react-select-box {
   font-size: 13px;
+  img {
+    margin-right: 8px;
+    width: 20px;
+  }
+}
+.navbar .react-select-box {
+  max-width: 165px;
+  margin: auto;
 }
 
 // modal-sm
 @media (min-width: 576px) {
   .modal-sm {
     max-width: 380px;
+  }
+}
+
+// json-preview
+.json-preview {
+  max-height: 350px;
+  overflow: auto;
+  border: 1px solid rgba($grey-color, 0.2);
+  border-radius: 7px;
+  padding: 5px;
+  .variable-row,
+  .object-key-val {
+    border-left: 0 !important;
   }
 }

@@ -49,7 +49,7 @@ const CollectionBlock = ({
                 <div className="img-container">
                   <ImgHolder
                     attributes={collection.results[0]?.attributes}
-                    layers={collection.layers}
+                    layers={collection.galleryLayers}
                   />
 
                   {collection.results.length === 0 && (

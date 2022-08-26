@@ -1,7 +1,6 @@
 import React, { useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
-import axios from "axios"
-import { showToast } from "../../helpers/utils"
+import { callApi, showToast } from "../../helpers/utils"
 import Page from "../../components/Page"
 import { PrismaClient } from "@prisma/client"
 import { useRouter } from "next/router"
@@ -25,8 +24,11 @@ const index = ({ settings }: any) => {
 
   const createNewCollection = async () => {
     try {
-      const { data }: any = await axios.post("/api/me/newcollection", {
-        address: account,
+      const { data } = await callApi({
+        route: "me/newcollection",
+        body: {
+          address: account,
+        },
       })
 
       if (!data.success) return showToast(data.message, "error")

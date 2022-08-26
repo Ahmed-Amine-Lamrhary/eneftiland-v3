@@ -8,12 +8,12 @@ import { useWeb3React } from "@web3-react/core"
 import { useRouter } from "next/router"
 import { injected } from "../helpers/wallet/connectors"
 import {
+  callApi,
   getConnectedUser,
   saveConnectedUser,
   showToast,
 } from "../helpers/utils"
 import AppModal from "./AppModal"
-import axios from "axios"
 import Image from "next/image"
 import metamaskIcon from "../assets/icons/metamask.png"
 import Button from "./Button"
@@ -34,10 +34,9 @@ const Page = ({
   hideNavbar,
   isProtected,
 }: PageProps) => {
-  const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME
-  const CRISP_WEBSITE_ID = process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID
+  const businessName = settings?.businessName ? settings?.businessName : ""
 
-  const { active, account, activate, deactivate, error } = useWeb3React()
+  const { active, account, activate, error } = useWeb3React()
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
   const [loaded, setLoaded] = useState(false)
   const router = useRouter()
@@ -61,9 +60,13 @@ const Page = ({
 
   const connectServer = async () => {
     try {
-      const { data } = await axios.post("/api/auth", {
-        address: account,
+      const { data } = await callApi({
+        route: "auth",
+        body: {
+          address: account,
+        },
       })
+
       if (!data.success) return showToast(data.message, "error")
 
       saveConnectedUser(data.data)
@@ -77,12 +80,13 @@ const Page = ({
     e.preventDefault()
 
     try {
-      await activate(injected)
+      await activate(injected, (error) => console.log(error), true)
+
       setShowAuthModal(false)
       router.push("/account")
     } catch (error: any) {
       console.log(error)
-      showToast(error.message, "error")
+      // showToast(error.message, "error")
     }
   }
 
@@ -122,7 +126,8 @@ const Page = ({
       <div className="all-page">
         <Head>
           <title>
-            {businessName + " - "}
+            {businessName}
+            {businessName && " - "}
             {title}
           </title>
 
@@ -147,7 +152,11 @@ const Page = ({
 
           <meta name="robots" content="index, follow" />
 
-          <link rel="icon" href="/images/favicon.ico" />
+          <link
+            rel="icon"
+            href={settings?.faviconUrl ? settings?.faviconUrl : ""}
+          />
+
           <link
             href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
             rel="stylesheet"
@@ -200,13 +209,6 @@ const Page = ({
             </Script>
           </>
         )}
-
-        {/* Crisp */}
-        <Script>
-          {`
-    window.$crisp=[];window.CRISP_WEBSITE_ID="${CRISP_WEBSITE_ID}";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();    
-    `}
-        </Script>
       </div>
     </div>
   )

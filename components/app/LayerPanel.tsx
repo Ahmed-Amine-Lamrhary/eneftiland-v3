@@ -196,12 +196,15 @@ function LayerPanel() {
 
   return (
     <div>
+      <h6>Attributes</h6>
+
       {/* Name */}
       <CheckBox
         checked={activeLayer?.isAdvanced}
         onCheck={toggleIsAdvanced}
         label="Show advanced"
         disabled={uploadingImages}
+        hideLabel
       />
 
       <FormControl

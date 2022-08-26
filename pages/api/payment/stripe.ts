@@ -1,7 +1,26 @@
 import { PrismaClient } from "@prisma/client"
 import { CURRENCY, getPaymentAmount } from "../../../helpers/constants"
+import jwt from "jsonwebtoken"
 
 export default async (req: any, res: any) => {
+  // jwt verification
+  const token = req.headers.authorization
+  if (!token)
+    return res.json({
+      success: false,
+      message: "Not authorized",
+    })
+
+  try {
+    jwt.verify(token, "secret")
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: "Not authorized",
+    })
+  }
+  // jwt verification
+
   let { description, amount, id } = req.body
 
   const prisma = new PrismaClient()

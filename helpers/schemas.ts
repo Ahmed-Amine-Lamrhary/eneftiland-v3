@@ -31,20 +31,52 @@ const settingsSchema = Yup.object().shape({
 
   royalties: Yup.number().when("network", {
     is: "sol",
-    then: (schema) => schema.min(0).required(),
+    then: (schema) =>
+      schema
+        .min(0, errorMessages.royaltiesMin)
+        .max(100, errorMessages.royaltiesMax)
+        .required(),
   }),
-  creators: Yup.array().of(
-    Yup.object().shape({
-      share: Yup.number().when("network", {
-        is: "sol",
-        then: (schema) => schema.min(0).required(),
-      }),
-      address: Yup.string().when("network", {
-        is: "sol",
-        then: (schema) => schema.required(),
-      }),
-    })
-  ),
+  creators: Yup.array()
+    .of(
+      Yup.object().shape({
+        share: Yup.number(),
+        address: Yup.string(),
+      })
+    )
+    .when("network", {
+      is: "sol",
+      then: (schema) =>
+        schema
+          .test(
+            "shares-validation",
+            "The total number of shares must be 100%",
+            (creators = []) => {
+              let valid: boolean[] = []
+              creators.forEach(({ share }) => {
+                if (!share || share <= 0) valid.push(false)
+              })
+
+              if (valid.includes(false)) return false
+
+              const totalShares = creators.reduce((total, creator) => {
+                return total + (creator.share || 0)
+              }, 0)
+              return totalShares === 100
+            }
+          )
+          .test(
+            "addresses-validation",
+            "Addresses are required",
+            (creators = []) => {
+              let valid: boolean[] = []
+              creators.forEach(({ address }) => {
+                if (!address) valid.push(false)
+              })
+              return !valid.includes(false)
+            }
+          ),
+    }),
 })
 
 const l: any = Yup.array().of(

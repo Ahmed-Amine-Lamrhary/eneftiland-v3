@@ -78,7 +78,7 @@ const PricingCalculator = ({ plans, currency }: any) => {
         />
       </div>
 
-      <p>Your collection will have {(chance * f) / 100} NFTs.</p>
+      <p>Your collection will have {((chance * f) / 100).toFixed(0)} NFTs.</p>
       <p>
         The final cost will be{" "}
         <b>

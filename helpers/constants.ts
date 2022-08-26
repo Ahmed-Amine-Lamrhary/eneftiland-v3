@@ -4,8 +4,11 @@ export const errorMessages = {
   collectionSizeMin: "Minimum collection size is 1",
   collectionSizeMax: "Maximum collection size is 20000",
 
-  sizeMin: "Item size should be at least 5",
-  sizeMax: "Item size should be at least 2400",
+  sizeMin: "Minimum item dimensions is 5",
+  sizeMax: "Maximum item dimensions is 2400",
+
+  royaltiesMin: "Minimum royalties percentage is 0",
+  royaltiesMax: "Maximum royalties percentage is 100",
 
   layers: "Please add at least 1 layer",
   layerName: "Each layer should have a name",
@@ -73,3 +76,19 @@ export const getPaymentAmount = (amount: number, currency: any) => {
 export const plansFeaturesDelimiter = "|||"
 
 export const CURRENCY = "USD"
+
+// networks
+export const networkParams: any = {
+  "0x89": {
+    chainName: "Polygon Mainnet",
+    chainId: "0x89",
+    nativeCurrency: { name: "MATIC", decimals: 18, symbol: "MATIC" },
+    rpcUrls: ["https://polygon-rpc.com/"],
+  },
+  "0x13881": {
+    chainName: "Mumbai Testnet",
+    chainId: "0x13881",
+    nativeCurrency: { name: "MATIC", decimals: 18, symbol: "MATIC" },
+    rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
+  },
+}

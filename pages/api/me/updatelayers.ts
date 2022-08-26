@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 import jwt from "jsonwebtoken"
+import { parseCollection } from "../../../services/parser"
 
 const ioHandler = async (req: any, res: any) => {
   // jwt verification
@@ -21,21 +22,32 @@ const ioHandler = async (req: any, res: any) => {
   }
   // jwt verification
 
-  const { id, currentCollection } = req.body
+  const { id, layers } = req.body
 
   try {
+    const collection = parseCollection(
+      await prisma.collection.findFirst({
+        where: {
+          id,
+        },
+      })
+    )
+
     await prisma.collection.update({
       where: {
         id,
       },
       data: {
-        ...currentCollection,
+        layers: JSON.stringify(layers),
+        ...((!collection?.layers || collection.layers.length === 0) && {
+          galleryLayers: JSON.stringify(layers),
+        }),
       },
     })
 
     res.json({
       success: true,
-      message: "Collection was updated successfully",
+      message: "Layers were updated successfully",
     })
   } catch (error: any) {
     res.json({ success: false, message: error.message })

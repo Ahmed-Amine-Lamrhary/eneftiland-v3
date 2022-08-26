@@ -5,6 +5,7 @@ import FormControl from "../../components/FormControl"
 import Button from "../../components/Button"
 import axios from "axios"
 import {
+  callApi,
   getConnectedUser,
   saveConnectedUser,
   showToast,
@@ -61,9 +62,13 @@ export default function MePage({ settings }: any) {
   const getMyCollections = async (query?: string) => {
     try {
       setGetLoading(true)
-      const { data }: any = await axios.post("/api/me/mycollections", {
-        address: account,
-        query,
+
+      const { data } = await callApi({
+        route: "me/mycollections",
+        body: {
+          address: account,
+          query,
+        },
       })
 
       if (!data.success) return showToast(data.message, "error")
@@ -83,9 +88,12 @@ export default function MePage({ settings }: any) {
 
   const getTransactions = async (page?: any) => {
     try {
-      const { data } = await axios.post("/api/me/transactions", {
-        address: account,
-        page,
+      const { data } = await callApi({
+        route: "me/transactions",
+        body: {
+          address: account,
+          page,
+        },
       })
 
       return data
@@ -96,10 +104,14 @@ export default function MePage({ settings }: any) {
 
   const updateMe = async (values: any) => {
     try {
-      const { data } = await axios.post("/api/me/update", {
-        address: account,
-        ...values,
+      const { data } = await callApi({
+        route: "me/update",
+        body: {
+          address: account,
+          ...values,
+        },
       })
+
       if (!data.success) return showToast(data.message, "error")
       showToast(data.message, "success")
 
@@ -113,9 +125,12 @@ export default function MePage({ settings }: any) {
     setUpdateLoading(true)
 
     try {
-      const { data } = await axios.post("/api/me/duplicatecollection", {
-        address: account,
-        id: collectionId,
+      const { data } = await callApi({
+        route: "me/duplicatecollection",
+        body: {
+          address: account,
+          id: collectionId,
+        },
       })
 
       if (!data.success) return showToast(data.message, "error")
@@ -143,9 +158,12 @@ export default function MePage({ settings }: any) {
 
     setUpdateLoading(true)
     try {
-      const { data } = await axios.post("/api/me/deletecollection", {
-        address: account,
-        id: collectionId,
+      const { data } = await callApi({
+        route: "me/deletecollection",
+        body: {
+          address: account,
+          id: collectionId,
+        },
       })
 
       if (!data.success) return showToast(data.message, "error")
@@ -215,14 +233,14 @@ export default function MePage({ settings }: any) {
               </p>
 
               <div className="row">
-                <div className="col-3">
+                <div className="col-lg-3 col-md-4 col-sm-6">
                   <CollectionBlock addNew />
                 </div>
 
                 {getLoading ? (
                   <>
                     {Array.from(Array(3).keys()).map(() => (
-                      <div className="col-3 mb-4">
+                      <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
                         <CollectionBlock loading />
                       </div>
                     ))}
@@ -230,7 +248,7 @@ export default function MePage({ settings }: any) {
                 ) : (
                   <>
                     {myCollections.map((c: any, index: number) => (
-                      <div className="col-3 mb-4">
+                      <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
                         <CollectionBlock
                           collection={c}
                           duplicateCollection={duplicateCollection}

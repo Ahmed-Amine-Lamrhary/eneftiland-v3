@@ -1,4 +1,3 @@
-import Button from "../components/Button"
 import Heading from "../components/Heading"
 import Section from "../components/Section"
 import FeatureBlock from "../components/FeatureBlock"
@@ -19,6 +18,11 @@ import PricingCalculator from "../components/PricingCalculator"
 import { CURRENCY } from "../helpers/constants"
 import { RiRulerLine } from "react-icons/ri"
 import GetStartedButton from "../components/GetStartedButton"
+import NavLink from "../components/NavLink"
+import Image from "next/image"
+import { FaRegSave } from "react-icons/fa"
+
+declare var $crisp: any
 
 export async function getServerSideProps(context: any) {
   const prisma = new PrismaClient()
@@ -44,32 +48,43 @@ export default function IndexPage({ settings, plans }: any) {
       {/* Header */}
       <header className="header-section d-flex align-items-center">
         <div className="container">
-          <h1>
-            Create NFT Collections <br /> Easily With No Code
-          </h1>
-          <div className="mb-4">
-            <p>
-              Turn image layers into thousands of uniquely <br /> code generated
-              atworks.
-            </p>
-          </div>
+          <div className="row">
+            <div className="col-lg-7">
+              <h1>
+                Create NFT Collections <br /> Easily With No Code
+              </h1>
+              <div className="mb-4">
+                <p>
+                  Turn image layers into thousands of uniquely <br /> code
+                  generated atworks.
+                </p>
+              </div>
 
-          <GetStartedButton theme="white">Get Started</GetStartedButton>
+              <GetStartedButton theme="white">Get Started</GetStartedButton>
+            </div>
+
+            <div className="col-lg-5 d-none d-lg-block">
+              <Image
+                className=""
+                src={require("../assets/home/header-home.png")}
+              />
+            </div>
+          </div>
         </div>
       </header>
 
       {/* How it works */}
       <Section className="bg-grey">
-        <Heading title="How it works" />
+        <Heading title="How it works" className="mb-5" />
         <div className="row">
           {/* Upload your art */}
-          <div className="col">
+          <div className="col-lg-3 col-md-6 mt-4">
             <HiOutlineUpload size={40} />
             <h5 className="mt-3">1. Upload your art</h5>
             <p className="paragraph">Upload your layers to get started.</p>
           </div>
           {/* Set rules and rarity */}
-          <div className="col">
+          <div className="col-lg-3 col-md-6 mt-4">
             <GoSettings size={40} />
             <h5 className="mt-3">2. Set rules and rarity</h5>
             <p className="paragraph">
@@ -78,7 +93,7 @@ export default function IndexPage({ settings, plans }: any) {
             </p>
           </div>
           {/* Preview */}
-          <div className="col">
+          <div className="col-lg-3 col-md-6 mt-4">
             <AiOutlineEye size={40} />
             <h5 className="mt-3">3. Preview</h5>
             <p className="paragraph">
@@ -86,7 +101,7 @@ export default function IndexPage({ settings, plans }: any) {
             </p>
           </div>
           {/* Export */}
-          <div className="col">
+          <div className="col-lg-3 col-md-6 mt-4">
             <BiImages size={40} />
             <h5 className="mt-3">4. Export</h5>
             <p className="paragraph">
@@ -97,7 +112,7 @@ export default function IndexPage({ settings, plans }: any) {
       </Section>
 
       {/* Features */}
-      <Section id="features-section" className="features-section">
+      <Section id="features" className="features-section">
         <Heading
           subTitle="Fully Featured"
           title="Everything you need"
@@ -109,7 +124,14 @@ export default function IndexPage({ settings, plans }: any) {
             <FeatureBlock
               Icon={BsCodeSlash}
               title="Super Simple (no code)"
-              content="Create NFT collectibles with ease, using the all-in-one generator"
+              content="Create NFT collectibles with ease, using the all-in-one generator."
+            />
+          </div>
+          <div className="col-md-4">
+            <FeatureBlock
+              Icon={FaRegSave}
+              title="Save your collections"
+              content="Your collections will be saved in your account, so you can always come back and edit them."
             />
           </div>
           <div className="col-md-4">
@@ -145,7 +167,7 @@ export default function IndexPage({ settings, plans }: any) {
 
       {/* Pricing */}
       {plans.length > 0 && (
-        <Section id="pricing-section" className="pricing-section bg-grey">
+        <Section id="pricing" className="pricing-section bg-grey">
           <Heading subTitle="Pricing" title="Use for FREE" />
 
           <div className="row justify-content-center">
@@ -167,13 +189,21 @@ export default function IndexPage({ settings, plans }: any) {
         <Heading title="Frequently asked questions" className="text-center">
           <p className="paragraph">
             If you still got a question you're always welcome to{" "}
-            <a href="mailto:eneftiland@email.com">email us</a>
+            <NavLink
+              to=""
+              onClick={(e: any) => {
+                e.preventDefault()
+                $crisp.push(["do", "chat:open"])
+              }}
+            >
+              contact us
+            </NavLink>
           </p>
         </Heading>
 
         <div className="row">
           {/*  */}
-          <div className="col-6 mb-5">
+          <div className="col-sm-6 mb-5">
             <h6>What are NFTs?</h6>
             <p className="paragraph">
               NFTs, or non-fungible tokens, are unique digital assets stored on
@@ -190,7 +220,7 @@ export default function IndexPage({ settings, plans }: any) {
           </div>
 
           {/*  */}
-          <div className="col-6 mb-5">
+          <div className="col-sm-6 mb-5">
             <h6>How is the metadata.json structured?</h6>
             <p className="paragraph">
               The metadata contains information on the rarity of each trait and
@@ -200,7 +230,7 @@ export default function IndexPage({ settings, plans }: any) {
           </div>
 
           {/*  */}
-          <div className="col-6 mb-5">
+          <div className="col-sm-6 mb-5">
             <h6>Can I set trait rules and rarity?</h6>
             <p className="paragraph">
               Yes! You can easily set rules and make some traits rarer than
@@ -209,7 +239,7 @@ export default function IndexPage({ settings, plans }: any) {
           </div>
 
           {/*  */}
-          <div className="col-6 mb-5">
+          <div className="col-sm-6 mb-5">
             <h6>What files should I use as layers?</h6>
             <p className="paragraph">
               For the moment we support .png, .jpeg, .jpg and .svg files. Your
@@ -219,7 +249,7 @@ export default function IndexPage({ settings, plans }: any) {
           </div>
 
           {/*  */}
-          <div className="col-6">
+          <div className="col-sm-6">
             <h6>How many NFTs can I create?</h6>
             <p className="paragraph">You can create as many as you want.</p>
           </div>

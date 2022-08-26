@@ -8,7 +8,7 @@ import {
 } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 import axios from "axios"
-import { showToast } from "../../helpers/utils"
+import { callApi, showToast } from "../../helpers/utils"
 import Button from "../Button"
 
 interface StripeProps {
@@ -35,10 +35,14 @@ const CheckoutForm = ({ description, amount, generate }: StripeProps) => {
     if (!error) {
       try {
         const { id } = paymentMethod
-        const { data } = await axios.post("/api/payment/stripe", {
-          description,
-          amount,
-          id,
+
+        const { data } = await callApi({
+          route: "payment/stripe",
+          body: {
+            description,
+            amount,
+            id,
+          },
         })
 
         if (!data.success) return showToast(data.message, "error")

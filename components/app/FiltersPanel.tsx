@@ -7,7 +7,7 @@ import Button from "../Button"
 const FiltersPanel = ({ loading, generate }: any) => {
   const { collection, filteredItems, setFilteredItems, results } =
     useContext(AppContext)
-  const layers = collection?.layers ? [...collection?.layers] : []
+  const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
 
   useEffect(() => {
     setFilters(resetedFilters())
@@ -69,13 +69,13 @@ const FiltersPanel = ({ loading, generate }: any) => {
   }
 
   return (
-    <div className={`filter-panel ${loading ? "disabled" : ""}`}>
+    <div className={`filter-panel mb-4 ${loading ? "disabled" : ""}`}>
       <h6 className="title">
         Filters: {filteredItems.length} item
         {filteredItems.length !== 1 ? "s" : ""}
       </h6>
 
-      <div className="d-flex mb-3">
+      <div className="btns mb-3">
         <Button
           className="btn-sm"
           onClick={() => generate(false)}
@@ -87,7 +87,7 @@ const FiltersPanel = ({ loading, generate }: any) => {
         {filteredItems.length !== results.length && (
           <Button
             theme="white"
-            className="ms-2 btn-sm"
+            className="mt-2 btn-sm"
             onClick={() => setFilters(resetedFilters())}
           >
             Reset Filters
@@ -119,7 +119,7 @@ const FiltersPanel = ({ loading, generate }: any) => {
                         {
                           results.filter((r: any) =>
                             r.attributes.some(
-                              (attr: any) => attr.value === image.name
+                              (attr: any) => attr.id === image.id
                             )
                           ).length
                         }

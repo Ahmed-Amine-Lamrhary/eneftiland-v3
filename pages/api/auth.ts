@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import jwt from "jsonwebtoken"
 const prisma = new PrismaClient()
 
 export default async (req: any, res: any) => {
@@ -12,7 +13,7 @@ export default async (req: any, res: any) => {
       })
 
     // check if user exists
-    const user = await prisma.user.findFirst({
+    const user: any = await prisma.user.findFirst({
       where: {
         metamaskAddress: address,
       },
@@ -26,10 +27,16 @@ export default async (req: any, res: any) => {
       })
     }
 
+    // jwt
+    const token = jwt.sign(user, "secret")
+
     res.json({
       success: true,
       message: "Operation was done successfully",
-      data: user,
+      data: {
+        user,
+        token,
+      },
     })
   } catch (error: any) {
     res.json({ success: false, message: error.message })

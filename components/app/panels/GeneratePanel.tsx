@@ -1,4 +1,3 @@
-import axios from "axios"
 import moment from "moment"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
@@ -8,7 +7,7 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoImageOutline } from "react-icons/io5"
 import { MdOutlineCollections } from "react-icons/md"
 import AppContext from "../../../context/AppContext"
-import { showToast } from "../../../helpers/utils"
+import { callApi, showToast } from "../../../helpers/utils"
 import ipfsProvidersType from "../../../types/ipfsProviders"
 import payMethodsType from "../../../types/payMethods"
 import AppLoader from "../../AppLoader"
@@ -18,6 +17,7 @@ import NoDataFound from "../../NoDataFound"
 import Pay from "../../payments/Pay"
 
 const GeneratePanel = ({ plans }: any) => {
+  const [isGeneratingMeta, setIsGeneratingMeta] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
 
@@ -48,8 +48,12 @@ const GeneratePanel = ({ plans }: any) => {
   const getCollectionHistory = async () => {
     try {
       setLoading(true)
-      const { data } = await axios.post("/api/me/history/get", {
-        id: collectionId,
+
+      const { data } = await callApi({
+        route: "me/history/get",
+        body: {
+          id: collectionId,
+        },
       })
 
       setHistory(data.data)
@@ -138,10 +142,12 @@ const GeneratePanel = ({ plans }: any) => {
   }
 
   const regenerateMeta = async (historyId: any) => {
-    setIsGenerating(true)
+    setIsGeneratingMeta(true)
 
     try {
-      const { data } = await axios.post(`/api/me/regenerate_meta/${historyId}`)
+      const { data } = await callApi({
+        route: `me/regenerate_meta/${historyId}`,
+      })
 
       if (!data.success) return showToast(data.message, "error")
 
@@ -149,7 +155,7 @@ const GeneratePanel = ({ plans }: any) => {
     } catch (error: any) {
       showToast(error.message, "error")
     } finally {
-      setIsGenerating(false)
+      setIsGeneratingMeta(false)
     }
   }
 
@@ -165,14 +171,14 @@ const GeneratePanel = ({ plans }: any) => {
     setShowPayment(false)
 
     try {
-      const { data } = await axios.post(
-        `/api/me/generatecollection/${collectionId}`,
-        {
+      const { data } = await callApi({
+        route: `me/generatecollection/${collectionId}`,
+        body: {
           ipfsProvider,
           watermark:
             isWatermark === undefined ? currentPlan?.watermark : isWatermark,
-        }
-      )
+        },
+      })
 
       if (!data.success) return showToast(data.message, "error")
 
@@ -204,7 +210,7 @@ const GeneratePanel = ({ plans }: any) => {
   }
 
   return (
-    <div>
+    <div className="generate-panel">
       {/* choose IPFS provider */}
       {/* <AppModal
         show={showIPFSProvider}
@@ -261,15 +267,32 @@ const GeneratePanel = ({ plans }: any) => {
         />
       </AppModal>
 
-      {/* generating & downloading modal */}
+      {/* generating modal */}
       <AppModal show={isGenerating} onHide={null} size="lg" closeButton={false}>
         <div className="text-center pb-5">
           <AppLoader />
           <div className="mt-3">
             <h5>Generating your collection...</h5>
             <p className="paragraph">
-              Please don't close your browser, this can take a few minutes.
+              Please don't close your browser, this can take a few minutes
+              <br /> depending on the collection size.
             </p>
+          </div>
+        </div>
+      </AppModal>
+
+      {/* re-generating metadata modal */}
+      <AppModal
+        show={isGeneratingMeta}
+        onHide={null}
+        size="lg"
+        closeButton={false}
+      >
+        <div className="text-center pb-5">
+          <AppLoader />
+          <div className="mt-3">
+            <h5>Regenerating metadata...</h5>
+            <p className="paragraph">Please don't close your browser.</p>
           </div>
         </div>
       </AppModal>
@@ -288,14 +311,13 @@ const GeneratePanel = ({ plans }: any) => {
 
         {/* generate */}
         <div className="d-flex justify-content-center mb-4">
-          <Button
-            theme="white"
-            onClick={generate}
-            disabled={collection.results.length === 0}
-          >
+          <Button theme="white" onClick={generate}>
             <MdOutlineCollections size={20} /> Generate Now
           </Button>
-          <Button className="ms-3" onClick={() => setView("preview")}>
+          <Button
+            className="ms-3"
+            onClick={() => router.push(`/app/${collection?.id}/gallery`)}
+          >
             <AiOutlineEye size={20} /> Gallery
           </Button>
         </div>

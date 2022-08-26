@@ -1,9 +1,7 @@
-import dynamic from "next/dynamic"
 import React, { useContext, useEffect, useState } from "react"
 import AppContext from "../../context/AppContext"
-import { getLayersImages, getMetadata } from "../../helpers/utils"
-
-const DynamicReactJson: any = dynamic(import("react-json-view"), { ssr: false })
+import { getMetadata } from "../../helpers/utils"
+import JsonPreview from "./JsonPreview"
 
 interface MetadataPreviewProps {
   item: any
@@ -18,32 +16,14 @@ const MetadataPreview = ({ item, index }: MetadataPreviewProps) => {
     handleGetMeta()
   }, [collection])
 
-  const handleGetMeta = async () => {
-    const allLayersImages = await getLayersImages({
-      collection,
-      noFile: true,
-    })
-
-    const { metadata } = getMetadata(collection, allLayersImages, item, index)
+  const handleGetMeta = () => {
+    const { metadata } = getMetadata(collection, item, index)
     setMetadata(metadata)
   }
 
   if (!metadata) return null
 
-  return (
-    <div>
-      <DynamicReactJson
-        src={metadata}
-        name={false}
-        collapsed={1}
-        displayDataTypes={false}
-        enableClipboard={false}
-        collapseStringsAfterLength={20}
-        displayObjectSize={false}
-        theme="grayscale:inverted"
-      />
-    </div>
-  )
+  return <JsonPreview json={metadata} />
 }
 
 export default MetadataPreview

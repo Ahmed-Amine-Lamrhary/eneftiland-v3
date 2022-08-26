@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Modal, Tab, Tabs } from "react-bootstrap"
+import { Tab, Tabs } from "react-bootstrap"
 import AppContext from "../../context/AppContext"
 import AppModal from "../AppModal"
 import ImgHolder from "./ImgHolder"
@@ -13,7 +13,7 @@ interface ResultsItemProps {
 
 const ResultsItem = ({ item, loading, index }: ResultsItemProps) => {
   const { collection, results } = useContext(AppContext)
-  const layers = collection?.layers ? [...collection?.layers] : []
+  const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
   const [showDetails, setShowDetails] = useState<boolean>(false)
 
   return (
@@ -41,11 +41,11 @@ const ResultsItem = ({ item, loading, index }: ResultsItemProps) => {
                 <div className="row">
                   {item?.attributes?.map((attr: any) => {
                     const total = results.filter((r: any) =>
-                      r.attributes.some((a: any) => a.value === attr.value)
+                      r.attributes.some((a: any) => a.id === attr.id)
                     ).length
 
                     return (
-                      <div className="col-4">
+                      <div className="col-md-4 col-sm-6">
                         <div className="attribute-details">
                           <p>{attr.trait_type}</p>
                           <h6>{attr.value}</h6>

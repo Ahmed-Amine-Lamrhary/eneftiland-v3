@@ -4,10 +4,29 @@ import { NFTStorage } from "nft.storage"
 import { packToBlob } from "ipfs-car/pack/blob"
 import { MemoryBlockStore } from "ipfs-car/blockstore/memory"
 import { getLayersImages, getMetadata } from "../../../../helpers/utils"
+import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
 
 export default async (req: any, res: any) => {
+  // jwt verification
+  const token = req.headers.authorization
+  if (!token)
+    return res.json({
+      success: false,
+      message: "Not authorized",
+    })
+
+  try {
+    jwt.verify(token, "secret")
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: "Not authorized",
+    })
+  }
+  // jwt verification
+
   const { id } = req.query
 
   try {
@@ -22,21 +41,11 @@ export default async (req: any, res: any) => {
     const currentCollection = parseCollection(currentCollectionData)
 
     // start re-generating
-    const allLayersImages = await getLayersImages({
-      collection: historyCollection,
-      noFile: true,
-    })
-
     const metas: any = []
 
     historyCollection.results.forEach(async (item: any, i: number) => {
       // metadata
-      const { metadata } = getMetadata(
-        currentCollection,
-        allLayersImages,
-        item,
-        i
-      )
+      const { metadata } = getMetadata(currentCollection, item, i)
       metas.push(metadata)
     })
 
@@ -52,8 +61,8 @@ export default async (req: any, res: any) => {
 
     const { car: metasCar } = await packToBlob({
       input: [
-        ...metas.map((meta: any) => ({
-          path: meta.filename,
+        ...metas.map((meta: any, index: number) => ({
+          path: `${index + 1}.json`,
           content: Buffer.from(JSON.stringify(meta)),
         })),
         {

@@ -1,17 +1,13 @@
 import React, { useContext, useEffect, useState } from "react"
 import { BiCheck } from "react-icons/bi"
-import { convertToEth } from "../../helpers/utils"
+import { callApi, convertToEth } from "../../helpers/utils"
 import Metamask from "./Metamask"
 import Image from "next/image"
 import AppContext from "../../context/AppContext"
 import payMethodsType from "../../types/payMethods"
-import axios from "axios"
 import { useWeb3React } from "@web3-react/core"
 
 import metamaskIcon from "../../assets/icons/metamask.png"
-import paypalIcon from "../../assets/icons/paypal.png"
-import stripeIcon from "../../assets/icons/stripe.png"
-import razorpayIcon from "../../assets/icons/razorpay.svg"
 
 import Razorpay from "./Razorpay"
 import Paypal from "./Paypal"
@@ -19,6 +15,9 @@ import Stripe from "./Stripe"
 import { CURRENCY } from "../../helpers/constants"
 import Button from "../Button"
 import CheckBox from "../app/CheckBox"
+import { BsPaypal } from "react-icons/bs"
+import { FaStripeS } from "react-icons/fa"
+import { SiRazorpay } from "react-icons/si"
 
 interface PayProps {
   description: string
@@ -62,17 +61,18 @@ const Pay = ({
     return amount + " " + CURRENCY
   }
 
-  const paymentMehodItem = (method: payMethodsType, img: any) => (
+  const paymentMehodItem = (method: payMethodsType) => (
     <li className={`${paymentMethod === method ? "active" : ""}`}>
       <button onClick={() => setPaymentMethod(method)}>
-        {paymentMethod === method && (
-          <span className="check-icon">
-            <BiCheck />
-          </span>
-        )}
-        <div>
-          <Image src={img} />
+        <div className="me-2">
+          {method === "metamask" && (
+            <Image src={metamaskIcon} width={20} height={20} />
+          )}
+          {method === "paypal" && <BsPaypal />}
+          {method === "razorpay" && <SiRazorpay />}
+          {method === "stripe" && <FaStripeS />}
         </div>
+        {method}
       </button>
     </li>
   )
@@ -82,12 +82,15 @@ const Pay = ({
 
     // save the transaction
     if (ethAmount > 0 && amount > 0)
-      await axios.post("/api/transactions/add", {
-        address: account,
-        label: `Generated ${collection?.results?.length} tokens`,
-        amount: paymentMethod === "metamask" ? ethAmount : amount,
-        method: paymentMethod ? paymentMethod : null,
-        currency: paymentMethod === "metamask" ? "ETH" : CURRENCY,
+      await callApi({
+        route: "transactions/add",
+        body: {
+          address: account,
+          label: `Generated ${collection?.results?.length} tokens`,
+          amount: paymentMethod === "metamask" ? ethAmount : amount,
+          method: paymentMethod ? paymentMethod : null,
+          currency: paymentMethod === "metamask" ? "ETH" : CURRENCY,
+        },
       })
 
     await generate({ isWatermark: false })
@@ -96,7 +99,7 @@ const Pay = ({
   return (
     <div className="app-panel pb-4">
       <div className="container">
-        <p className="paragraph">
+        <p className="paragraph mt-0 mb-3">
           See our pricing{" "}
           <a target={"_blank"} href="/#pricing-section">
             here
@@ -144,14 +147,10 @@ const Pay = ({
               <div>
                 <div>
                   <ul className="select-payment-methods">
-                    {settings?.isPaypal &&
-                      paymentMehodItem("paypal", paypalIcon)}
-                    {settings?.isMetamask &&
-                      paymentMehodItem("metamask", metamaskIcon)}
-                    {settings?.isStripe &&
-                      paymentMehodItem("stripe", stripeIcon)}
-                    {settings?.isRazorpay &&
-                      paymentMehodItem("razorpay", razorpayIcon)}
+                    {settings?.isPaypal && paymentMehodItem("paypal")}
+                    {settings?.isMetamask && paymentMehodItem("metamask")}
+                    {settings?.isStripe && paymentMehodItem("stripe")}
+                    {settings?.isRazorpay && paymentMehodItem("razorpay")}
                   </ul>
                 </div>
                 <div className="selected-payment-method">

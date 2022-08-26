@@ -23,8 +23,6 @@ const TransactionsTable = ({ getTransactions }: TransactionsTableProps) => {
     try {
       const data = await getTransactions(page)
 
-      console.log(data)
-
       if (!data.success) return showToast(data.message, "error")
 
       setCount(data.count)

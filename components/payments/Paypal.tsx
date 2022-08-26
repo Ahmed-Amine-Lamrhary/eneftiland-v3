@@ -59,7 +59,11 @@ export default function Paypal({ description, amount, generate }: PaypalProps) {
     return (
       <div className="paypal-payment">
         {!win.paypal ? (
-          <div>Error with paypal configuration</div>
+          <div>
+            <p className="paragraph text-center">
+              Error with paypal configuration
+            </p>
+          </div>
         ) : (
           <div ref={paypal}></div>
         )}

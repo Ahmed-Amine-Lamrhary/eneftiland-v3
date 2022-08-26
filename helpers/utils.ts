@@ -1,4 +1,5 @@
 import { Stripe, loadStripe } from "@stripe/stripe-js"
+import axios from "axios"
 import { loadImage } from "canvas"
 import moment from "moment"
 import { toast } from "react-toastify"
@@ -141,49 +142,106 @@ export function millisToMinutesAndSeconds(millis: any) {
   return `${minutes} minutes and ${seconds} seconds`
 }
 
-export const getMetadata = (
-  collection: any,
-  allLayersImages: any,
-  item: any,
-  index: number
-) => {
+export const getMetadata = (collection: any, item: any, index: number) => {
   const edition = index + 1
 
-  const files: any = []
-  item?.attributes.forEach((attr: any) => {
-    const f = allLayersImages.find((l: any) => l.id === attr.id)
-    const imgExtension = f?.filename.split(".").pop()
-    files.push({
-      uri: f?.url,
-      type: `image/${imgExtension}`,
-    })
-  })
+  // const files: any = []
+  // item?.attributes.forEach((attr: any) => {
+  //   const f = allLayersImages.find((l: any) => l.id === attr.id)
+  //   const imgExtension = f?.filename.split(".").pop()
+  //   files.push({
+  //     uri: f?.url,
+  //     type: `image/${imgExtension}`,
+  //   })
+  // })
+
+  const tokenName = `${
+    collection.prefix ? collection.prefix : collection.collectionName
+  }#${edition}`
 
   let metadata: any = {
-    name: `${
-      collection.prefix ? collection.prefix : collection.collectionName
-    }#${edition}`,
+    name: tokenName,
     description: collection.collectionDesc,
     image: `ipfs://<CID>/${edition}.png`,
-    attributes: item.attributes,
-    date: Date.now(),
-    filename: `${edition}.json`,
+    attributes: item.attributes.map(({ trait_type, value }: any) => ({
+      trait_type,
+      value,
+    })),
   }
 
   if (collection.network == "sol")
     metadata = {
       ...metadata,
+      collection: {
+        name: tokenName,
+        family: collection.collectionName,
+      },
       symbol: collection.symbol,
-      seller_fee_basis_points: collection.royalties,
+      seller_fee_basis_points: collection.royalties
+        ? collection.royalties * 100
+        : 0,
       external_url: collection.externalUrl,
       properties: {
-        files,
+        files: [
+          {
+            uri: `${edition}.png`,
+            type: "image/png",
+          },
+        ],
         category: "image",
         creators: collection.creators,
       },
     }
 
   return { metadata, edition }
+}
+
+export const getMetadataPreview = (collection: any) => {
+  const edition = 1
+
+  const tokenName = `${
+    collection.prefix ? collection.prefix : collection.collectionName
+  }#${edition}`
+
+  const attributes = collection.layers
+    .filter((l: any) => l.images.length > 0)
+    .map((layer: any) => ({
+      trait_type: layer.name,
+      value: layer.images[0].name,
+    }))
+
+  let metadata: any = {
+    name: tokenName,
+    description: collection.collectionDesc,
+    image: `ipfs://<CID>/${edition}.png`,
+    attributes,
+  }
+
+  if (collection.network == "sol")
+    metadata = {
+      ...metadata,
+      collection: {
+        name: tokenName,
+        family: collection.collectionName,
+      },
+      symbol: collection.symbol,
+      seller_fee_basis_points: collection.royalties
+        ? collection.royalties * 100
+        : 0,
+      external_url: collection.externalUrl,
+      properties: {
+        files: [
+          {
+            uri: `${edition}.png`,
+            type: "image/png",
+          },
+        ],
+        category: "image",
+        creators: collection.creators,
+      },
+    }
+
+  return metadata
 }
 
 interface getLayersImagesI {
@@ -197,7 +255,7 @@ export const getLayersImages = async ({
 }: getLayersImagesI) => {
   const allLayersImages: any = []
   await Promise.all(
-    collection.layers.map(async (layer: any) => {
+    collection.galleryLayers.map(async (layer: any) => {
       await Promise.all(
         layer.images.map(async (image: any) => {
           let r
@@ -219,14 +277,40 @@ export const getLayersImages = async ({
 }
 
 // connected user
-export const saveConnectedUser = (user: any) => {
-  if (user)
+export const saveConnectedUser = ({ user, token }: any) => {
+  if (user) {
     localStorage.setItem("eneftiland-connected-user", JSON.stringify(user))
+    localStorage.setItem("eneftiland-token", token)
+  }
 }
 export const removeConnectedUser = () => {
   localStorage.removeItem("eneftiland-connected-user")
+  localStorage.removeItem("eneftiland-token")
 }
 export const getConnectedUser = () => {
   const connectedUser = localStorage.getItem("eneftiland-connected-user")
   return connectedUser ? JSON.parse(connectedUser) : null
+}
+export const getToken = () => localStorage.getItem("eneftiland-token")
+
+// call api
+interface CallApiI {
+  route: string
+  body?: any
+}
+
+export const callApi = async ({ route, body }: CallApiI) => {
+  try {
+    const headers: any = {
+      Authorization: getToken(),
+    }
+
+    const response = await axios.post(`/api/${route}`, body, {
+      headers,
+    })
+
+    return response
+  } catch (error) {
+    throw error
+  }
 }

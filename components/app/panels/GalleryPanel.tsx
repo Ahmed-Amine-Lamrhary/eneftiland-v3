@@ -7,21 +7,16 @@ import ResultsItem from "../ResultsItem"
 import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
 
-interface PreviewPanelProps {
-  setError: any
-  generate: any
-  generationTime: string
-  loading?: boolean
-}
-
-const PreviewPanel = ({
-  setError,
-  generate,
-  generationTime,
-  loading,
-}: PreviewPanelProps) => {
-  const { filteredItems, results, collection, setFilteredItems }: any =
-    useContext(AppContext)
+const GalleryPanel = () => {
+  const {
+    filteredItems,
+    results,
+    collection,
+    setFilteredItems,
+    generate,
+    generationTime,
+    loading,
+  }: any = useContext(AppContext)
 
   const [count, setCount] = useState({
     prev: 0,
@@ -85,14 +80,14 @@ const PreviewPanel = ({
   if (!results)
     return (
       <div className="results-panel">
-        <header className="text-center">
-          <h3 className="mb-3">An Error Occured</h3>
-          <h6>Please try again</h6>
+        <header className="text-center mb-3">
+          <h3>An Error Occured</h3>
+          <p className="paragraph">Please try again</p>
         </header>
 
         {/* show collections */}
         <div className="collection-images">
-          <div className="options-bar text-center mb-3">
+          <div className="options-bar text-center">
             <div className="container">
               <Button theme="white" onClick={generate} className="me-3 btn-sm">
                 <AiOutlineReload /> Try again
@@ -109,17 +104,17 @@ const PreviewPanel = ({
       {/* show items */}
       <div className="collection-images">
         <div className="container-fluid">
-          <div className="options-bar text-center mb-4">
-            <div className="container">
-              {generationTime && (
+          {generationTime && (
+            <div className="options-bar text-center mb-4">
+              <div className="container">
                 <p className="paragraph">Generation Time: {generationTime}</p>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="collections-block">
-            <div className="row justify-content-end">
-              <div className="form-group col-2">
+            <div className="d-flex justify-content-end">
+              <div className="form-group">
                 <select className="form-select" onChange={sortBy}>
                   <option value="name">Item index</option>
                   <option value="rarity">Rarity score</option>
@@ -129,11 +124,11 @@ const PreviewPanel = ({
 
             <div className="row">
               {/* Filter */}
-              <div className="col-3">
+              <div className="col-md-3 col-sm-4">
                 <FiltersPanel loading={loading} generate={generate} />
               </div>
 
-              <div className="col-9">
+              <div className="col-md-9 col-sm-8">
                 <InfiniteScroll
                   dataLength={current.length}
                   next={getMoreData}
@@ -150,7 +145,7 @@ const PreviewPanel = ({
                     {current &&
                       current.map((item: any, index: any) => (
                         <div
-                          className="col-md-3 col-6"
+                          className="col-xxl-2 col-md-3 col-6"
                           key={`result-item-${index}`}
                         >
                           <ResultsItem
@@ -171,4 +166,4 @@ const PreviewPanel = ({
   )
 }
 
-export default PreviewPanel
+export default GalleryPanel

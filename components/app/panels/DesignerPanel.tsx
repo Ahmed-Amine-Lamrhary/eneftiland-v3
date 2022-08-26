@@ -5,11 +5,7 @@ import LayerPanel from "../LayerPanel"
 import LayersPanel from "../LayersPanel"
 import PreviewItem from "../PreviewItem"
 
-interface DesignerPanelProps {
-  generate: any
-}
-
-const DesignerPanel = ({ generate }: DesignerPanelProps) => {
+const DesignerPanel = () => {
   const { uploadingFolder } = useContext(AppContext)
 
   return (
@@ -24,18 +20,16 @@ const DesignerPanel = ({ generate }: DesignerPanelProps) => {
       )}
 
       <div className="container-fluid">
-        <div className="pt-4 pb-4">
+        <div className="pb-4">
           <div className="row">
-            <div className="col-lg-3">
+            <div className="col-md-3 col-sm-6">
               <LayersPanel />
             </div>
-
-            <div className="col-lg-7 middle-section">
-              <LayerPanel />
-            </div>
-
-            <div className="col-lg-2">
+            <div className="col-md-2 col-sm-6 mb-3">
               <PreviewItem />
+            </div>
+            <div className="col-md-7 middle-section">
+              <LayerPanel />
             </div>
           </div>
         </div>

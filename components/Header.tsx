@@ -1,20 +1,19 @@
 import NavLink from "./NavLink"
-import Button from "./Button"
 import { AiOutlineUser } from "react-icons/ai"
 import { FiLogOut } from "react-icons/fi"
-import Image from "next/image"
 import { removeConnectedUser } from "../helpers/utils"
 import { FaRegUserCircle } from "react-icons/fa"
 import { useWeb3React } from "@web3-react/core"
 import { useContext } from "react"
 import PageContext from "../context/PageContext"
 import GetStartedButton from "./GetStartedButton"
+import NetworkSwitcher from "./NetworkSwitcher"
 
-export default function Header() {
+export default function Header({ children }: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
-  const { active, account, activate, deactivate } = useWeb3React()
+  const { active, account, deactivate } = useWeb3React()
 
-  const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME
+  const businessName = settings?.businessName ? settings?.businessName : ""
 
   const handleSignout = async (e: any) => {
     e.preventDefault()
@@ -23,9 +22,13 @@ export default function Header() {
   }
 
   const myAccountBtn = () => (
-    <ul className="navbar-nav">
+    <ul className="navbar-nav myAccountBtn">
       {active && (
         <>
+          <li className="nav-item me-2 ms-2">
+            <NetworkSwitcher />
+          </li>
+
           <li className="nav-item dropdown">
             <a
               className="nav-link dropdown-toggle"
@@ -35,21 +38,8 @@ export default function Header() {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <span className="me-2 d-inline-block" style={{ height: 30 }}>
-                <Image
-                  className="user-avatar rounded-circle"
-                  width={30}
-                  height={30}
-                  src={require("../assets/user-avatar.png")}
-                  alt="User Avatar"
-                />
-              </span>
-
-              <span className="d-none d-md-inline-block">
-                {/* Hi,{" "} */}
+              <span>
                 <span className="user-avatar-name">
-                  {/* {session.user.name ? session.user.name : "Artist"} */}
-
                   {`${account?.substring(0, 6)}...${account?.substring(
                     account?.length - 4,
                     account?.length
@@ -85,28 +75,38 @@ export default function Header() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <NavLink className="navbar-brand" to="/">
-            {settings?.logoUrl ? (
-              <img src={settings?.logoUrl} className="navbar-brand-logo" />
-            ) : (
-              businessName
-            )}
-          </NavLink>
+      <nav className="navbar navbar-expand-md navbar-light bg-light">
+        <div
+          className="container-fluid"
+          style={children ? { flexWrap: "nowrap" } : {}}
+        >
+          {!children && (
+            <NavLink className="navbar-brand" to="/">
+              {settings?.logoUrl ? (
+                <img src={settings?.logoUrl} className="navbar-brand-logo" />
+              ) : (
+                businessName
+              )}
+            </NavLink>
+          )}
+
+          {children}
 
           <div className="d-flex">
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
+            {!children && (
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon" />
+              </button>
+            )}
+
             <div className="d-sm-block d-md-none">{myAccountBtn()}</div>
           </div>
 
@@ -117,22 +117,26 @@ export default function Header() {
             <div className="mr-auto" />
 
             <ul className="navbar-nav my-2 my-lg-0">
-              <li className="nav-item me-2">
-                <GetStartedButton className="btn-sm btn-outline">
-                  Generate Collection
-                </GetStartedButton>
-              </li>
+              {!children && (
+                <>
+                  <li className="nav-item me-2">
+                    <GetStartedButton className="btn-sm btn-outline">
+                      Generate Collection
+                    </GetStartedButton>
+                  </li>
 
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/#features-section">
-                  Features
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/#pricing-section">
-                  Pricing
-                </NavLink>
-              </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/#features">
+                      Features
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/#pricing">
+                      Pricing
+                    </NavLink>
+                  </li>
+                </>
+              )}
 
               {!active && (
                 <>

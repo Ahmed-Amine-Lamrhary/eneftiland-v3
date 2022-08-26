@@ -2,12 +2,12 @@ import axios from "axios"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
 import AppContext from "../../../context/AppContext"
-import { showToast } from "../../../helpers/utils"
+import { callApi, showToast } from "../../../helpers/utils"
 import RuleI from "../../../types/RuleI"
 import Button from "../../Button"
 import AppLoader from "../../AppLoader"
 import AppSelect from "../AppSelect"
-import { AiOutlineLoading } from "react-icons/ai"
+import { AiOutlineLoading, AiOutlinePlus } from "react-icons/ai"
 import { RiDeleteBin5Line, RiRulerLine } from "react-icons/ri"
 import NoDataFound from "../../NoDataFound"
 
@@ -44,9 +44,13 @@ const RulesPanel = () => {
     try {
       setLoading(true)
 
-      const { data } = await axios.post("/api/collection/getRules", {
-        collectionId,
+      const { data } = await callApi({
+        route: "collection/getRules",
+        body: {
+          collectionId,
+        },
       })
+
       setRules(data.data)
     } catch (error: any) {
       throw error
@@ -66,9 +70,12 @@ const RulesPanel = () => {
       try {
         setAddLoading(true)
 
-        const { data } = await axios.post("/api/collection/addRule", {
-          collectionId,
-          rule: newRule,
+        const { data } = await callApi({
+          route: "collection/addRule",
+          body: {
+            collectionId,
+            rule: newRule,
+          },
         })
 
         if (!data.success) return showToast(data.message, "error")
@@ -89,8 +96,11 @@ const RulesPanel = () => {
     try {
       setAddedLoading(true)
 
-      const { data } = await axios.post("/api/collection/deleteRule", {
-        id,
+      const { data } = await callApi({
+        route: "collection/deleteRule",
+        body: {
+          id,
+        },
       })
 
       if (!data.success) return showToast(data.message, "error")
@@ -108,8 +118,11 @@ const RulesPanel = () => {
       try {
         setAddedLoading(true)
 
-        const { data } = await axios.post("/api/collection/updateRule", {
-          rule: newRule,
+        const { data } = await callApi({
+          route: "collection/updateRule",
+          body: {
+            rule: newRule,
+          },
         })
 
         if (!data.success) return showToast(data.message, "error")
@@ -125,13 +138,20 @@ const RulesPanel = () => {
     }
   }
 
-  const traitsSelectBoxOptions: any = layers.map((layer) => ({
-    label: layer.name,
-    options: layer.images?.map((image) => ({
-      label: image.name,
-      value: `${layer.name}:${image.name}`,
-    })),
-  }))
+  const traitsSelectBoxOptions: any = layers.map((layer) => {
+    return {
+      label: layer.name,
+      options: layer.images?.map((image) => ({
+        label: (
+          <div>
+            <img src={image.url} />
+            {image.name}
+          </div>
+        ),
+        value: `${layer.name}:${image.name}`,
+      })),
+    }
+  })
 
   const traitsSelectBox = (value: any, onChange: any) => {
     const layer = value.split(":")[0]
@@ -175,30 +195,30 @@ const RulesPanel = () => {
     <div className="rules-panel">
       <div className="container">
         {/* Create new rule */}
-        <div className="mb-5">
+        <div className="mb-4">
           <h6 className="mb-3">Create new rule</h6>
           <div className="row">
-            <div className="col-4">
+            <div className="col-md-4 col-sm-6 mb-2">
               {traitsSelectBox(currentTrait1, (e: any) =>
                 setCurrentTrait1(e.value)
               )}
             </div>
 
-            <div className="col-3">
+            <div className="col-md-3 col-sm-6 mb-2">
               {conditionSelectBox(currentCondition, (e: any) =>
                 setCurrentCondition(e.value)
               )}
             </div>
 
-            <div className="col-4">
+            <div className="col-md-4 col-sm-6 mb-2">
               {traitsSelectBox(currentTrait2, (e: any) =>
                 setCurrentTrait2(e.value)
               )}
             </div>
 
-            <div className="col-1">
+            <div className="col-md-1 col-sm-6 mb-2">
               <Button onClick={addRule} loading={addLoading} className="btn-sm">
-                Add
+                <AiOutlinePlus />
               </Button>
             </div>
           </div>
@@ -214,7 +234,7 @@ const RulesPanel = () => {
               <>
                 {rules?.map((rule, index) => (
                   <div key={index} className="row align-items-center mb-3">
-                    <div className="col-4">
+                    <div className="col-md-4 col-sm-6 mb-2">
                       {traitsSelectBox(rule.trait1, (e: any) =>
                         updateRule(
                           {
@@ -226,7 +246,7 @@ const RulesPanel = () => {
                       )}
                     </div>
 
-                    <div className="col-3">
+                    <div className="col-md-3 col-sm-6 mb-2">
                       {conditionSelectBox(rule.condition, (e: any) =>
                         updateRule(
                           {
@@ -238,7 +258,7 @@ const RulesPanel = () => {
                       )}
                     </div>
 
-                    <div className="col-4">
+                    <div className="col-md-4 col-sm-6 mb-2">
                       {traitsSelectBox(rule.trait2, (e: any) =>
                         updateRule(
                           {
@@ -250,7 +270,7 @@ const RulesPanel = () => {
                       )}
                     </div>
 
-                    <div className="col-1">
+                    <div className="col-md-1 col-sm-6 mb-2">
                       {addedLoading ? (
                         <AiOutlineLoading className="loading-icon" size={20} />
                       ) : (

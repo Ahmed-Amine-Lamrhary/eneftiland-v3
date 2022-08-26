@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { convertToEth, showToast } from "../../helpers/utils"
 import Button from "../Button"
-import AppContext from "../../context/AppContext"
 import { CURRENCY } from "../../helpers/constants"
+import { useWeb3React } from "@web3-react/core"
+import Web3 from "web3"
 
 interface MetamaskProps {
   amount: any
@@ -15,7 +16,7 @@ const myMetamaskAddress = process.env.NEXT_PUBLIC_METAMASK_ADDRESS || ""
 const Metamask = ({ amount, generate }: MetamaskProps) => {
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState("")
-  const { settings } = useContext(AppContext)
+  const { library } = useWeb3React()
 
   useEffect(() => {
     connectToWallet()
@@ -38,17 +39,22 @@ const Metamask = ({ amount, generate }: MetamaskProps) => {
 
   const handlePayment = async () => {
     try {
-      const win: any = window
-      const ether: any = win.ethereum
-      const network = ether.networkVersion
-
-      // network must be Mainnet
-      if (network !== "1")
-        return showToast("Please switch to the Mainnet network", "error")
-
+      const currentNetwork = window.ethereum.networkVersion
       setLoading(true)
 
-      const provider = new ethers.providers.Web3Provider(ether)
+      // switch to eth main network
+      if (currentNetwork !== "1") {
+        try {
+          await library.provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: Web3.utils.toHex("1") }],
+          })
+        } catch (switchError: any) {
+          throw switchError
+        }
+      }
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
 
       ethers.utils.getAddress(myMetamaskAddress)

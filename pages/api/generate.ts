@@ -1,10 +1,29 @@
 import { PrismaClient } from "@prisma/client"
 import { startCreating } from "../../helpers/generator"
 const prisma = new PrismaClient()
+import jwt from "jsonwebtoken"
 
 const ioHandler = async (req: any, res: any) => {
   try {
-    const { collection, watermark } = req.body
+    // jwt verification
+    const token = req.headers.authorization
+    if (!token)
+      return res.json({
+        success: false,
+        message: "Not authorized",
+      })
+
+    try {
+      jwt.verify(token, "secret")
+    } catch (err) {
+      return res.json({
+        success: false,
+        message: "Not authorized",
+      })
+    }
+    // jwt verification
+
+    const { collection } = req.body
 
     const {
       id,
@@ -14,12 +33,10 @@ const ioHandler = async (req: any, res: any) => {
       collectionSize,
       creators,
       externalUrl,
-      ipfsGateway,
       network,
       prefix,
       royalties,
       symbol,
-      size,
     } = collection
 
     const metadata = {

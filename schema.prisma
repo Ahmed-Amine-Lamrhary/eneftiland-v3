@@ -62,6 +62,8 @@ model Settings {
   watermarkUrl String?
   watermarkPos String  @default("bottom-right") // top-left top-right bottom-left bottom-right center full
   logoUrl      String?
+  faviconUrl   String?
+  businessName String?
 
   googleAnalyticsTrackingCode String?
 
@@ -94,6 +96,7 @@ model Collection {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   layers  String @db.VarChar(65535)
+  galleryLayers  String @db.VarChar(65535)
   results String @db.VarChar(65535)
 
   collectionDesc String

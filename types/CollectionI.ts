@@ -19,6 +19,7 @@ export default interface CollectionI {
   royalties: number
 
   layers?: LayerI[]
+  galleryLayers?: LayerI[]
 
   results?: any[]
 

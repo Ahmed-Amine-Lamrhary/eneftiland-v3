@@ -1,18 +1,20 @@
-import React from "react"
+import React, { useContext } from "react"
 import { AiFillInstagram } from "react-icons/ai"
 import { BsLinkedin, BsTwitter, BsYoutube } from "react-icons/bs"
 import { FaDiscord } from "react-icons/fa"
+import PageContext from "../context/PageContext"
 import NavLink from "./NavLink"
 
 const Footer = () => {
-  const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME
+  const { settings } = useContext(PageContext)
+  const businessName = settings?.businessName ? settings?.businessName : ""
 
   return (
     <footer className="footer">
       <div className="container-lg">
         {/* main */}
         <div className="main row">
-          <div className="col">
+          <div className="col-md-3 col-sm-6 mb-3">
             <h6>Social Media</h6>
             <ul className="links-list sm d-flex">
               <li>
@@ -43,7 +45,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col">
+          <div className="col-md-3 col-sm-6 mb-3">
             <h6>Legal</h6>
             <ul className="links-list">
               <li>
@@ -55,7 +57,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col">
+          <div className="col-md-3 col-sm-6 mb-3">
             <h6>Links</h6>
             <ul className="links-list">
               <li>
@@ -64,7 +66,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col">
+          <div className="col-md-3 col-sm-6 mb-3">
             <h6>Products</h6>
             <ul className="links-list">
               <li>

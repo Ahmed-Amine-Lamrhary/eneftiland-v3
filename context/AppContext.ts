@@ -11,8 +11,6 @@ interface AppContextInterface {
   setLoading: any
   setResults: any
   addToResults: any
-  view: "designer" | "settings" | "rules" | "preview" | "generate"
-  setView: any
   settings: any
   filteredItems: any[]
   setFilteredItems: any
@@ -23,6 +21,8 @@ interface AppContextInterface {
   setIsSaving: any
   uploadingImages: boolean
   setUploadingImages: any
+  generate: any
+  generationTime: string
 }
 
 const AppContext = React.createContext<AppContextInterface>({
@@ -34,8 +34,6 @@ const AppContext = React.createContext<AppContextInterface>({
   loading: false,
   setResults: null,
   addToResults: null,
-  view: "designer",
-  setView: null,
   settings: null,
   setLoading: null,
   filteredItems: [],
@@ -47,6 +45,8 @@ const AppContext = React.createContext<AppContextInterface>({
   setIsSaving: null,
   uploadingImages: false,
   setUploadingImages: null,
+  generate: null,
+  generationTime: "",
 })
 
 export default AppContext

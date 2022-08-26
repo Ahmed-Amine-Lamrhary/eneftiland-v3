@@ -28,8 +28,10 @@ const AppSelect = ({
         styles={{
           option: (provided, state) => ({
             ...provided,
-            color: state.isSelected ? "white" : "#4b4b4b",
-            backgroundColor: state.isSelected ? "#724bf4" : "white",
+            color: "#4b4b4b",
+            backgroundColor: state.isSelected
+              ? "rgba(75, 75, 75, 0.1)"
+              : "white",
           }),
         }}
         theme={(theme) => ({
