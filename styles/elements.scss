@@ -48,9 +48,9 @@
   .dropdown {
     border-left: 1px solid rgba($grey-color, 0.05);
     .dropdown-toggle {
-      font-size: 12px;
-      font-weight: 500;
-      color: $black-color;
+      font-size: 13px;
+      font-weight: 400;
+      color: $grey-color;
       display: flex;
       align-items: center;
       padding-right: 0 !important;
@@ -605,6 +605,11 @@ label {
 .navbar .react-select-box {
   max-width: 165px;
   margin: auto;
+}
+@media (max-width: 500px) {
+  .navbar .react-select-box {
+    max-width: 82px;
+  }
 }
 
 // modal-sm

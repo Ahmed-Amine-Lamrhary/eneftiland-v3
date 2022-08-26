@@ -190,6 +190,8 @@ export default function MePage({ settings }: any) {
           sortBy === "dateCreated"
             ? new Date(collection2[sortBy]).getTime()
             : collection2[sortBy]
+
+        if (sortBy === "collectionName") return v1 < v2 ? -1 : 1
         return v2 - v1
       })
 
@@ -211,6 +213,7 @@ export default function MePage({ settings }: any) {
                       className="form-select"
                       onChange={sortMyCollections}
                     >
+                      <option value="">Sort by</option>
                       <option value="collectionName">Name</option>
                       <option value="dateCreated">Latest</option>
                       <option value="collectionSize">Largest</option>
