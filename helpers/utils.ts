@@ -145,16 +145,6 @@ export function millisToMinutesAndSeconds(millis: any) {
 export const getMetadata = (collection: any, item: any, index: number) => {
   const edition = index + 1
 
-  // const files: any = []
-  // item?.attributes.forEach((attr: any) => {
-  //   const f = allLayersImages.find((l: any) => l.id === attr.id)
-  //   const imgExtension = f?.filename.split(".").pop()
-  //   files.push({
-  //     uri: f?.url,
-  //     type: `image/${imgExtension}`,
-  //   })
-  // })
-
   const tokenName = `${
     collection.prefix ? collection.prefix : collection.collectionName
   }#${edition}`
@@ -256,6 +246,33 @@ export const getLayersImages = async ({
   const allLayersImages: any = []
   await Promise.all(
     collection.galleryLayers.map(async (layer: any) => {
+      await Promise.all(
+        layer.images.map(async (image: any) => {
+          let r
+          if (!noFile) r = await loadImage(image.url)
+
+          allLayersImages.push({
+            id: image.id,
+            name: image.name,
+            file: r,
+            filename: image.filename,
+            url: image.url,
+          })
+        })
+      )
+    })
+  )
+
+  return allLayersImages
+}
+
+export const getLayersImagesFromHistory = async ({
+  history,
+  noFile = false,
+}: any) => {
+  const allLayersImages: any = []
+  await Promise.all(
+    history.layers.map(async (layer: any) => {
       await Promise.all(
         layer.images.map(async (image: any) => {
           let r

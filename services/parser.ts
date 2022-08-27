@@ -22,7 +22,7 @@ const parseCollection = (data: any) => {
   return collectionData
 }
 
-const parseHistory = (data: any) => {
+const parseHistory = (data: any) => {  
   const historyData = { ...data }
 
   historyData.dateCreated = historyData.dateCreated.toString()

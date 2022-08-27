@@ -69,37 +69,53 @@ const GeneratePanel = ({ plans }: any) => {
     const time = moment(new Date(historyItem.dateCreated)).format("HH:mm A")
 
     return (
-      <div className="generated-item">
+      <div
+        className={`generated-item ${
+          !historyItem.completed ? "not-completed" : ""
+        }`}
+      >
         <h6>{`${day} at ${time}`}</h6>
         <p>
           {historyItem.collectionSize} token
           {historyItem.collectionSize > 1 && "s"}
         </p>
 
-        <Dropdown align="end">
-          <Dropdown.Toggle id="dropdown-basic">
-            <BsThreeDots />
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => regenerateMeta(historyItem.id)}>
-              Regenerate metadata
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
-              target="_blank"
+        {!historyItem.completed ? (
+          <div className="d-flex align-items-center">
+            <p className="error-text me-4">Error while generating</p>
+            <Button
+              className="btn-sm btn-outline btn-danger"
+              onClick={() => generateAgain(historyItem.id)}
             >
-              View images
-            </Dropdown.Item>
-            <Dropdown.Item
-              href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
-              target="_blank"
-            >
-              View metadata
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              Generate Again
+            </Button>
+          </div>
+        ) : (
+          <Dropdown align="end">
+            <Dropdown.Toggle id="dropdown-basic">
+              <BsThreeDots />
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => regenerateMeta(historyItem.id)}>
+                Regenerate metadata
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
+                target="_blank"
+              >
+                View images
+              </Dropdown.Item>
+              <Dropdown.Item
+                href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
+                target="_blank"
+              >
+                View metadata
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
     )
   }
@@ -181,12 +197,29 @@ const GeneratePanel = ({ plans }: any) => {
       })
 
       if (!data.success) return showToast(data.message, "error")
-
-      await getCollectionHistory()
     } catch (error: any) {
       showToast(error.message, "error")
     } finally {
       setIsGenerating(false)
+      await getCollectionHistory()
+    }
+  }
+
+  const generateAgain = async (historyId: any) => {
+    setIsGenerating(true)
+    setShowPayment(false)
+
+    try {
+      const { data } = await callApi({
+        route: `me/generateagain/${historyId}`,
+      })
+
+      if (!data.success) return showToast(data.message, "error")
+    } catch (error: any) {
+      showToast(error.message, "error")
+    } finally {
+      setIsGenerating(false)
+      await getCollectionHistory()
     }
   }
 

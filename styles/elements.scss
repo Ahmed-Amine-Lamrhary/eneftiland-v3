@@ -312,6 +312,15 @@ label {
       background-color: $main-color;
       color: $white-color;
     }
+    &.btn-danger {
+      background-color: transparent;
+      border-color: $red-color;
+      color: $red-color;
+      &:hover {
+        background-color: $red-color;
+        color: $white-color;
+      }
+    }
   }
   &.btn-white {
     background-color: $beige-color;

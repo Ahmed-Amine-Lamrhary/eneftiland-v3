@@ -95,9 +95,9 @@ model collection {
   userId String
   user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  layers  String @db.VarChar(65535)
-  galleryLayers  String @db.VarChar(65535)
-  results String @db.VarChar(65535)
+  layers        String @db.VarChar(65535)
+  galleryLayers String @db.VarChar(65535)
+  results       String @db.VarChar(65535)
 
   collectionDesc String
   collectionName String
@@ -116,16 +116,27 @@ model collection {
 }
 
 model history {
-  id             String     @id @default(cuid())
-  collectionId   String
-  collection     collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  dateCreated    DateTime   @default(now())
-  ipfsGateway    String
-  imagesCid      String
-  metaCid        String
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  dateCreated  DateTime   @default(now())
+  ipfsGateway  String
+  imagesCid    String
+  metaCid      String
+  layers       String     @db.VarChar(65535)
+  results      String     @db.VarChar(65535)
+  completed    Boolean
+
+  collectionDesc String?
+  collectionName String?
   collectionSize Int
-  layers         String     @db.VarChar(65535)
-  results        String     @db.VarChar(65535)
+  creators       String? @db.VarChar(65535)
+  externalUrl    String?
+  network        String?
+  prefix         String?
+  royalties      Float?
+  symbol         String?
+  size           Int?
 }
 
 model rule {

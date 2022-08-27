@@ -170,7 +170,6 @@ const Page = ({
           transition={Zoom}
           icon={false}
           closeButton={false}
-          autoClose={false}
         />
 
         <PageContext.Provider
