@@ -10,9 +10,9 @@
   "homepage": "https://www.eneftiland.com/",
   "main": "",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",
     "types": "tsc --noEmit"
   },
   "license": "ISC",
