@@ -163,7 +163,11 @@ const Pay = ({
                   )}
 
                   {settings?.isMetamask && paymentMethod === "metamask" && (
-                    <Metamask amount={amount} generate={finishPayment} />
+                    <Metamask
+                      amount={amount}
+                      generate={finishPayment}
+                      myMetamaskAddress={settings?.metamaskAddress}
+                    />
                   )}
 
                   {settings?.isStripe && paymentMethod === "stripe" && (

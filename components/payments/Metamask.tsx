@@ -9,13 +9,12 @@ import Web3 from "web3"
 interface MetamaskProps {
   amount: any
   generate: any
+  myMetamaskAddress: any
 }
 
 declare const window: any
 
-const myMetamaskAddress = process.env.NEXT_PUBLIC_METAMASK_ADDRESS || ""
-
-const Metamask = ({ amount, generate }: MetamaskProps) => {
+const Metamask = ({ amount, generate, myMetamaskAddress }: MetamaskProps) => {
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState("")
   const { library } = useWeb3React()
