@@ -1,8 +1,86 @@
 import { Stripe, loadStripe } from "@stripe/stripe-js"
 import axios from "axios"
-import { loadImage } from "canvas"
 import moment from "moment"
 import { toast } from "react-toastify"
+
+export const getLayersImages = async ({
+  collection,
+  noFile = false,
+  isHistory,
+}: any) => {
+  const allLayersImages: any = []
+  await Promise.all(
+    collection[isHistory ? "layers" : "galleryLayers"].map(
+      async (layer: any) => {
+        await Promise.all(
+          layer.images.map(async (image: any) => {
+            let r
+            if (!noFile) r = await loadImage(image.url)
+
+            allLayersImages.push({
+              id: image.id,
+              name: image.name,
+              file: r,
+              filename: image.filename,
+              url: image.url,
+            })
+          })
+        )
+      }
+    )
+  )
+
+  return allLayersImages
+}
+
+export const getWatermarkCred = ({ dimensions, position }: any) => {
+  const watermarkSize = dimensions / 4
+
+  let x,
+    y,
+    w = watermarkSize,
+    h = watermarkSize
+
+  switch (position) {
+    case "top-left":
+      x = 0
+      y = 0
+      break
+    case "top-right":
+      x = dimensions - watermarkSize
+      y = 0
+      break
+    case "bottom-left":
+      x = 0
+      y = dimensions - watermarkSize
+      break
+    case "bottom-right":
+      x = dimensions - watermarkSize
+      y = dimensions - watermarkSize
+      break
+    case "center":
+      x = dimensions / 2 - watermarkSize / 2
+      y = dimensions / 2 - watermarkSize / 2
+      break
+    case "full":
+      x = 0
+      y = 0
+      w = dimensions
+      h = dimensions
+      break
+  }
+
+  return { x, y, w, h }
+}
+
+export function loadImage(url: string) {
+  return new Promise((r) => {
+    let i = new Image()
+    i.crossOrigin = "anonymous"
+    i.onload = () => r(i)
+    i.src = url
+  })
+}
 
 export function nFormatter(num: number) {
   if (num >= 1000000000) {
@@ -244,65 +322,6 @@ export const getMetadataPreview = (collection: any) => {
     }
 
   return metadata
-}
-
-interface getLayersImagesI {
-  collection: any
-  noFile?: boolean
-}
-
-export const getLayersImages = async ({
-  collection,
-  noFile = false,
-}: getLayersImagesI) => {
-  const allLayersImages: any = []
-  await Promise.all(
-    collection.galleryLayers.map(async (layer: any) => {
-      await Promise.all(
-        layer.images.map(async (image: any) => {
-          let r
-          if (!noFile) r = await loadImage(image.url)
-
-          allLayersImages.push({
-            id: image.id,
-            name: image.name,
-            file: r,
-            filename: image.filename,
-            url: image.url,
-          })
-        })
-      )
-    })
-  )
-
-  return allLayersImages
-}
-
-export const getLayersImagesFromHistory = async ({
-  history,
-  noFile = false,
-}: any) => {
-  const allLayersImages: any = []
-  await Promise.all(
-    history.layers.map(async (layer: any) => {
-      await Promise.all(
-        layer.images.map(async (image: any) => {
-          let r
-          if (!noFile) r = await loadImage(image.url)
-
-          allLayersImages.push({
-            id: image.id,
-            name: image.name,
-            file: r,
-            filename: image.filename,
-            url: image.url,
-          })
-        })
-      )
-    })
-  )
-
-  return allLayersImages
 }
 
 // connected user

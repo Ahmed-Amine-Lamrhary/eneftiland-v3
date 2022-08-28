@@ -22,7 +22,7 @@ export default async (req: any, res: any) => {
   }
   // jwt verification
 
-  const { id, ipfsGateway, imagesCid, metaCid } = req.body
+  const { id } = req.body
 
   try {
     // update
@@ -31,10 +31,7 @@ export default async (req: any, res: any) => {
         id,
       },
       data: {
-        ipfsGateway,
-        imagesCid,
-        metaCid,
-        completed: true,
+        ...req.body,
       },
     })
 

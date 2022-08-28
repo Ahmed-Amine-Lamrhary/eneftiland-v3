@@ -1,5 +1,6 @@
 import { MemoryBlockStore } from "ipfs-car/blockstore/memory"
 import { packToBlob } from "ipfs-car/pack/blob"
+import JSZip from "jszip"
 import moment from "moment"
 import { useRouter } from "next/router"
 import { NFTStorage } from "nft.storage"
@@ -10,7 +11,15 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoImageOutline } from "react-icons/io5"
 import { MdOutlineCollections } from "react-icons/md"
 import AppContext from "../../../context/AppContext"
-import { callApi, getMetadata, showToast } from "../../../helpers/utils"
+import {
+  callApi,
+  getLayersImages,
+  getMetadata,
+  getWatermarkCred,
+  loadImage,
+  showToast,
+} from "../../../helpers/utils"
+import { parseHistory } from "../../../services/parser"
 import ipfsProvidersType from "../../../types/ipfsProviders"
 import payMethodsType from "../../../types/payMethods"
 import AppLoader from "../../AppLoader"
@@ -24,9 +33,7 @@ const GeneratePanel = ({ plans, settings }: any) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
 
-  const [generatingStatus, setGeneratingStatus] = useState(
-    "Generating your collection..."
-  )
+  const [generatingStatus, setGeneratingStatus] = useState("")
 
   // payment
   const [showPayment, setShowPayment] = useState<boolean>(false)
@@ -87,44 +94,88 @@ const GeneratePanel = ({ plans, settings }: any) => {
           {historyItem.collectionSize > 1 && "s"}
         </p>
 
-        {!historyItem.completed ? (
+        {!historyItem.completed && (
           <div className="d-flex align-items-center">
             <p className="error-text me-4">Error while generating</p>
-            <Button
-              className="btn-sm btn-outline btn-danger"
-              onClick={() => generateAgain(historyItem.id)}
-            >
-              Generate Again
-            </Button>
           </div>
-        ) : (
+        )}
+
+        <div className="d-flex align-items-center">
+          {historyItem.completed && (
+            <Button
+              className="btn-sm btn-outline me-3"
+              onClick={() => uploadToIPFS(historyItem)}
+            >
+              Upload to IPFS
+            </Button>
+          )}
+
           <Dropdown align="end">
             <Dropdown.Toggle id="dropdown-basic">
               <BsThreeDots />
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => regenerateMeta(historyItem.id)}>
-                Regenerate metadata
+              <Dropdown.Item onClick={() => generateAgain(historyItem)}>
+                Download
               </Dropdown.Item>
 
-              <Dropdown.Item
-                href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
-                target="_blank"
-              >
-                View images
-              </Dropdown.Item>
-              <Dropdown.Item
-                href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
-                target="_blank"
-              >
-                View metadata
-              </Dropdown.Item>
+              {historyItem.completed && (
+                <>
+                  <Dropdown.Item onClick={() => regenerateMeta(historyItem.id)}>
+                    Regenerate metadata
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
+                    target="_blank"
+                  >
+                    View images
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
+                    target="_blank"
+                  >
+                    View metadata
+                  </Dropdown.Item>
+                </>
+              )}
             </Dropdown.Menu>
           </Dropdown>
-        )}
+        </div>
       </div>
     )
+  }
+
+  const downloadFiles = async (nfts: any, metas: any) => {
+    var zip = new JSZip()
+    var file: any = zip.folder("collection")
+    var imagesFolder: any = file.folder("images")
+    var metaFolder: any = file.folder("meta")
+
+    nfts.sort((a: any, b: any) => a.index - b.index)
+
+    nfts.map((nft: any) => {
+      imagesFolder.file(nft.name, nft.data, { base64: true })
+    })
+
+    metas.map((meta: any, index: any) => {
+      metaFolder.file(
+        `${index + 1}.json`,
+        Buffer.from(JSON.stringify(meta, null, 4))
+      )
+    })
+    metaFolder.file(
+      `metadata.json`,
+      Buffer.from(JSON.stringify(metas, null, 4))
+    )
+
+    const content = await zip.generateAsync({ type: "blob" })
+
+    var link = document.createElement("a")
+    link.href = window.URL.createObjectURL(content)
+    link.download = `collection.zip`
+    link.click()
   }
 
   const generate = async () => {
@@ -161,7 +212,36 @@ const GeneratePanel = ({ plans, settings }: any) => {
     //   }
     // }
 
-    await startGeneratingBrowser()
+    try {
+      setGeneratingStatus("Generating your collection...")
+      setIsGenerating(true)
+
+      const { data } = await callApi({
+        route: "me/history/create",
+        body: {
+          collectionId,
+        },
+      })
+
+      await startGenerating({
+        callback: async (nfts: any, metas: any) => {
+          // download files
+          await downloadFiles(nfts, metas)
+
+          // update history
+          await callApi({
+            route: "me/history/update",
+            body: {
+              id: data.data.id,
+              ipfsGateway: "",
+              imagesCid: "",
+              metaCid: "",
+              completed: true,
+            },
+          })
+        },
+      })
+    } catch (error: any) {}
   }
 
   const regenerateMeta = async (historyId: any) => {
@@ -184,82 +264,12 @@ const GeneratePanel = ({ plans, settings }: any) => {
 
   interface StartGeneratingI {
     isWatermark?: boolean
+    otherCollection?: any
+    callback?: any
   }
 
-  // browser
-  const getLayersImages = async ({ collection, noFile = false }: any) => {
-    const allLayersImages: any = []
-    await Promise.all(
-      collection.galleryLayers.map(async (layer: any) => {
-        await Promise.all(
-          layer.images.map(async (image: any) => {
-            let r
-            if (!noFile) r = await loadImage(image.url)
-
-            allLayersImages.push({
-              id: image.id,
-              name: image.name,
-              file: r,
-              filename: image.filename,
-              url: image.url,
-            })
-          })
-        )
-      })
-    )
-
-    return allLayersImages
-  }
-  const getWatermarkCred = ({ dimensions, position }: any) => {
-    const watermarkSize = dimensions / 4
-
-    let x,
-      y,
-      w = watermarkSize,
-      h = watermarkSize
-
-    switch (position) {
-      case "top-left":
-        x = 0
-        y = 0
-        break
-      case "top-right":
-        x = dimensions - watermarkSize
-        y = 0
-        break
-      case "bottom-left":
-        x = 0
-        y = dimensions - watermarkSize
-        break
-      case "bottom-right":
-        x = dimensions - watermarkSize
-        y = dimensions - watermarkSize
-        break
-      case "center":
-        x = dimensions / 2 - watermarkSize / 2
-        y = dimensions / 2 - watermarkSize / 2
-        break
-      case "full":
-        x = 0
-        y = 0
-        w = dimensions
-        h = dimensions
-        break
-    }
-
-    return { x, y, w, h }
-  }
-  function loadImage(url: string) {
-    return new Promise((r) => {
-      let i = new Image()
-      i.crossOrigin = "anonymous"
-      i.onload = () => r(i)
-      i.src = url
-    })
-  }
-
-  const startGeneratingBrowser = async (options?: StartGeneratingI) => {
-    const { isWatermark } = options || {}
+  const startGenerating = async (options?: StartGeneratingI) => {
+    const { isWatermark, otherCollection, callback } = options || {}
     const currentPlan = getUsedPlan()
 
     const watermark =
@@ -268,18 +278,10 @@ const GeneratePanel = ({ plans, settings }: any) => {
     setIsGenerating(true)
     setShowPayment(false)
 
+    const collectionData = otherCollection ? otherCollection : collection
+
     try {
-      // add to history
-      const { data } = await callApi({
-        route: "me/history/create",
-        body: {
-          collectionId,
-        },
-      })
-
-      const history = data.data
-
-      const dimensions = collection.size
+      const dimensions = collectionData.size
 
       const canvas = document.createElement("canvas")
       canvas.width = dimensions
@@ -287,7 +289,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
       const ctx: any = canvas.getContext("2d")
 
       const allLayersImages = await getLayersImages({
-        collection,
+        collection: collectionData,
+        isHistory: otherCollection ? true : false,
       })
 
       // watermark
@@ -301,11 +304,11 @@ const GeneratePanel = ({ plans, settings }: any) => {
       let i = 0
 
       const func = async () => {
-        if (i < collection.results.length) {
-          const item = collection.results[i]
+        if (i < collectionData.results.length) {
+          const item = collectionData.results[i]
 
           // metadata
-          const { metadata, edition } = getMetadata(collection, item, i)
+          const { metadata, edition } = getMetadata(collectionData, item, i)
           metas.push(metadata)
 
           // image
@@ -350,69 +353,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
 
           set()
         } else {
-          setGeneratingStatus("Uploading to IPFS...")
-
-          // upload to IPFS
-          const ipfsGateway = "https://nftstorage.link/ipfs"
-          const client = new NFTStorage({
-            token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || "",
-          })
-
-          // images
-          nfts.sort((a: any, b: any) => a.index - b.index)
-
-          const { car: nftsCar } = await packToBlob({
-            input: [
-              ...nfts.map((nft: any) => ({
-                path: nft.name,
-                content: nft.data,
-              })),
-            ],
-            blockstore: new MemoryBlockStore(),
-          })
-
-          setGeneratingStatus("Generated nfts car file")
-          setGeneratingStatus("Uploading nfts car file...")
-
-          const nftsCid = await client.storeCar(nftsCar)
-
-          // metadata
-          metas.forEach((meta: any) => {
-            meta.image = meta.image.replace("<CID>", nftsCid)
-          })
-
-          const { car: metasCar } = await packToBlob({
-            input: [
-              ...metas.map((meta: any, index: number) => ({
-                path: `${index + 1}.json`,
-                content: Buffer.from(JSON.stringify(meta)),
-              })),
-              {
-                path: "_metadata.json",
-                content: Buffer.from(JSON.stringify(metas)),
-              },
-            ],
-            blockstore: new MemoryBlockStore(),
-          })
-
-          setGeneratingStatus("Generated metadata car file")
-          setGeneratingStatus("Uploading metadata car file...")
-
-          const metasCid = await client.storeCar(metasCar)
-
-          console.log(nftsCid)
-          console.log(metasCid)
-
-          // update history
-          await callApi({
-            route: "me/history/update",
-            body: {
-              id: history.id,
-              ipfsGateway,
-              imagesCid: nftsCid,
-              metaCid: metasCid,
-            },
-          })
+          // callback
+          if (callback) await callback(nfts, metas)
 
           setIsGenerating(false)
           await getCollectionHistory()
@@ -432,50 +374,94 @@ const GeneratePanel = ({ plans, settings }: any) => {
       showToast(error.message, "error")
     }
   }
-  // browser
 
-  const startGenerating = async (options?: StartGeneratingI) => {
-    const { isWatermark } = options || {}
-    const currentPlan = getUsedPlan()
+  const uploadToIPFS = async (history: any) => {
+    const collection = parseHistory(history)
+
+    setGeneratingStatus("Preparing your files...")
 
     setIsGenerating(true)
     setShowPayment(false)
-
     try {
-      const { data } = await callApi({
-        route: `me/generatecollection/${collectionId}`,
-        body: {
-          ipfsProvider,
-          watermark:
-            isWatermark === undefined ? currentPlan?.watermark : isWatermark,
+      await startGenerating({
+        otherCollection: collection,
+        callback: async (nfts: any, metas: any) => {
+          // upload to IPFS
+          const ipfsGateway = "https://nftstorage.link/ipfs"
+          const client = new NFTStorage({
+            token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || "",
+          })
+          // images
+          nfts.sort((a: any, b: any) => a.index - b.index)
+          const { car: nftsCar } = await packToBlob({
+            input: [
+              ...nfts.map((nft: any) => ({
+                path: nft.name,
+                content: nft.data,
+              })),
+            ],
+            blockstore: new MemoryBlockStore(),
+          })
+          const nftsCid = await client.storeCar(nftsCar)
+          // metadata
+          metas.forEach((meta: any) => {
+            meta.image = meta.image.replace("<CID>", nftsCid)
+          })
+          const { car: metasCar } = await packToBlob({
+            input: [
+              ...metas.map((meta: any, index: number) => ({
+                path: `${index + 1}.json`,
+                content: Buffer.from(JSON.stringify(meta)),
+              })),
+              {
+                path: "_metadata.json",
+                content: Buffer.from(JSON.stringify(metas)),
+              },
+            ],
+            blockstore: new MemoryBlockStore(),
+          })
+          const metasCid = await client.storeCar(metasCar)
+
+          // update history
+          await callApi({
+            route: "me/history/update",
+            body: {
+              id: history.id,
+              ipfsGateway,
+              imagesCid: nftsCid,
+              metaCid: metasCid,
+            },
+          })
         },
       })
-
-      if (!data.success) return showToast(data.message, "error")
-    } catch (error: any) {
-      showToast(error.message, "error")
-    } finally {
-      setIsGenerating(false)
-      await getCollectionHistory()
-    }
+    } catch (error: any) {}
   }
 
-  const generateAgain = async (historyId: any) => {
+  const generateAgain = async (history: any) => {
+    const collection = parseHistory(history)
+
+    setGeneratingStatus("Preparing your files...")
+
     setIsGenerating(true)
     setShowPayment(false)
-
     try {
-      const { data } = await callApi({
-        route: `me/generateagain/${historyId}`,
-      })
+      await startGenerating({
+        otherCollection: collection,
+        callback: async (nfts: any, metas: any) => {
+          // download files
+          await downloadFiles(nfts, metas)
 
-      if (!data.success) return showToast(data.message, "error")
-    } catch (error: any) {
-      showToast(error.message, "error")
-    } finally {
-      setIsGenerating(false)
-      await getCollectionHistory()
-    }
+          // update history
+          await callApi({
+            route: "me/history/update",
+            body: {
+              id: history.id,
+              completed: true,
+            },
+          })
+        },
+      })
+    } catch (error: any) {}
   }
 
   const getUsedPlan = () => {
@@ -546,7 +532,7 @@ const GeneratePanel = ({ plans, settings }: any) => {
         <Pay
           description={collection?.collectionName}
           currentPlan={currentPlan}
-          generate={startGeneratingBrowser}
+          generate={startGenerating}
           setShowPayment={setShowPayment}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
