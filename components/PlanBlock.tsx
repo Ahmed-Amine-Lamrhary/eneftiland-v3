@@ -6,13 +6,18 @@ import PlanI from "../types/admin/PlanI"
 interface PlanBlockProps {
   plan: PlanI
   currencyCode?: string
+  active?: boolean
 }
 
-const PlanBlock = ({ plan, currencyCode = "USD" }: PlanBlockProps) => {
+const PlanBlock = ({
+  plan,
+  currencyCode = "USD",
+  active = false,
+}: PlanBlockProps) => {
   const { assetsNumber, price, features, priceToRemoveWatermark } = plan
 
   return (
-    <div className="plan-block">
+    <div className={`plan-block ${active ? "active" : ""}`}>
       <div className="top">
         <div className="up-to">UP TO</div>
         <div className="plan-size">{assetsNumber}</div>

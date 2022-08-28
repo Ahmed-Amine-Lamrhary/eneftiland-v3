@@ -292,6 +292,10 @@ section {
   border: 1px solid rgba($grey-color, 0.2);
   border-radius: 10px;
   text-align: center;
+  &.active {
+    background-color: rgba($main-color, 0.1);
+    border-color: rgba($main-color, 0.1);
+  }
   .paragraph {
     font-size: 13px;
   }

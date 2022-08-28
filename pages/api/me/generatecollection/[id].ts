@@ -9,8 +9,8 @@ import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
 
-const getWatermarkCred = ({ size, position }: any) => {
-  const watermarkSize = size / 4
+const getWatermarkCred = ({ dimensions, position }: any) => {
+  const watermarkSize = dimensions / 4
 
   let x,
     y,
@@ -23,26 +23,26 @@ const getWatermarkCred = ({ size, position }: any) => {
       y = 0
       break
     case "top-right":
-      x = size - watermarkSize
+      x = dimensions - watermarkSize
       y = 0
       break
     case "bottom-left":
       x = 0
-      y = size - watermarkSize
+      y = dimensions - watermarkSize
       break
     case "bottom-right":
-      x = size - watermarkSize
-      y = size - watermarkSize
+      x = dimensions - watermarkSize
+      y = dimensions - watermarkSize
       break
     case "center":
-      x = size / 2 - watermarkSize / 2
-      y = size / 2 - watermarkSize / 2
+      x = dimensions / 2 - watermarkSize / 2
+      y = dimensions / 2 - watermarkSize / 2
       break
     case "full":
       x = 0
       y = 0
-      w = size
-      h = size
+      w = dimensions
+      h = dimensions
       break
   }
 
@@ -102,9 +102,9 @@ export default async (req: any, res: any) => {
       },
     })
 
-    const size = collection.size
+    const dimensions = collection.size
 
-    const canvas = createCanvas(size, size)
+    const canvas = createCanvas(dimensions, dimensions)
     const ctx = canvas.getContext("2d")
 
     const allLayersImages = await getLayersImages({
@@ -120,50 +120,58 @@ export default async (req: any, res: any) => {
     const nfts: any = []
     const metas: any = []
 
-    await Promise.all(
-      collection.results.map(async (item: any, i: number) => {
-        // metadata
-        const { metadata, edition } = getMetadata(collection, item, i)
-        metas.push(metadata)
 
-        // image
-        const loadedImages: any = []
 
-        item?.attributes.forEach((attr: any) => {
-          const f = allLayersImages.find((u: any) => u.id === attr.id)
-          loadedImages.push(f.file)
-        })
 
-        //////////////////// creating nft /////////////////////
-        loadedImages.forEach((img: any) => {
-          ctx.drawImage(img, 0, 0, size, size)
-        })
+let i = 0
+    const func = async () => {
+      if (i < collection.results.length) {
+        console.log(i)
+        
+        const item = collection.results[i]
 
-        if (watermark && watermarkImg) {
-          const { x, y, w, h } = getWatermarkCred({
-            size,
-            position: settings?.watermarkPos,
-          })
+// metadata
+const { metadata, edition } = getMetadata(collection, item, i)
+metas.push(metadata)
 
-          ctx.drawImage(watermarkImg, x, y, w, h)
-        }
-        const imageName = `${edition}.png`
-        const canvasType: any = "image/png"
-        const img = canvas.toBuffer(canvasType)
-        //////////////////// creating nft /////////////////////
+// image
+const loadedImages: any = []
 
-        nfts.push({
-          data: img,
-          name: imageName,
-          index: i,
-        })
+item?.attributes.forEach((attr: any) => {
+  const f = allLayersImages.find((u: any) => u.id === attr.id)
+  loadedImages.push(f.file)
+})
 
-        ctx.clearRect(0, 0, size, size)
-        ctx.beginPath()
-      })
-    )
+//////////////////// creating nft /////////////////////
+loadedImages.forEach((img: any) => {
+  ctx.drawImage(img, 0, 0, dimensions, dimensions)
+})
 
-    // upload to IPFS
+if (watermark && watermarkImg) {
+  const { x, y, w, h } = getWatermarkCred({
+    dimensions,
+    position: settings?.watermarkPos,
+  })
+
+  ctx.drawImage(watermarkImg, x, y, w, h)
+}
+const imageName = `${edition}.png`
+const canvasType: any = "image/png"
+const img = canvas.toBuffer(canvasType)
+//////////////////// creating nft /////////////////////
+
+nfts.push({
+  data: img,
+  name: imageName,
+  index: i,
+})
+
+ctx.clearRect(0, 0, dimensions, dimensions)
+ctx.beginPath()
+
+        set()
+      } else {
+         // upload to IPFS
     const ipfsGateway = "https://nftstorage.link/ipfs"
     const client = new NFTStorage({
       token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || "",
@@ -205,7 +213,7 @@ export default async (req: any, res: any) => {
 
     const metasCid = await client.storeCar(metasCar)
 
-    // add to history
+    // update
     await prisma.history.update({
       where: {
         id: history.id,
@@ -222,6 +230,128 @@ export default async (req: any, res: any) => {
       success: true,
       message: "Operation was done successfully",
     })
+      }
+    }
+
+    const set = async () => {
+      setTimeout(async () => {
+        await func()
+        i++
+      }, 1)
+    }
+
+    set()
+
+
+
+
+    
+
+
+
+
+    // await Promise.all(
+    //   collection.results.map(async (item: any, i: number) => {
+    //     // metadata
+    //     const { metadata, edition } = getMetadata(collection, item, i)
+    //     metas.push(metadata)
+
+    //     // image
+    //     const loadedImages: any = []
+
+    //     item?.attributes.forEach((attr: any) => {
+    //       const f = allLayersImages.find((u: any) => u.id === attr.id)
+    //       loadedImages.push(f.file)
+    //     })
+
+    //     //////////////////// creating nft /////////////////////
+    //     loadedImages.forEach((img: any) => {
+    //       ctx.drawImage(img, 0, 0, dimensions, dimensions)
+    //     })
+
+    //     if (watermark && watermarkImg) {
+    //       const { x, y, w, h } = getWatermarkCred({
+    //         dimensions,
+    //         position: settings?.watermarkPos,
+    //       })
+
+    //       ctx.drawImage(watermarkImg, x, y, w, h)
+    //     }
+    //     const imageName = `${edition}.png`
+    //     const canvasType: any = "image/png"
+    //     const img = canvas.toBuffer(canvasType)
+    //     //////////////////// creating nft /////////////////////
+
+    //     nfts.push({
+    //       data: img,
+    //       name: imageName,
+    //       index: i,
+    //     })
+
+    //     ctx.clearRect(0, 0, dimensions, dimensions)
+    //     ctx.beginPath()
+    //   })
+    // )
+
+    // // upload to IPFS
+    // const ipfsGateway = "https://nftstorage.link/ipfs"
+    // const client = new NFTStorage({
+    //   token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || "",
+    // })
+
+    // // images
+    // nfts.sort((a: any, b: any) => a.index - b.index)
+
+    // const { car: nftsCar } = await packToBlob({
+    //   input: [
+    //     ...nfts.map((nft: any) => ({
+    //       path: nft.name,
+    //       content: nft.data,
+    //     })),
+    //   ],
+    //   blockstore: new MemoryBlockStore(),
+    // })
+
+    // const nftsCid = await client.storeCar(nftsCar)
+
+    // // metadata
+    // metas.forEach((meta: any) => {
+    //   meta.image = meta.image.replace("<CID>", nftsCid)
+    // })
+
+    // const { car: metasCar } = await packToBlob({
+    //   input: [
+    //     ...metas.map((meta: any, index: number) => ({
+    //       path: `${index + 1}.json`,
+    //       content: Buffer.from(JSON.stringify(meta)),
+    //     })),
+    //     {
+    //       path: "_metadata.json",
+    //       content: Buffer.from(JSON.stringify(metas)),
+    //     },
+    //   ],
+    //   blockstore: new MemoryBlockStore(),
+    // })
+
+    // const metasCid = await client.storeCar(metasCar)
+
+    // // update
+    // await prisma.history.update({
+    //   where: {
+    //     id: history.id,
+    //   },
+    //   data: {
+    //     ipfsGateway,
+    //     imagesCid: nftsCid,
+    //     metaCid: metasCid,
+    //     completed: true,
+    //   },
+    // })
+
+    // return res.json({
+    //   success: true,
+    //   message: "Operation was done successfully",
+    // })
   } catch (error: any) {
     console.log(error)
     res.json({

@@ -34,7 +34,7 @@ const generate = ({ settings, plans }: any) => {
 
   return (
     <AppWrapper settings={settings}>
-      <GeneratePanel plans={plans} />
+      <GeneratePanel plans={plans} settings={settings} />
     </AppWrapper>
   )
 }

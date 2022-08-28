@@ -50,17 +50,16 @@ const AppNavbar = () => {
   const disableButtons = uploadingFolder || isSaving || uploadingImages
 
   const renderBtn = (route: string, Icon: any) => (
-    <button
-      type="button"
+    <NavLink
+      to={`/app/${collection?.id}/${route}`}
       className={
         router.asPath === `/app/${collection?.id}/${route}` ? "active" : ""
       }
-      onClick={() => router.push(`/app/${collection?.id}/${route}`)}
       disabled={disableButtons}
     >
       <Icon />
       <span className="text">{route}</span>
-    </button>
+    </NavLink>
   )
 
   return (
@@ -109,19 +108,19 @@ const AppNavbar = () => {
 
       {/*  */}
       <ul>
-        <li className="nav-item me-2">{renderBtn("layers", FiLayers)}</li>
-        <li className="nav-item me-2">{renderBtn("settings", FiSettings)}</li>
-        <li className="nav-item me-2">
+        <li className="nav-item me-3">{renderBtn("layers", FiLayers)}</li>
+        <li className="nav-item me-3">{renderBtn("settings", FiSettings)}</li>
+        <li className="nav-item me-3">
           {renderBtn("rules", RiPencilRuler2Line)}
         </li>
-        <li className="nav-item me-2">
+        <li className="nav-item me-3">
           {renderBtn("gallery", HiOutlineCollection)}
         </li>
-        <li className="nav-item me-2">{renderBtn("generate", BiImage)}</li>
+        <li className="nav-item">{renderBtn("generate", BiImage)}</li>
       </ul>
 
       {isSaving && (
-        <li className="nav-item">
+        <li className="nav-item ms-2">
           <button type="button" disabled>
             <AiOutlineLoading3Quarters className="loading-icon" />
 

@@ -170,17 +170,7 @@ export default function IndexPage({ settings, plans }: any) {
         <Section id="pricing" className="pricing-section bg-grey">
           <Heading subTitle="Pricing" title="Use for FREE" />
 
-          <div className="row justify-content-center">
-            {plans?.map((plan: any) => (
-              <div key={`plan-${plan.id}`} className="col-lg-3 col-md-6 mb-4">
-                <PlanBlock plan={plan} currencyCode={CURRENCY} />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4">
-            <PricingCalculator plans={plans} currency={CURRENCY} />
-          </div>
+          <PricingCalculator plans={plans} currency={CURRENCY} />
         </Section>
       )}
 

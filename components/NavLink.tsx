@@ -6,12 +6,22 @@ interface NavLinkProps {
   children: any
   to: string
   onClick?: any
+  disabled?: boolean
 }
 
-const NavLink = ({ className, children, to, onClick }: NavLinkProps) => {
+const NavLink = ({
+  className,
+  children,
+  to,
+  onClick,
+  disabled = false,
+}: NavLinkProps) => {
   return (
     <Link href={to}>
-      <a onClick={onClick} className={className}>
+      <a
+        onClick={onClick}
+        className={`${className} ${disabled ? "disabled" : ""}`}
+      >
         {children}
       </a>
     </Link>

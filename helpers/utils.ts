@@ -3,7 +3,19 @@ import axios from "axios"
 import { loadImage } from "canvas"
 import moment from "moment"
 import { toast } from "react-toastify"
-import CollectionI from "../types/CollectionI"
+
+export function nFormatter(num: number) {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "G"
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M"
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K"
+  }
+  return num
+}
 
 export const formatDate = (date: any) =>
   moment(date).format("dddd Do YYYY, h:mm a")

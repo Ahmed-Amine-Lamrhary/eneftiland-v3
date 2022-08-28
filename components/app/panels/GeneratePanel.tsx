@@ -1,5 +1,8 @@
+import { MemoryBlockStore } from "ipfs-car/blockstore/memory"
+import { packToBlob } from "ipfs-car/pack/blob"
 import moment from "moment"
 import { useRouter } from "next/router"
+import { NFTStorage } from "nft.storage"
 import React, { useContext, useEffect, useState } from "react"
 import { Dropdown } from "react-bootstrap"
 import { AiOutlineEye } from "react-icons/ai"
@@ -7,7 +10,7 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoImageOutline } from "react-icons/io5"
 import { MdOutlineCollections } from "react-icons/md"
 import AppContext from "../../../context/AppContext"
-import { callApi, showToast } from "../../../helpers/utils"
+import { callApi, getMetadata, showToast } from "../../../helpers/utils"
 import ipfsProvidersType from "../../../types/ipfsProviders"
 import payMethodsType from "../../../types/payMethods"
 import AppLoader from "../../AppLoader"
@@ -16,10 +19,14 @@ import Button from "../../Button"
 import NoDataFound from "../../NoDataFound"
 import Pay from "../../payments/Pay"
 
-const GeneratePanel = ({ plans }: any) => {
+const GeneratePanel = ({ plans, settings }: any) => {
   const [isGeneratingMeta, setIsGeneratingMeta] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
+
+  const [generatingStatus, setGeneratingStatus] = useState(
+    "Generating your collection..."
+  )
 
   // payment
   const [showPayment, setShowPayment] = useState<boolean>(false)
@@ -179,6 +186,261 @@ const GeneratePanel = ({ plans }: any) => {
     isWatermark?: boolean
   }
 
+  // browser
+  const getLayersImages = async ({ collection, noFile = false }: any) => {
+    const allLayersImages: any = []
+    await Promise.all(
+      collection.galleryLayers.map(async (layer: any) => {
+        await Promise.all(
+          layer.images.map(async (image: any) => {
+            let r
+            if (!noFile) r = await loadImage(image.url)
+
+            allLayersImages.push({
+              id: image.id,
+              name: image.name,
+              file: r,
+              filename: image.filename,
+              url: image.url,
+            })
+          })
+        )
+      })
+    )
+
+    return allLayersImages
+  }
+  const getWatermarkCred = ({ dimensions, position }: any) => {
+    const watermarkSize = dimensions / 4
+
+    let x,
+      y,
+      w = watermarkSize,
+      h = watermarkSize
+
+    switch (position) {
+      case "top-left":
+        x = 0
+        y = 0
+        break
+      case "top-right":
+        x = dimensions - watermarkSize
+        y = 0
+        break
+      case "bottom-left":
+        x = 0
+        y = dimensions - watermarkSize
+        break
+      case "bottom-right":
+        x = dimensions - watermarkSize
+        y = dimensions - watermarkSize
+        break
+      case "center":
+        x = dimensions / 2 - watermarkSize / 2
+        y = dimensions / 2 - watermarkSize / 2
+        break
+      case "full":
+        x = 0
+        y = 0
+        w = dimensions
+        h = dimensions
+        break
+    }
+
+    return { x, y, w, h }
+  }
+  function loadImage(url: string) {
+    return new Promise((r) => {
+      let i = new Image()
+      i.crossOrigin = "anonymous"
+      i.onload = () => r(i)
+      i.src = url
+    })
+  }
+
+  const startGeneratingBrowser = async (options?: StartGeneratingI) => {
+    const { isWatermark } = options || {}
+    const currentPlan = getUsedPlan()
+
+    const watermark =
+      isWatermark === undefined ? currentPlan?.watermark : isWatermark
+
+    setIsGenerating(true)
+    setShowPayment(false)
+
+    try {
+      // add to history
+      const { data } = await callApi({
+        route: "me/history/create",
+        body: {
+          collectionId,
+        },
+      })
+
+      const history = data.data
+
+      const dimensions = collection.size
+
+      const canvas = document.createElement("canvas")
+      canvas.width = dimensions
+      canvas.height = dimensions
+      const ctx: any = canvas.getContext("2d")
+
+      const allLayersImages = await getLayersImages({
+        collection,
+      })
+
+      // watermark
+      const watermarkUrl = settings?.watermarkUrl
+      const watermarkImg = watermarkUrl ? await loadImage(watermarkUrl) : null
+      // watermark
+
+      const nfts: any = []
+      const metas: any = []
+
+      let i = 0
+
+      const func = async () => {
+        if (i < collection.results.length) {
+          const item = collection.results[i]
+
+          // metadata
+          const { metadata, edition } = getMetadata(collection, item, i)
+          metas.push(metadata)
+
+          // image
+          const loadedImages: any = []
+
+          item?.attributes.forEach((attr: any) => {
+            const f = allLayersImages.find((u: any) => u.id === attr.id)
+            loadedImages.push(f.file)
+          })
+
+          //////////////////// creating nft /////////////////////
+          loadedImages.forEach((img: any) => {
+            ctx.drawImage(img, 0, 0, dimensions, dimensions)
+          })
+
+          if (watermark && watermarkImg) {
+            const { x, y, w, h } = getWatermarkCred({
+              dimensions,
+              position: settings?.watermarkPos,
+            })
+
+            ctx.drawImage(watermarkImg, x, y, w, h)
+          }
+          const imageName = `${edition}.png`
+          const canvasType: any = "image/png"
+          const img = new Buffer(
+            canvas.toDataURL(canvasType).split(",")[1],
+            "base64"
+          )
+          //////////////////// creating nft /////////////////////
+
+          nfts.push({
+            data: img,
+            name: imageName,
+            index: i,
+          })
+
+          ctx.clearRect(0, 0, dimensions, dimensions)
+          ctx.beginPath()
+
+          setGeneratingStatus("Generared " + (i + 1))
+
+          set()
+        } else {
+          setGeneratingStatus("Uploading to IPFS...")
+
+          // upload to IPFS
+          const ipfsGateway = "https://nftstorage.link/ipfs"
+          const client = new NFTStorage({
+            token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || "",
+          })
+
+          // images
+          nfts.sort((a: any, b: any) => a.index - b.index)
+
+          const { car: nftsCar } = await packToBlob({
+            input: [
+              ...nfts.map((nft: any) => ({
+                path: nft.name,
+                content: nft.data,
+              })),
+            ],
+            blockstore: new MemoryBlockStore(),
+          })
+
+          setGeneratingStatus("Generated nfts car file")
+
+          // download car file
+          const dat = window.URL.createObjectURL(nftsCar)
+          const link = document.createElement("a")
+          link.href = dat
+          link.download = "file.car"
+          link.click()
+
+          setGeneratingStatus("Uploading nfts car file...")
+          const nftsCid = await client.storeCar(nftsCar)
+
+          // metadata
+          metas.forEach((meta: any) => {
+            meta.image = meta.image.replace("<CID>", nftsCid)
+          })
+
+          const { car: metasCar } = await packToBlob({
+            input: [
+              ...metas.map((meta: any, index: number) => ({
+                path: `${index + 1}.json`,
+                content: Buffer.from(JSON.stringify(meta)),
+              })),
+              {
+                path: "_metadata.json",
+                content: Buffer.from(JSON.stringify(metas)),
+              },
+            ],
+            blockstore: new MemoryBlockStore(),
+          })
+
+          setGeneratingStatus("Generated metadata car file")
+          setGeneratingStatus("Uploading metadata car file...")
+
+          const metasCid = await client.storeCar(metasCar)
+
+          console.log(nftsCid)
+          console.log(metasCid)
+
+          // update history
+          await callApi({
+            route: "me/history/update",
+            body: {
+              id: history.id,
+              ipfsGateway,
+              imagesCid: nftsCid,
+              metaCid: metasCid,
+            },
+          })
+
+          setIsGenerating(false)
+          await getCollectionHistory()
+        }
+      }
+
+      const set = async () => {
+        setTimeout(async () => {
+          await func()
+          i++
+        }, 1)
+      }
+
+      set()
+    } catch (error: any) {
+      console.log(error)
+      showToast(error.message, "error")
+    }
+  }
+  // browser
+
   const startGenerating = async (options?: StartGeneratingI) => {
     const { isWatermark } = options || {}
     const currentPlan = getUsedPlan()
@@ -224,7 +486,9 @@ const GeneratePanel = ({ plans }: any) => {
   }
 
   const getUsedPlan = () => {
-    if (collection?.collectionSize <= plans[0]?.assetsNumber) return plans[0]
+    const size = collection?.results.length
+
+    if (size <= plans[0]?.assetsNumber) return plans[0]
 
     for (let i = 0; i < plans.length; i++) {
       const p = plans[i]
@@ -232,11 +496,7 @@ const GeneratePanel = ({ plans }: any) => {
 
       if (!nextP) return p
 
-      if (
-        nextP &&
-        collection?.collectionSize > p.assetsNumber &&
-        collection?.collectionSize <= nextP.assetsNumber
-      ) {
+      if (nextP && size > p.assetsNumber && size <= nextP.assetsNumber) {
         return nextP
       }
     }
@@ -305,7 +565,7 @@ const GeneratePanel = ({ plans }: any) => {
         <div className="text-center pb-5">
           <AppLoader />
           <div className="mt-3">
-            <h5>Generating your collection...</h5>
+            <h5>{generatingStatus}</h5>
             <p className="paragraph">
               Please don't close your browser, this can take a few minutes
               <br /> depending on the collection size.
@@ -347,10 +607,7 @@ const GeneratePanel = ({ plans }: any) => {
           <Button theme="white" onClick={generate}>
             <MdOutlineCollections size={20} /> Generate Now
           </Button>
-          <Button
-            className="ms-3"
-            onClick={() => router.push(`/app/${collection?.id}/gallery`)}
-          >
+          <Button className="ms-3" to={`/app/${collection?.id}/gallery`}>
             <AiOutlineEye size={20} /> Gallery
           </Button>
         </div>
