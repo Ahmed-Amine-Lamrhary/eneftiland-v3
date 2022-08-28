@@ -161,7 +161,7 @@ const GeneratePanel = ({ plans, settings }: any) => {
     //   }
     // }
 
-    await startGenerating()
+    await startGeneratingBrowser()
   }
 
   const regenerateMeta = async (historyId: any) => {
@@ -372,15 +372,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
           })
 
           setGeneratingStatus("Generated nfts car file")
-
-          // download car file
-          const dat = window.URL.createObjectURL(nftsCar)
-          const link = document.createElement("a")
-          link.href = dat
-          link.download = "file.car"
-          link.click()
-
           setGeneratingStatus("Uploading nfts car file...")
+
           const nftsCid = await client.storeCar(nftsCar)
 
           // metadata
@@ -553,7 +546,7 @@ const GeneratePanel = ({ plans, settings }: any) => {
         <Pay
           description={collection?.collectionName}
           currentPlan={currentPlan}
-          generate={startGenerating}
+          generate={startGeneratingBrowser}
           setShowPayment={setShowPayment}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
