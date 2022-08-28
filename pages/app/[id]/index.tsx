@@ -86,8 +86,10 @@ const AppWrapper = ({ settings, children }: any) => {
   // rarity score
 
   useEffect(() => {
-    if (count > 0) verify(collection?.layers)
-    setCount(count + 1)
+    if (collection) {
+      if (count > 0) verify(collection?.layers)
+      setCount(count + 1)
+    }
   }, [collection?.layers])
 
   const updateLayers = async (layers: any) => {

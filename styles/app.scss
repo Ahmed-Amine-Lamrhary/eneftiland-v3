@@ -58,7 +58,7 @@
 .app-panel {
   position: relative;
   .app-container {
-    padding: 20px 0;
+    padding: 40px 0;
     position: relative;
   }
 
@@ -280,8 +280,10 @@
   }
   .options-bar {
     background-color: $white-color;
-    padding: 10px;
     border-radius: 5px;
+    p {
+      margin: 0;
+    }
     @media (max-width: 768px) {
       button {
         display: block;

@@ -39,6 +39,7 @@ export default async (req: any, res: any) => {
         collectionName: {
           contains: query,
         },
+        isHistory: false,
       },
       orderBy: {
         dateCreated: "desc",
@@ -50,6 +51,7 @@ export default async (req: any, res: any) => {
     const count = await prisma.collection.count({
       where: {
         userId: user.id,
+        isHistory: false,
       },
     })
 

@@ -24,9 +24,10 @@ export default async (req: any, res: any) => {
     }
     // jwt verification
 
-    const history = await prisma.history.findMany({
+    const history = await prisma.collection.findMany({
       where: {
         collectionId: id,
+        isHistory: true,
       },
       orderBy: {
         dateCreated: "desc",

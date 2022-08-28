@@ -7,6 +7,8 @@ import ResultsItem from "../ResultsItem"
 import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
 
+const STEP = 20
+
 const GalleryPanel = () => {
   const {
     filteredItems,
@@ -20,7 +22,7 @@ const GalleryPanel = () => {
 
   const [count, setCount] = useState({
     prev: 0,
-    next: 10,
+    next: STEP,
   })
   const [hasMore, setHasMore] = useState(true)
   const [current, setCurrent] = useState(
@@ -32,10 +34,10 @@ const GalleryPanel = () => {
       setHasMore(true)
       setCount({
         prev: 0,
-        next: 10,
+        next: STEP,
       })
       setCurrent(
-        Array.from(Array(collection?.collectionSize).keys()).slice(0, 10)
+        Array.from(Array(collection?.collectionSize).keys()).slice(0, STEP)
       )
     } else {
       setCurrent(filteredItems?.slice(count.prev, count.next))
@@ -46,9 +48,9 @@ const GalleryPanel = () => {
     setHasMore(true)
     setCount({
       prev: 0,
-      next: 10,
+      next: STEP,
     })
-    setCurrent(filteredItems?.slice(0, 10))
+    setCurrent(filteredItems?.slice(0, STEP))
   }, [filteredItems])
 
   const getMoreData = () => {
@@ -57,11 +59,11 @@ const GalleryPanel = () => {
       return
     }
     setCurrent(
-      current.concat(filteredItems.slice(count.prev + 10, count.next + 10))
+      current.concat(filteredItems.slice(count.prev + STEP, count.next + STEP))
     )
     setCount((prevState) => ({
-      prev: prevState.prev + 10,
-      next: prevState.next + 10,
+      prev: prevState.prev + STEP,
+      next: prevState.next + STEP,
     }))
   }
 

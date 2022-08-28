@@ -26,7 +26,7 @@ export default async (req: any, res: any) => {
 
   try {
     // update
-    await prisma.history.update({
+    await prisma.collection.update({
       where: {
         id,
       },

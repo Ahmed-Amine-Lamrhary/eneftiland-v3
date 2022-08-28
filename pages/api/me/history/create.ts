@@ -26,32 +26,20 @@ export default async (req: any, res: any) => {
   const { collectionId } = req.body
 
   try {
-    const collectionData: any = await prisma.collection.findUnique({
+    // create new collection
+    const collection: any = await prisma.collection.findUnique({
       where: { id: collectionId },
     })
-    const collection = parseCollection(collectionData)
 
-    // add to history
-    const history = await prisma.history.create({
+    delete collection.id
+    delete collection.dateCreated
+
+    const history = await prisma.collection.create({
       data: {
+        ...collection,
         collectionId,
-        ipfsGateway: "",
-        imagesCid: "",
-        metaCid: "",
-        collectionSize: collection.results.length,
-        layers: collectionData.layers,
-        results: collectionData.results,
-        completed: false,
-
-        collectionDesc: collectionData.collectionDesc,
-        collectionName: collectionData.collectionName,
-        creators: collectionData.creators,
-        externalUrl: collectionData.externalUrl,
-        network: collectionData.network,
-        prefix: collectionData.prefix,
-        royalties: collectionData.royalties,
-        symbol: collectionData.symbol,
-        size: collectionData.size,
+        isHistory: true,
+        galleryLayers: "",
       },
     })
 

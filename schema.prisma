@@ -40,7 +40,7 @@ model plan {
   id                     String  @id @default(cuid())
   price                  Float   @unique
   assetsNumber           Float   @unique
-  features               String
+  features               String  @db.VarChar(65535)
   watermark              Boolean @default(false)
   priceToRemoveWatermark Float?
 }
@@ -81,17 +81,18 @@ model settings {
 model privacypage {
   id      String @id @default(cuid())
   title   String @default("Privacy Policy")
-  content String
+  content String @db.VarChar(65535)
 }
 
 model termspage {
   id      String @id @default(cuid())
   title   String @default("Terms and Services")
-  content String
+  content String @db.VarChar(65535)
 }
 
 model collection {
-  id     String @id @default(cuid())
+  id String @id @default(cuid())
+
   userId String
   user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -102,41 +103,24 @@ model collection {
   collectionDesc String
   collectionName String
   collectionSize Int
-  creators       String    @db.VarChar(65535)
+  creators       String @db.VarChar(65535)
   externalUrl    String
   network        String
   prefix         String
   royalties      Float
   symbol         String
   size           Int
-  History        history[]
 
   dateCreated DateTime @default(now())
   Rule        rule[]
-}
 
-model history {
-  id           String     @id @default(cuid())
-  collectionId String
-  collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  dateCreated  DateTime   @default(now())
-  ipfsGateway  String
-  imagesCid    String
-  metaCid      String
-  layers       String     @db.VarChar(65535)
-  results      String     @db.VarChar(65535)
-  completed    Boolean
-
-  collectionDesc String?
-  collectionName String?
-  collectionSize Int
-  creators       String? @db.VarChar(65535)
-  externalUrl    String?
-  network        String?
-  prefix         String?
-  royalties      Float?
-  symbol         String?
-  size           Int?
+  // for history
+  collectionId String? @default(cuid())
+  ipfsGateway  String?
+  imagesCid    String?
+  metaCid      String?
+  completed    Boolean @default(false)
+  isHistory    Boolean @default(false)
 }
 
 model rule {

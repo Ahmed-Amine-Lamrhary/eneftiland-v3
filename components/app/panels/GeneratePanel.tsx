@@ -20,37 +20,32 @@ import {
   showToast,
 } from "../../../helpers/utils"
 import { parseHistory } from "../../../services/parser"
-import ipfsProvidersType from "../../../types/ipfsProviders"
 import payMethodsType from "../../../types/payMethods"
 import AppLoader from "../../AppLoader"
 import AppModal from "../../AppModal"
 import Button from "../../Button"
 import NoDataFound from "../../NoDataFound"
 import Pay from "../../payments/Pay"
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
+import "react-circular-progressbar/dist/styles.css"
 
 const GeneratePanel = ({ plans, settings }: any) => {
-  const [isGeneratingMeta, setIsGeneratingMeta] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
 
+  const [generatingPercentage, setGeneratingPercentage] = useState(0)
   const [generatingStatus, setGeneratingStatus] = useState("")
 
   // payment
   const [showPayment, setShowPayment] = useState<boolean>(false)
   const [paymentMethod, setPaymentMethod] = useState<payMethodsType>(undefined)
 
-  // choose IPFS provider
-  const [showIPFSProvider, setShowIPFSProvider] = useState<boolean>(true)
-  const [ipfsProvider, setIpfsProvider] =
-    useState<ipfsProvidersType>("nftstorage")
-  const [pinataJWT, setPinataJWT] = useState("")
-
   //
   const [loading, setLoading] = useState(false)
 
   const [history, setHistory] = useState([])
 
-  const { collection, setView }: any = useContext(AppContext)
+  const { collection }: any = useContext(AppContext)
 
   const router = useRouter()
   const { id: collectionId }: any = router.query
@@ -117,27 +112,33 @@ const GeneratePanel = ({ plans, settings }: any) => {
 
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => generateAgain(historyItem)}>
-                Download
+                {historyItem.completed ? "Download" : "Regenerate"}
               </Dropdown.Item>
 
               {historyItem.completed && (
                 <>
-                  <Dropdown.Item onClick={() => regenerateMeta(historyItem.id)}>
+                  <Dropdown.Item onClick={() => regenerateMeta(historyItem)}>
                     Regenerate metadata
                   </Dropdown.Item>
 
-                  <Dropdown.Item
-                    href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
-                    target="_blank"
-                  >
-                    View images
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
-                    target="_blank"
-                  >
-                    View metadata
-                  </Dropdown.Item>
+                  {historyItem.imagesCid &&
+                    historyItem.metaCid &&
+                    historyItem.ipfsGateway && (
+                      <>
+                        <Dropdown.Item
+                          href={`${historyItem?.ipfsGateway}/${historyItem.imagesCid}`}
+                          target="_blank"
+                        >
+                          View images
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          href={`${historyItem?.ipfsGateway}/${historyItem.metaCid}`}
+                          target="_blank"
+                        >
+                          View metadata
+                        </Dropdown.Item>
+                      </>
+                    )}
                 </>
               )}
             </Dropdown.Menu>
@@ -239,26 +240,102 @@ const GeneratePanel = ({ plans, settings }: any) => {
               completed: true,
             },
           })
+
+          setGeneratingStatus("")
         },
       })
     } catch (error: any) {}
   }
 
-  const regenerateMeta = async (historyId: any) => {
-    setIsGeneratingMeta(true)
+  const regenerateMeta = async (history: any) => {
+    setIsGenerating(true)
+
+    const historyCollection = parseHistory(history)
+
+    setGeneratingStatus("Regenerating metadata...")
 
     try {
-      const { data } = await callApi({
-        route: `me/regenerate_meta/${historyId}`,
-      })
+      const metas: any = []
 
-      if (!data.success) return showToast(data.message, "error")
+      let i = 0
 
-      await getCollectionHistory()
+      const func = async () => {
+        if (i < historyCollection.results.length) {
+          const item = historyCollection.results[i]
+
+          // metadata
+          const { metadata } = getMetadata(collection, item, i)
+          metas.push(metadata)
+
+          set()
+        } else {
+          // download
+          var zip = new JSZip()
+          var metaFolder: any = zip.folder("metadata")
+
+          metas.map((meta: any, index: any) => {
+            metaFolder.file(
+              `${index + 1}.json`,
+              Buffer.from(JSON.stringify(meta, null, 4))
+            )
+          })
+          metaFolder.file(
+            `metadata.json`,
+            Buffer.from(JSON.stringify(metas, null, 4))
+          )
+
+          const content = await zip.generateAsync({ type: "blob" })
+
+          var link = document.createElement("a")
+          link.href = window.URL.createObjectURL(content)
+          link.download = `collection.zip`
+          link.click()
+          // download
+
+          // update history
+          await callApi({
+            route: "me/history/update",
+            body: {
+              id: historyCollection.id,
+              collectionDesc: collection.collectionDesc,
+              collectionName: collection.collectionName,
+              creators: JSON.stringify(collection.creators).replace(
+                /(^"|"$)/g,
+                ""
+              ),
+              externalUrl: collection.externalUrl,
+              network: collection.network,
+              prefix: collection.prefix,
+              royalties: collection.royalties,
+              symbol: collection.symbol,
+            },
+          })
+          // update history
+
+          setIsGenerating(false)
+          await getCollectionHistory()
+
+          setGeneratingStatus("")
+          setGeneratingPercentage(0)
+        }
+      }
+
+      const set = async () => {
+        setTimeout(async () => {
+          await func()
+          i++
+
+          if (i <= historyCollection.results.length)
+            setGeneratingPercentage(
+              (i * 100) / historyCollection.results.length
+            )
+        }, 1)
+      }
+
+      set()
     } catch (error: any) {
+      console.log(error)
       showToast(error.message, "error")
-    } finally {
-      setIsGeneratingMeta(false)
     }
   }
 
@@ -349,14 +426,13 @@ const GeneratePanel = ({ plans, settings }: any) => {
           ctx.clearRect(0, 0, dimensions, dimensions)
           ctx.beginPath()
 
-          setGeneratingStatus("Generared " + (i + 1))
-
           set()
         } else {
           // callback
           if (callback) await callback(nfts, metas)
 
           setIsGenerating(false)
+          setGeneratingPercentage(0)
           await getCollectionHistory()
         }
       }
@@ -365,6 +441,9 @@ const GeneratePanel = ({ plans, settings }: any) => {
         setTimeout(async () => {
           await func()
           i++
+
+          if (i <= collectionData.results.length)
+            setGeneratingPercentage((i * 100) / collectionData.results.length)
         }, 1)
       }
 
@@ -386,6 +465,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
       await startGenerating({
         otherCollection: collection,
         callback: async (nfts: any, metas: any) => {
+          setGeneratingStatus("Uploading to IPFS...")
+
           // upload to IPFS
           const ipfsGateway = "https://nftstorage.link/ipfs"
           const client = new NFTStorage({
@@ -432,6 +513,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
               metaCid: metasCid,
             },
           })
+
+          setGeneratingStatus("")
         },
       })
     } catch (error: any) {}
@@ -459,6 +542,8 @@ const GeneratePanel = ({ plans, settings }: any) => {
               completed: true,
             },
           })
+
+          setGeneratingStatus("")
         },
       })
     } catch (error: any) {}
@@ -483,46 +568,6 @@ const GeneratePanel = ({ plans, settings }: any) => {
 
   return (
     <div className="generate-panel">
-      {/* choose IPFS provider */}
-      {/* <AppModal
-        show={showIPFSProvider}
-        onHide={() => setShowIPFSProvider(false)}
-        size="lg"
-      >
-        <h4>Select your IPFS provider</h4>
-        <p className="paragraph">
-          Your collection will be directly uploaded to IPFS after generated.
-        </p>
-
-        <div className="form-group mt-4">
-          <select
-            className="form-select"
-            value={ipfsProvider}
-            onChange={(e: any) => setIpfsProvider(e.target.value)}
-          >
-            <option value="nftstorage">NFTStorage</option>
-            <option value="pinata">Pinata</option>
-          </select>
-        </div>
-
-        {ipfsProvider === "pinata" && (
-          <>
-            <p className="paragraph">Please enter your Admin Pinata JWT.</p>
-            <div className="form-group mt-3">
-              <textarea
-                className="form-control"
-                value={pinataJWT}
-                onChange={(e) => setPinataJWT(e.target.value)}
-              />
-            </div>
-          </>
-        )}
-
-        <Button theme="white" onClick={generate}>
-          Generate
-        </Button>
-      </AppModal> */}
-
       {/* pay */}
       <AppModal
         show={showPayment}
@@ -542,29 +587,26 @@ const GeneratePanel = ({ plans, settings }: any) => {
       {/* generating modal */}
       <AppModal show={isGenerating} onHide={null} size="lg" closeButton={false}>
         <div className="text-center pb-5">
-          <AppLoader />
-          <div className="mt-3">
+          <div className="app-loader">
+            <div style={{ width: "80px" }}>
+              <CircularProgressbar
+                value={generatingPercentage}
+                text={`${generatingPercentage}%`}
+                styles={buildStyles({
+                  pathColor: `#724bf4`,
+                  textColor: "#724bf4",
+                  trailColor: "#f7fbfe",
+                })}
+              />
+            </div>
+          </div>
+
+          <div className="mt-4">
             <h5>{generatingStatus}</h5>
             <p className="paragraph">
               Please don't close your browser, this can take a few minutes
               <br /> depending on the collection size.
             </p>
-          </div>
-        </div>
-      </AppModal>
-
-      {/* re-generating metadata modal */}
-      <AppModal
-        show={isGeneratingMeta}
-        onHide={null}
-        size="lg"
-        closeButton={false}
-      >
-        <div className="text-center pb-5">
-          <AppLoader />
-          <div className="mt-3">
-            <h5>Regenerating metadata...</h5>
-            <p className="paragraph">Please don't close your browser.</p>
           </div>
         </div>
       </AppModal>

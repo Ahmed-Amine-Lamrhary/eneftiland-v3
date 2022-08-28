@@ -22,11 +22,15 @@ const parseCollection = (data: any) => {
   return collectionData
 }
 
-const parseHistory = (data: any) => {  
+const parseHistory = (data: any) => {
   const historyData = { ...data }
 
   historyData.dateCreated = historyData.dateCreated.toString()
   historyData.layers = historyData.layers ? JSON.parse(historyData.layers) : []
+
+  historyData.creators = historyData.creators
+    ? JSON.parse(historyData.creators)
+    : []
 
   const resultsData = parseResults(historyData, historyData.results, true)
 
