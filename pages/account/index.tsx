@@ -49,7 +49,7 @@ export default function MePage({ settings }: any) {
   const [query, setQuery] = useState("")
 
   useEffect(() => {
-    verify(query)
+    if (account) verify(query)
   }, [query])
 
   const verify = useCallback(

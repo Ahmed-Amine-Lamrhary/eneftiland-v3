@@ -75,7 +75,7 @@ export const getPaymentAmount = (amount: number, currency: any) => {
 
 export const plansFeaturesDelimiter = "|||"
 
-export const CURRENCY = "USD"
+export const CURRENCY = "$"
 
 // networks
 export const networkParams: any = {

@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useState } from "react"
 import { callApi, convertToEth } from "../../helpers/utils"
 import Wallet from "./Wallet"
-import Image from "next/image"
 import AppContext from "../../context/AppContext"
 import payMethodsType from "../../types/payMethods"
 import { useWeb3React } from "@web3-react/core"
-
-import metamaskIcon from "../../assets/icons/metamask.png"
 
 import Razorpay from "./Razorpay"
 import Paypal from "./Paypal"
@@ -53,11 +50,11 @@ const Pay = ({
 
   const getAmount = async () => {
     if (paymentMethod === "wallet") {
-      const ethAmount = await convertToEth(amount, CURRENCY)
+      const ethAmount = await convertToEth(amount)
       return Number.parseFloat(ethAmount.toFixed(3)) + " ETH"
     }
 
-    return amount + " " + CURRENCY
+    return CURRENCY + amount + " "
   }
 
   const paymentMehodItem = (method: payMethodsType) => (
@@ -75,7 +72,7 @@ const Pay = ({
   )
 
   const finishPayment = async () => {
-    const ethAmount = await convertToEth(amount, CURRENCY)
+    const ethAmount = await convertToEth(amount)
 
     // save the transaction
     if (ethAmount > 0 && amount > 0)

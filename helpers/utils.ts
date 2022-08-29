@@ -203,11 +203,9 @@ const cleanName = (_str: any) => {
   return nameWithoutWeight
 }
 
-export const convertToEth = async (amount: number, currency?: string) => {
+export const convertToEth = async (amount: number) => {
   const response = await fetch(
-    `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=${
-      currency || "USD"
-    }`
+    `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD`
   )
 
   const data = await response.json()

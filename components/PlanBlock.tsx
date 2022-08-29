@@ -5,15 +5,11 @@ import PlanI from "../types/admin/PlanI"
 
 interface PlanBlockProps {
   plan: PlanI
-  currencyCode?: string
+  currencyCode: string
   active?: boolean
 }
 
-const PlanBlock = ({
-  plan,
-  currencyCode = "USD",
-  active = false,
-}: PlanBlockProps) => {
+const PlanBlock = ({ plan, currencyCode, active = false }: PlanBlockProps) => {
   const { assetsNumber, price, features, priceToRemoveWatermark } = plan
 
   return (
@@ -23,17 +19,11 @@ const PlanBlock = ({
         <div className="plan-size">{assetsNumber}</div>
         <div className="asset-generated">Tokens Generated</div>
         <span className="plan-price">
-          {price === 0 ? "Free" : price + currencyCode}
+          {price === 0 ? "Free" : currencyCode + price}
         </span>
         <br />
 
         <i className="per-collection">Per Collection</i>
-
-        {priceToRemoveWatermark && (
-          <p className="paragraph">
-            Pay {priceToRemoveWatermark} {currencyCode} to remove watermark
-          </p>
-        )}
       </div>
 
       {features && features.length > 0 && (

@@ -3,6 +3,7 @@ import Slider from "rc-slider"
 import "rc-slider/assets/index.css"
 import { nFormatter } from "../helpers/utils"
 import PlanBlock from "./PlanBlock"
+import { CURRENCY } from "../helpers/constants"
 
 const PricingCalculator = ({ plans, currency }: any) => {
   const f = plans[plans.length - 1]?.assetsNumber
@@ -116,8 +117,13 @@ const PricingCalculator = ({ plans, currency }: any) => {
         <p>
           The final cost will be{" "}
           <b>
-            {price} {currency}
+            {currency}
+            {price}
           </b>
+          {getUsedPlan().priceToRemoveWatermark &&
+            `, pay ${CURRENCY}${
+              getUsedPlan().priceToRemoveWatermark
+            } to remove watermark.`}
         </p>
       </div>
     </>

@@ -293,8 +293,8 @@ section {
   border-radius: 10px;
   text-align: center;
   &.active {
-    background-color: rgba($main-color, 0.1);
-    border-color: rgba($main-color, 0.1);
+    border-color: rgba($main-color, 1);
+    border-width: 2px;
   }
   .paragraph {
     font-size: 13px;
@@ -328,7 +328,7 @@ section {
     }
   }
   .plan-features {
-    padding: 20px;
+    padding: 16px 10px;
     list-style-type: none;
     margin: 0;
     text-align: left;
@@ -601,7 +601,6 @@ footer {
   padding: 0 10px;
   h2 {
     font-size: 20px;
-    margin-bottom: 20px;
   }
   p {
     color: rgba($black-color, 0.7);

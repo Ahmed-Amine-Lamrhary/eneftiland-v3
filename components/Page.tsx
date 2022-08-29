@@ -71,7 +71,7 @@ const Page = ({
       saveConnectedUser(data.data)
     } catch (error: any) {
       console.log(error)
-      showToast(error.message, "error")
+      // showToast(error.message, "error")
     }
   }
 
