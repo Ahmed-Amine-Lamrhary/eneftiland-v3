@@ -40,7 +40,7 @@ export default function ConnectWallet() {
 
 function ConnectBtn({ connectBrowser }: any) {
   if (isMobileDevice()) {
-    const dappUrl = "192.168.1.2:3000"
+    const dappUrl = "eneftiland-v3.herokuapp.com"
     const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + dappUrl
 
     return (
