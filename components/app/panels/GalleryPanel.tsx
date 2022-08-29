@@ -7,7 +7,7 @@ import ResultsItem from "../ResultsItem"
 import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
 
-const STEP = 80
+const STEP = 20
 
 const GalleryPanel = () => {
   const {

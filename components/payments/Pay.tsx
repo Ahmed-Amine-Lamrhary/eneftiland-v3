@@ -54,7 +54,7 @@ const Pay = ({
       return Number.parseFloat(ethAmount.toFixed(3)) + " ETH"
     }
 
-    return CURRENCY + amount + " "
+    return "$" + amount
   }
 
   const paymentMehodItem = (method: payMethodsType) => (

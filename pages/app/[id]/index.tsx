@@ -98,8 +98,6 @@ const AppWrapper = ({ settings, plans }: any) => {
 
   // rarity score
   useEffect(() => {
-    console.log(results)
-
     results?.map((item: any) => {
       const sum = item.attributes.reduce((currentSum: any, attr: any) => {
         const total = results.filter((r: any) =>
@@ -279,8 +277,6 @@ const AppWrapper = ({ settings, plans }: any) => {
           address: account,
         },
       })
-
-      console.log(data)
 
       if (!data.success) {
         return router.push("/404")

@@ -1,7 +1,6 @@
 import Heading from "../components/Heading"
 import Section from "../components/Section"
 import FeatureBlock from "../components/FeatureBlock"
-import PlanBlock from "../components/PlanBlock"
 import { BsCodeSlash } from "react-icons/bs"
 import { AiOutlineEye } from "react-icons/ai"
 import {
@@ -15,7 +14,6 @@ import { GoSettings } from "react-icons/go"
 import Page from "../components/Page"
 import { PrismaClient } from "@prisma/client"
 import PricingCalculator from "../components/PricingCalculator"
-import { CURRENCY } from "../helpers/constants"
 import { RiRulerLine } from "react-icons/ri"
 import GetStartedButton from "../components/GetStartedButton"
 import NavLink from "../components/NavLink"
@@ -170,7 +168,7 @@ export default function IndexPage({ settings, plans }: any) {
         <Section id="pricing" className="pricing-section bg-grey">
           <Heading subTitle="Pricing" title="Use for FREE" />
 
-          <PricingCalculator plans={plans} currency={CURRENCY} />
+          <PricingCalculator plans={plans} />
         </Section>
       )}
 

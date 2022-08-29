@@ -24,10 +24,10 @@ function WalletAuthProvider({ children }: any) {
       const connectedUser = getConnectedUser()
       const isAuthorized = await injected.isAuthorized()
 
+      if (!connectedUser) return router.push("/")
+
       if (connectedUser && isAuthorized && !networkActive && !networkError) {
         activateNetwork(injected)
-      } else {
-        router.push("/")
       }
     } catch (error) {
     } finally {

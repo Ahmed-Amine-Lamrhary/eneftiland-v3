@@ -3,9 +3,8 @@ import Slider from "rc-slider"
 import "rc-slider/assets/index.css"
 import { nFormatter } from "../helpers/utils"
 import PlanBlock from "./PlanBlock"
-import { CURRENCY } from "../helpers/constants"
 
-const PricingCalculator = ({ plans, currency }: any) => {
+const PricingCalculator = ({ plans }: any) => {
   const f = plans[plans.length - 1]?.assetsNumber
 
   const [chance, setChance] = useState(0)
@@ -80,11 +79,7 @@ const PricingCalculator = ({ plans, currency }: any) => {
       <div className="row justify-content-center">
         {plans?.map((plan: any) => (
           <div key={`plan-${plan.id}`} className="col-lg-3 col-md-6 mb-4">
-            <PlanBlock
-              plan={plan}
-              currencyCode={currency}
-              active={getUsedPlan().id === plan.id}
-            />
+            <PlanBlock plan={plan} active={getUsedPlan().id === plan.id} />
           </div>
         ))}
       </div>
@@ -115,13 +110,9 @@ const PricingCalculator = ({ plans, currency }: any) => {
 
         <p>Your collection will have {currentCollectionSize} NFTs.</p>
         <p>
-          The final cost will be{" "}
-          <b>
-            {currency}
-            {price}
-          </b>
+          The final cost will be <b>${price}</b>
           {getUsedPlan().priceToRemoveWatermark &&
-            `, pay ${CURRENCY}${
+            `, pay $${
               getUsedPlan().priceToRemoveWatermark
             } to remove watermark.`}
         </p>

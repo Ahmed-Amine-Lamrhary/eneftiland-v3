@@ -50,7 +50,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
   const [history, setHistory] = useState([])
 
-  const { collection, setView }: any = useContext(AppContext)
+  const { collection, setView, results }: any = useContext(AppContext)
 
   const router = useRouter()
   const { id: collectionId }: any = router.query
@@ -555,7 +555,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
   }
 
   const getUsedPlan = () => {
-    const size = collection?.results.length
+    const size = results.length
 
     if (size <= plans[0]?.assetsNumber) return plans[0]
 
