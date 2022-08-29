@@ -3,6 +3,7 @@ import { useWeb3React } from "@web3-react/core"
 import { injected } from "./connectors"
 import { getConnectedUser } from "../utils"
 import AppLoader from "../../components/AppLoader"
+import { useRouter } from "next/router"
 
 function WalletAuthProvider({ children }: any) {
   const {
@@ -12,6 +13,7 @@ function WalletAuthProvider({ children }: any) {
   } = useWeb3React()
 
   const [loaded, setLoaded] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     handle()
@@ -24,6 +26,8 @@ function WalletAuthProvider({ children }: any) {
 
       if (connectedUser && isAuthorized && !networkActive && !networkError) {
         activateNetwork(injected)
+      } else {
+        router.push("/")
       }
     } catch (error) {
     } finally {
