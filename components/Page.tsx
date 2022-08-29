@@ -13,11 +13,8 @@ import {
   saveConnectedUser,
   showToast,
 } from "../helpers/utils"
-import AppModal from "./AppModal"
-import Image from "next/image"
-import metamaskIcon from "../assets/icons/metamask.png"
-import Button from "./Button"
 import PageContext from "../context/PageContext"
+import ConnectWallet from "./ConnectWallet"
 
 interface PageProps {
   title: string
@@ -42,7 +39,7 @@ const Page = ({
   const router = useRouter()
 
   useEffect(() => {
-    if (isProtected)
+    if (isProtected) {
       injected.isAuthorized().then((isAuthorized) => {
         const connectedUser = getConnectedUser()
 
@@ -52,6 +49,7 @@ const Page = ({
           router.push("/")
         }
       })
+    }
   }, [activate, active, error])
 
   useEffect(() => {
@@ -76,9 +74,7 @@ const Page = ({
     }
   }
 
-  const connectBrowser = async (e: any) => {
-    e.preventDefault()
-
+  const connectBrowser = async () => {
     try {
       await activate(injected, (error) => console.log(error), true)
 
@@ -94,35 +90,6 @@ const Page = ({
 
   return (
     <div>
-      {/* Connect wallet modal */}
-      <AppModal
-        show={showAuthModal}
-        onHide={() => setShowAuthModal(false)}
-        size="sm"
-        title="Connect a Wallet"
-      >
-        <button className="login-btn" onClick={connectBrowser}>
-          <span className="me-3">
-            <Image src={metamaskIcon} width={22} height={22} />
-          </span>
-          MetaMask
-        </button>
-
-        <hr />
-
-        <div className="text-center">
-          <h6 className="mb-3 fw-bold">Don't have a wallet?</h6>
-          <Button
-            target="_blank"
-            className="btn-sm"
-            to="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en"
-          >
-            Get a Wallet
-          </Button>
-        </div>
-      </AppModal>
-      {/*  */}
-
       <div className="all-page">
         <Head>
           <title>
@@ -177,9 +144,14 @@ const Page = ({
             showAuthModal,
             setShowAuthModal,
             settings,
+            connectBrowser,
           }}
         >
           <>
+            {/* Connect wallet modal */}
+            <ConnectWallet />
+            {/* Connect wallet modal */}
+
             {!hideNavbar && <Header />}
 
             <main>{children}</main>

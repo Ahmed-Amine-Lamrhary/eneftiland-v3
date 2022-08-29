@@ -3,7 +3,7 @@ import { useWeb3React } from "@web3-react/core"
 import { injected } from "./connectors"
 import { getConnectedUser } from "../utils"
 
-function MetamaskProvider({ children }: any) {
+function WalletAuthProvider({ children }: any) {
   const {
     active: networkActive,
     error: networkError,
@@ -37,4 +37,4 @@ function MetamaskProvider({ children }: any) {
   return null
 }
 
-export default MetamaskProvider
+export default WalletAuthProvider

@@ -23,6 +23,8 @@ interface AppContextInterface {
   setUploadingImages: any
   generate: any
   generationTime: string
+  view: "layers" | "settings" | "rules" | "gallery" | "generate"
+  setView: any
 }
 
 const AppContext = React.createContext<AppContextInterface>({
@@ -47,6 +49,8 @@ const AppContext = React.createContext<AppContextInterface>({
   setUploadingImages: null,
   generate: null,
   generationTime: "",
+  view: "layers",
+  setView: null,
 })
 
 export default AppContext

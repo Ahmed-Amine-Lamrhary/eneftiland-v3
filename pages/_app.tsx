@@ -6,7 +6,7 @@ import "../styles/globals.scss"
 import "../styles/app.scss"
 import "../styles/elements.scss"
 import "react-toastify/dist/ReactToastify.css"
-import MetamaskProvider from "../helpers/wallet/MetamaskProvider"
+import WalletAuthProvider from "../helpers/wallet/WalletAuthProvider"
 import { ethers } from "ethers"
 
 declare const window: any
@@ -42,9 +42,9 @@ function App({ Component, pageProps }: any) {
 
   return pageLayout(
     <Web3ReactProvider getLibrary={getLibrary}>
-      <MetamaskProvider>
+      <WalletAuthProvider>
         <Component {...pageProps} />
-      </MetamaskProvider>
+      </WalletAuthProvider>
     </Web3ReactProvider>
   )
 }

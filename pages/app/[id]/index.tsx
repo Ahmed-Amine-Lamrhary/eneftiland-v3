@@ -14,11 +14,23 @@ import Header from "../../../components/Header"
 import AppNavbar from "../../../components/app/panels/AppNavbar"
 import debounce from "lodash.debounce"
 import swal from "sweetalert2"
+import SettingsPanel from "../../../components/app/panels/SettingsPanel"
+import RulesPanel from "../../../components/app/panels/RulesPanel"
+import GalleryPanel from "../../../components/app/panels/GalleryPanel"
+import GeneratePanel from "../../../components/app/panels/GeneratePanel"
+import DesignerPanel from "../../../components/app/panels/DesignerPanel"
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query
 
   const prisma = new PrismaClient()
+
+  const settings = await prisma.settings.findFirst()
+  const plans = await prisma.plan.findMany({
+    orderBy: {
+      assetsNumber: "asc",
+    },
+  })
 
   const collection = await prisma.collection.findUnique({
     where: {
@@ -35,24 +47,34 @@ export async function getServerSideProps(context: any) {
     }
 
   return {
-    redirect: {
-      destination: `${context.resolvedUrl}/layers`,
-      permanent: false,
+    props: {
+      settings,
+      plans,
     },
   }
 }
 
-const AppWrapper = ({ settings, children }: any) => {
+const AppWrapper = ({ settings, plans }: any) => {
   const { account } = useWeb3React()
 
   const router = useRouter()
-  const { id: collectionId }: any = router.query
+  const { id: collectionId, page }: any = router.query
 
   const [collection, setCollection] = useState<any>()
 
   const [results, setResults] = useState<any>()
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
   const [filteredItems, setFilteredItems] = useState<any>([])
+
+  // view
+  const [view, setView] = useState<
+    "layers" | "settings" | "rules" | "gallery" | "generate"
+  >(
+    page &&
+      ["layers", "settings", "rules", "gallery", "generate"].includes(page)
+      ? page
+      : "layers"
+  )
 
   // loadings
   const [isSaving, setIsSaving] = useState<boolean>(false)
@@ -197,7 +219,17 @@ const AppWrapper = ({ settings, children }: any) => {
 
       setCollection({ ...collection, galleryLayers: collection?.layers })
       setResults(resultsData)
-      if (!ignoreWarning) router.push(`/app/${collection?.id}/gallery`)
+      if (!ignoreWarning) {
+        router.push(
+          {
+            pathname: `/app/${collection?.id}`,
+            query: { page: "gallery" },
+          },
+          undefined,
+          { scroll: false }
+        )
+        setView("gallery")
+      }
       setLoading(false)
 
       // generation time
@@ -210,13 +242,24 @@ const AppWrapper = ({ settings, children }: any) => {
       if (error.name !== "ValidationError") setError(error)
 
       showToast(error.message, "error")
-      if (!ignoreWarning) router.push(`/app/${collection?.id}/gallery`)
+      if (!ignoreWarning) {
+        router.push(
+          {
+            pathname: `/app/${collection?.id}`,
+            query: { page: "gallery" },
+          },
+          undefined,
+          { scroll: false }
+        )
+        setView("gallery")
+      }
       setLoading(false)
     }
   }
 
   useEffect(() => {
     if (account) getData()
+    else setLoadingPage(false)
   }, [account])
 
   const getData = async () => {
@@ -242,6 +285,16 @@ const AppWrapper = ({ settings, children }: any) => {
       router.push("/404")
     }
   }
+
+  // paypal
+  useEffect(() => {
+    if (settings && settings.paypalClientId) {
+      const script = document.createElement("script")
+      script.src = `https://www.paypal.com/sdk/js?client-id=${settings.paypalClientId}`
+      document.body.appendChild(script)
+    }
+  }, [])
+  // paypal
 
   useEffect(() => {
     setFilteredItems(results)
@@ -282,6 +335,8 @@ const AppWrapper = ({ settings, children }: any) => {
           setUploadingImages,
           generate,
           generationTime,
+          view,
+          setView,
         }}
       >
         <div className="app-panel">
@@ -289,7 +344,15 @@ const AppWrapper = ({ settings, children }: any) => {
             <AppNavbar />
           </Header>
 
-          <div className="app-container">{children}</div>
+          <div className="app-container">
+            {view === "layers" && <DesignerPanel />}
+            {view === "settings" && <SettingsPanel />}
+            {view === "rules" && <RulesPanel />}
+            {view === "gallery" && <GalleryPanel />}
+            {view === "generate" && (
+              <GeneratePanel plans={plans} settings={settings} />
+            )}
+          </div>
         </div>
       </AppContext.Provider>
     </Page>

@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from "react"
 import { FiLayers, FiSettings } from "react-icons/fi"
 import { HiOutlineCollection } from "react-icons/hi"
 import { BiImage } from "react-icons/bi"
-import { AiOutlineLoading3Quarters, AiOutlineUser } from "react-icons/ai"
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { RiPencilRuler2Line } from "react-icons/ri"
 import AppContext from "../../../context/AppContext"
 import NavLink from "../../NavLink"
 import { useWeb3React } from "@web3-react/core"
 import { callApi, showToast } from "../../../helpers/utils"
 import { BsCheck2 } from "react-icons/bs"
+import Button from "../../Button"
 import { useRouter } from "next/router"
 
 const AppNavbar = () => {
@@ -16,8 +17,14 @@ const AppNavbar = () => {
 
   const router = useRouter()
 
-  const { uploadingFolder, isSaving, collection, uploadingImages } =
-    useContext(AppContext)
+  const {
+    uploadingFolder,
+    isSaving,
+    collection,
+    uploadingImages,
+    view,
+    setView,
+  } = useContext(AppContext)
 
   const [myCollections, setMyCollections] = useState<any>([])
   const [getLoading, setGetLoading] = useState(false)
@@ -50,16 +57,25 @@ const AppNavbar = () => {
   const disableButtons = uploadingFolder || isSaving || uploadingImages
 
   const renderBtn = (route: string, Icon: any) => (
-    <NavLink
-      to={`/app/${collection?.id}/${route}`}
-      className={
-        router.asPath === `/app/${collection?.id}/${route}` ? "active" : ""
-      }
+    <Button
+      className={view === route ? "active" : ""}
       disabled={disableButtons}
+      onClick={() => {
+        router.push(
+          {
+            pathname: `/app/${collection?.id}`,
+            query: { page: route },
+          },
+          undefined,
+          { scroll: false }
+        )
+
+        setView(route)
+      }}
     >
       <Icon />
       <span className="text">{route}</span>
-    </NavLink>
+    </Button>
   )
 
   return (
@@ -108,12 +124,10 @@ const AppNavbar = () => {
 
       {/*  */}
       <ul>
-        <li className="nav-item me-3">{renderBtn("layers", FiLayers)}</li>
-        <li className="nav-item me-3">{renderBtn("settings", FiSettings)}</li>
-        <li className="nav-item me-3">
-          {renderBtn("rules", RiPencilRuler2Line)}
-        </li>
-        <li className="nav-item me-3">
+        <li className="nav-item">{renderBtn("layers", FiLayers)}</li>
+        <li className="nav-item">{renderBtn("settings", FiSettings)}</li>
+        <li className="nav-item">{renderBtn("rules", RiPencilRuler2Line)}</li>
+        <li className="nav-item">
           {renderBtn("gallery", HiOutlineCollection)}
         </li>
         <li className="nav-item">{renderBtn("generate", BiImage)}</li>

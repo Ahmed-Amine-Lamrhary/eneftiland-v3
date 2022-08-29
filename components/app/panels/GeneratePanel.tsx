@@ -29,7 +29,12 @@ import Pay from "../../payments/Pay"
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 
-const GeneratePanel = ({ plans, settings }: any) => {
+interface GeneratePanelProps {
+  plans: any
+  settings: any
+}
+
+const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
 
@@ -45,7 +50,7 @@ const GeneratePanel = ({ plans, settings }: any) => {
 
   const [history, setHistory] = useState([])
 
-  const { collection }: any = useContext(AppContext)
+  const { collection, setView }: any = useContext(AppContext)
 
   const router = useRouter()
   const { id: collectionId }: any = router.query
@@ -628,7 +633,21 @@ const GeneratePanel = ({ plans, settings }: any) => {
           <Button theme="white" onClick={generate}>
             <MdOutlineCollections size={20} /> Generate Now
           </Button>
-          <Button className="ms-3" to={`/app/${collection?.id}/gallery`}>
+
+          <Button
+            className="ms-3"
+            onClick={() => {
+              router.push(
+                {
+                  pathname: `/app/${collection?.id}`,
+                  query: { page: "gallery" },
+                },
+                undefined,
+                { scroll: false }
+              )
+              setView("gallery")
+            }}
+          >
             <AiOutlineEye size={20} /> Gallery
           </Button>
         </div>
