@@ -61,7 +61,7 @@ const Wallet = ({ amount, generate, myMetamaskAddress }: WalletProps) => {
       ethers.utils.getAddress(myMetamaskAddress)
 
       // get amount
-      const ethAmount = await convertToEth(amount, CURRENCY)
+      const ethAmount = await convertToEth(amount)
 
       await signer.sendTransaction({
         to: myMetamaskAddress,
