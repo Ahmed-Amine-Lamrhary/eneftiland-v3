@@ -6,7 +6,7 @@ import { CURRENCY } from "../../helpers/constants"
 import { useWeb3React } from "@web3-react/core"
 import Web3 from "web3"
 
-interface MetamaskProps {
+interface WalletProps {
   amount: any
   generate: any
   myMetamaskAddress: any
@@ -14,7 +14,7 @@ interface MetamaskProps {
 
 declare const window: any
 
-const Metamask = ({ amount, generate, myMetamaskAddress }: MetamaskProps) => {
+const Wallet = ({ amount, generate, myMetamaskAddress }: WalletProps) => {
   const [loading, setLoading] = useState(false)
   const [address, setAddress] = useState("")
   const { library } = useWeb3React()
@@ -105,4 +105,4 @@ const Metamask = ({ amount, generate, myMetamaskAddress }: MetamaskProps) => {
   )
 }
 
-export default Metamask
+export default Wallet

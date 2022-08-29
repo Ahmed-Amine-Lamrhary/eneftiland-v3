@@ -7,7 +7,7 @@ import ResultsItem from "../ResultsItem"
 import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
 
-const STEP = 20
+const STEP = 80
 
 const GalleryPanel = () => {
   const {
@@ -132,7 +132,7 @@ const GalleryPanel = () => {
 
               <div className="col-md-9 col-sm-8">
                 <InfiniteScroll
-                  dataLength={current.length}
+                  dataLength={current?.length}
                   next={getMoreData}
                   hasMore={hasMore}
                   loader={null}

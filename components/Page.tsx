@@ -6,7 +6,7 @@ import Header from "./Header"
 import Script from "next/script"
 import { useWeb3React } from "@web3-react/core"
 import { useRouter } from "next/router"
-import { injected } from "../helpers/wallet/connectors"
+import { injected, walletlink } from "../helpers/wallet/connectors"
 import {
   callApi,
   getConnectedUser,
@@ -15,6 +15,7 @@ import {
 } from "../helpers/utils"
 import PageContext from "../context/PageContext"
 import ConnectWallet from "./ConnectWallet"
+import AppLoader from "./AppLoader"
 
 interface PageProps {
   title: string
@@ -74,9 +75,13 @@ const Page = ({
     }
   }
 
-  const connectBrowser = async () => {
+  const connectBrowser = async (connectorMethod: "metamask" | "coinbase") => {
     try {
-      await activate(injected, (error) => console.log(error), true)
+      let connector: any
+      if (connectorMethod === "metamask") connector = injected
+      else if (connectorMethod === "coinbase") connector = walletlink
+
+      await activate(connector, (error) => console.log(error), true)
 
       setShowAuthModal(false)
       router.push("/account")
@@ -86,7 +91,12 @@ const Page = ({
     }
   }
 
-  if (isProtected && !loaded) return null
+  if (isProtected && !loaded)
+    return (
+      <div className="loading-panel">
+        <AppLoader />
+      </div>
+    )
 
   return (
     <div>

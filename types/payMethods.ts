@@ -1,3 +1,3 @@
-type payMethodsType = "paypal" | "metamask" | "stripe" | "razorpay" | undefined
+type payMethodsType = "paypal" | "wallet" | "stripe" | "razorpay" | undefined
 
 export default payMethodsType

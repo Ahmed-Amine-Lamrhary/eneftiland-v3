@@ -157,7 +157,7 @@
       padding: 8px 13px;
       &.active,
       &:hover {
-        color: $main-color;
+        color: $black-color;
       }
       &:disabled {
         &:not(.active):hover {

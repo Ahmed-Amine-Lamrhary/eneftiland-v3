@@ -1,4 +1,5 @@
 import { InjectedConnector } from "@web3-react/injected-connector"
+import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 
 // Ethereum Main Network (Mainnet) => 1
 // Rinkeby Test Network            => 4
@@ -51,4 +52,9 @@ export const SUPPORTED_NETWORKS = [
 
 export const injected = new InjectedConnector({
   supportedChainIds: SUPPORTED_NETWORKS.map((network) => network.value),
+})
+
+export const walletlink = new WalletLinkConnector({
+  url: `https://mainnet.infura.io/v3/c324248cc5e14a859dcc4ea1a25b0880`,
+  appName: "web3-react-demo",
 })

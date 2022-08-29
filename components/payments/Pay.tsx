@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
-import { BiCheck } from "react-icons/bi"
 import { callApi, convertToEth } from "../../helpers/utils"
-import Metamask from "./Metamask"
+import Wallet from "./Wallet"
 import Image from "next/image"
 import AppContext from "../../context/AppContext"
 import payMethodsType from "../../types/payMethods"
@@ -16,7 +15,7 @@ import { CURRENCY } from "../../helpers/constants"
 import Button from "../Button"
 import CheckBox from "../app/CheckBox"
 import { BsPaypal } from "react-icons/bs"
-import { FaStripeS } from "react-icons/fa"
+import { FaStripeS, FaWallet } from "react-icons/fa"
 import { SiRazorpay } from "react-icons/si"
 
 interface PayProps {
@@ -43,7 +42,7 @@ const Pay = ({
   const { settings, collection } = useContext(AppContext)
 
   useEffect(() => {
-    setPaymentMethod("metamask")
+    setPaymentMethod("wallet")
   }, [])
 
   useEffect(() => {
@@ -53,7 +52,7 @@ const Pay = ({
   }, [paymentMethod, amount])
 
   const getAmount = async () => {
-    if (paymentMethod === "metamask") {
+    if (paymentMethod === "wallet") {
       const ethAmount = await convertToEth(amount, CURRENCY)
       return Number.parseFloat(ethAmount.toFixed(3)) + " ETH"
     }
@@ -65,9 +64,7 @@ const Pay = ({
     <li className={`${paymentMethod === method ? "active" : ""}`}>
       <button onClick={() => setPaymentMethod(method)}>
         <div className="me-2">
-          {method === "metamask" && (
-            <Image src={metamaskIcon} width={20} height={20} />
-          )}
+          {method === "wallet" && <FaWallet />}
           {method === "paypal" && <BsPaypal />}
           {method === "razorpay" && <SiRazorpay />}
           {method === "stripe" && <FaStripeS />}
@@ -87,9 +84,9 @@ const Pay = ({
         body: {
           address: account,
           label: `Generated ${collection?.results?.length} tokens`,
-          amount: paymentMethod === "metamask" ? ethAmount : amount,
+          amount: paymentMethod === "wallet" ? ethAmount : amount,
           method: paymentMethod ? paymentMethod : null,
-          currency: paymentMethod === "metamask" ? "ETH" : CURRENCY,
+          currency: paymentMethod === "wallet" ? "ETH" : CURRENCY,
         },
       })
 
@@ -148,7 +145,7 @@ const Pay = ({
                 <div>
                   <ul className="select-payment-methods">
                     {settings?.isPaypal && paymentMehodItem("paypal")}
-                    {settings?.isMetamask && paymentMehodItem("metamask")}
+                    {settings?.isMetamask && paymentMehodItem("wallet")}
                     {settings?.isStripe && paymentMehodItem("stripe")}
                     {settings?.isRazorpay && paymentMehodItem("razorpay")}
                   </ul>
@@ -162,8 +159,8 @@ const Pay = ({
                     />
                   )}
 
-                  {settings?.isMetamask && paymentMethod === "metamask" && (
-                    <Metamask
+                  {settings?.isMetamask && paymentMethod === "wallet" && (
+                    <Wallet
                       amount={amount}
                       generate={finishPayment}
                       myMetamaskAddress={settings?.metamaskAddress}

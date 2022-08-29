@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { injected } from "./connectors"
 import { getConnectedUser } from "../utils"
+import AppLoader from "../../components/AppLoader"
 
 function WalletAuthProvider({ children }: any) {
   const {
@@ -34,7 +35,11 @@ function WalletAuthProvider({ children }: any) {
     return children
   }
 
-  return null
+  return (
+    <div className="loading-panel">
+      <AppLoader />
+    </div>
+  )
 }
 
 export default WalletAuthProvider

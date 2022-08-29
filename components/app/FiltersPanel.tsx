@@ -34,6 +34,8 @@ const FiltersPanel = ({ loading, generate }: any) => {
     }
 
     if (!filtersEmpty) {
+      console.log(filters)
+
       for (const layerName in filters) {
         if (filters[layerName].length > 0) {
           const items = results?.filter(
@@ -42,8 +44,8 @@ const FiltersPanel = ({ loading, generate }: any) => {
                 (attr: any) =>
                   attr.trait_type === layerName &&
                   filters[layerName].includes(attr.value)
-              ) &&
-              !newResults.some((colItem: any) => colItem.name === item.name)
+              ) 
+              // && !newResults.some((colItem: any) => colItem.name === item.name)
           )
 
           newResults.push(...items)
@@ -52,6 +54,8 @@ const FiltersPanel = ({ loading, generate }: any) => {
     } else {
       newResults = [...results]
     }
+
+    console.log(newResults.length)
 
     setFilteredItems(newResults)
   }, [filters])
@@ -71,8 +75,8 @@ const FiltersPanel = ({ loading, generate }: any) => {
   return (
     <div className={`filter-panel mb-4 ${loading ? "disabled" : ""}`}>
       <h6 className="title">
-        Filters: {filteredItems.length} item
-        {filteredItems.length !== 1 ? "s" : ""}
+        Filters: {filteredItems?.length} item
+        {filteredItems?.length !== 1 ? "s" : ""}
       </h6>
 
       <div className="btns mb-3">
@@ -84,7 +88,7 @@ const FiltersPanel = ({ loading, generate }: any) => {
           <AiOutlineReload /> Regenerate
         </Button>
 
-        {filteredItems.length !== results.length && (
+        {filteredItems?.length !== results.length && (
           <Button
             theme="white"
             className="mt-2 btn-sm"

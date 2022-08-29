@@ -9,7 +9,7 @@ interface NoDataFoundProps {
 const NoDataFound = ({ phrase, Icon = BsFillInboxFill }: NoDataFoundProps) => {
   return (
     <div className="no-data-found">
-      <Icon size={80} />
+      <Icon size={70} />
       <h6>{phrase ? phrase : "No data found"}</h6>
     </div>
   )

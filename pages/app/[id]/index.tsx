@@ -19,6 +19,7 @@ import RulesPanel from "../../../components/app/panels/RulesPanel"
 import GalleryPanel from "../../../components/app/panels/GalleryPanel"
 import GeneratePanel from "../../../components/app/panels/GeneratePanel"
 import DesignerPanel from "../../../components/app/panels/DesignerPanel"
+import AppLoader from "../../../components/AppLoader"
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query
@@ -97,10 +98,18 @@ const AppWrapper = ({ settings, plans }: any) => {
 
   // rarity score
   useEffect(() => {
+    console.log(results)
+
     results?.map((item: any) => {
-      const sum = item.attributes.reduce((p: any, a: any) => {
-        return p + a.rarity
+      const sum = item.attributes.reduce((currentSum: any, attr: any) => {
+        const total = results.filter((r: any) =>
+          r.attributes.some((a: any) => a.id === attr.id)
+        ).length
+
+        return currentSum + total
+        // return currentSum + attr.rarity
       }, 0)
+
       item["totalRarity"] = sum
       return item
     })
@@ -259,7 +268,6 @@ const AppWrapper = ({ settings, plans }: any) => {
 
   useEffect(() => {
     if (account) getData()
-    else setLoadingPage(false)
   }, [account])
 
   const getData = async () => {
@@ -271,6 +279,8 @@ const AppWrapper = ({ settings, plans }: any) => {
           address: account,
         },
       })
+
+      console.log(data)
 
       if (!data.success) {
         return router.push("/404")
@@ -308,7 +318,12 @@ const AppWrapper = ({ settings, plans }: any) => {
     setResults([...results, item])
   }
 
-  if (loadingPage) return null
+  if (loadingPage)
+    return (
+      <div className="loading-panel">
+        <AppLoader />
+      </div>
+    )
 
   return (
     <Page title="NFT Generator" settings={settings} hideNavbar isProtected>
