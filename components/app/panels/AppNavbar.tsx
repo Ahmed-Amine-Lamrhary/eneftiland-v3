@@ -50,7 +50,7 @@ const AppNavbar = () => {
 
   const disableButtons = uploadingFolder || isSaving || uploadingImages
 
-  const renderBtn = (route: string, Icon: any) => (
+  const renderBtn = (route: string, Icon: any, title?: string) => (
     <Button
       className={view === route ? "active" : ""}
       disabled={disableButtons}
@@ -68,7 +68,7 @@ const AppNavbar = () => {
       }}
     >
       <Icon />
-      <span className="text">{route}</span>
+      <span className="text">{title ? title : route}</span>
     </Button>
   )
 
@@ -155,7 +155,9 @@ const AppNavbar = () => {
         <li className="nav-item">
           {renderBtn("gallery", HiOutlineCollection)}
         </li>
-        <li className="nav-item">{renderBtn("generate", BiImage)}</li>
+        <li className="nav-item">
+          {renderBtn("generate", BiImage, "Generate & Download")}
+        </li>
       </ul>
 
       {isSaving && (

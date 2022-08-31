@@ -237,10 +237,12 @@ export const getMetadata = (collection: any, item: any, index: number) => {
     collection.prefix ? collection.prefix : collection.collectionName
   }#${edition}`
 
+  const cid = collection.cid ? collection.cid : "<CID>"
+
   let metadata: any = {
     name: tokenName,
     description: collection.collectionDesc,
-    image: `ipfs://<CID>/${edition}.png`,
+    image: `ipfs://${cid}/${edition}.png`,
     attributes: item.attributes.map(({ trait_type, value }: any) => ({
       trait_type,
       value,
@@ -288,10 +290,12 @@ export const getMetadataPreview = (collection: any) => {
       value: layer.images[0].name,
     }))
 
+  const cid = collection.cid ? collection.cid : "<CID>"
+
   let metadata: any = {
     name: tokenName,
     description: collection.collectionDesc,
-    image: `ipfs://<CID>/${edition}.png`,
+    image: `ipfs://${cid}/${edition}.png`,
     attributes,
   }
 

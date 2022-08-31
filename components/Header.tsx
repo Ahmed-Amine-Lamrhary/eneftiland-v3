@@ -6,6 +6,7 @@ import { useContext } from "react"
 import PageContext from "../context/PageContext"
 import GetStartedButton from "./GetStartedButton"
 import { signOut, useSession } from "next-auth/react"
+import { BiUserCircle } from "react-icons/bi"
 
 export default function Header({ children }: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
@@ -27,7 +28,12 @@ export default function Header({ children }: any) {
               aria-expanded="false"
             >
               <span>
-                <span className="user-avatar-name">{session?.user?.name}</span>
+                <span className="user-avatar-name">
+                  <span className="user-icon me-1">
+                    <BiUserCircle size={20} />
+                  </span>
+                  <span className="name">{session?.user?.name}</span>
+                </span>
               </span>
             </a>
             <ul
@@ -72,9 +78,9 @@ export default function Header({ children }: any) {
             {settings?.isBeta && <span className="beta">Beta</span>}
           </NavLink>
 
-          {children}
-
           <div className="d-flex">
+            {children}
+
             {!children && (
               <button
                 className="navbar-toggler"

@@ -231,14 +231,14 @@ export default function MePage({ settings }: any) {
               </p>
 
               <div className="row">
-                <div className="col-lg-3 col-md-4 col-sm-6">
+                <div className="col-lg-3 col-md-4 col-6 mb-4">
                   <CollectionBlock addNew />
                 </div>
 
                 {getLoading ? (
                   <>
                     {Array.from(Array(3).keys()).map(() => (
-                      <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
+                      <div className="col-lg-3 col-md-4 col-6 mb-4">
                         <CollectionBlock loading />
                       </div>
                     ))}
@@ -246,7 +246,7 @@ export default function MePage({ settings }: any) {
                 ) : (
                   <>
                     {myCollections.map((c: any, index: number) => (
-                      <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
+                      <div className="col-lg-3 col-md-4 col-6 mb-4">
                         <CollectionBlock
                           collection={c}
                           duplicateCollection={duplicateCollection}

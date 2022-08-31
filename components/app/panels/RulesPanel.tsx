@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
 import AppContext from "../../../context/AppContext"
@@ -194,6 +193,13 @@ const RulesPanel = () => {
   return (
     <div className="rules-panel">
       <div className="container">
+        <div className="mb-5">
+          <h3>Rules</h3>
+          <p className="paragraph">
+            Separate traits that don’t mix well with others.
+          </p>
+        </div>
+
         {/* Create new rule */}
         <div className="mb-4">
           <h6 className="mb-3">Create new rule</h6>

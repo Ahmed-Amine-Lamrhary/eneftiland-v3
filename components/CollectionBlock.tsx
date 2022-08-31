@@ -27,7 +27,7 @@ const CollectionBlock = ({
 }: CollectionBlockProps) => {
   if (loading)
     return (
-      <div className="collection-block">
+      <div className="collection-block collection-loading">
         <div className="img-container">
           <div className="img-holder loading-img-holder" />
           <div className="icon" />
@@ -60,9 +60,11 @@ const CollectionBlock = ({
                 </div>
               )}
 
-              <div className="collection-name">
-                {collection.collectionName} ({collection.results.length} items)
+              <div className="collection-size">
+                {collection.results.length} items
               </div>
+
+              <div className="collection-name">{collection.collectionName}</div>
             </a>
           </Link>
 

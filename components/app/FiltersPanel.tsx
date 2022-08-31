@@ -1,26 +1,26 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect } from "react"
 import { Accordion } from "react-bootstrap"
-import { AiOutlineReload } from "react-icons/ai"
 import AppContext from "../../context/AppContext"
-import Button from "../Button"
 
-const FiltersPanel = ({ loading, generate }: any) => {
-  const { collection, filteredItems, setFilteredItems, results } =
-    useContext(AppContext)
+interface FiltersPanelProps {
+  loading: any
+  filters: any
+  setFilters: any
+  resetedFilters: any
+}
+
+const FiltersPanel = ({
+  loading,
+  filters,
+  setFilters,
+  resetedFilters,
+}: FiltersPanelProps) => {
+  const { collection, setFilteredItems, results } = useContext(AppContext)
   const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
 
   useEffect(() => {
     setFilters(resetedFilters())
   }, [results])
-
-  const resetedFilters = () => {
-    const f: any = {}
-    layers.forEach((layer) => {
-      f[layer.name] = []
-    })
-    return f
-  }
-  const [filters, setFilters] = useState<any>(resetedFilters())
 
   useEffect(() => {
     let newResults: any = []
@@ -71,32 +71,7 @@ const FiltersPanel = ({ loading, generate }: any) => {
   }
 
   return (
-    <div className={`filter-panel mb-4 ${loading ? "disabled" : ""}`}>
-      <h6 className="title">
-        Filters: {filteredItems?.length} item
-        {filteredItems?.length !== 1 ? "s" : ""}
-      </h6>
-
-      <div className="btns mb-3">
-        <Button
-          className="btn-sm"
-          onClick={() => generate(false)}
-          disabled={loading}
-        >
-          <AiOutlineReload /> Regenerate
-        </Button>
-
-        {filteredItems?.length !== results.length && (
-          <Button
-            theme="white"
-            className="mt-2 btn-sm"
-            onClick={() => setFilters(resetedFilters())}
-          >
-            Reset Filters
-          </Button>
-        )}
-      </div>
-
+    <div className={`filter-panel ${loading ? "disabled" : ""}`}>
       <Accordion className="accordion" alwaysOpen>
         {layers.map((layer) => (
           <Accordion.Item eventKey={layer.name}>

@@ -1,24 +1,11 @@
-import React, { useContext } from "react"
-import AppContext from "../../../context/AppContext"
-import AppLoader from "../../AppLoader"
+import React from "react"
 import LayerPanel from "../LayerPanel"
 import LayersPanel from "../LayersPanel"
 import PreviewItem from "../PreviewItem"
 
 const DesignerPanel = () => {
-  const { uploadingFolder } = useContext(AppContext)
-
   return (
     <div className="designer">
-      {uploadingFolder && (
-        <div className="uploading-folder text-center d-flex justify-content-center align-items-center">
-          <div>
-            <AppLoader />
-            <p className="paragraph">Uploading your images...</p>
-          </div>
-        </div>
-      )}
-
       <div className="container-fluid">
         <div className="pb-4">
           <div className="row">

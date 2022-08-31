@@ -42,4 +42,26 @@ export default NextAuth({
       return session
     },
   },
+  events: {
+    async signIn(message) {
+      if (message.isNewUser) {
+        // create eneftiland demo collection
+        const collection: any = await prisma.collection.findUnique({
+          where: { id: "eneftiland-demo" },
+        })
+
+        if (collection) {
+          delete collection.id
+          delete collection.dateCreated
+
+          await prisma.collection.create({
+            data: {
+              ...collection,
+              userId: message.user.id,
+            },
+          })
+        }
+      }
+    },
+  },
 })

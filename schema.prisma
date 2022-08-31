@@ -117,8 +117,8 @@ model termspage {
 model collection {
   id String @id @default(cuid())
 
-  userId String
-  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  user   user?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   layers        String @db.VarChar(65535)
   galleryLayers String @db.VarChar(65535)
@@ -127,13 +127,14 @@ model collection {
   collectionDesc String
   collectionName String
   collectionSize Int
-  creators       String @db.VarChar(65535)
+  creators       String  @db.VarChar(65535)
   externalUrl    String
   network        String
   prefix         String
   royalties      Float
   symbol         String
   size           Int
+  cid            String?
 
   dateCreated DateTime @default(now())
   Rule        rule[]

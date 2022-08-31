@@ -13,16 +13,20 @@
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
+    @media (max-width: 767px) {
+      .name {
+        display: none;
+      }
+    }
   }
   .navbar-brand {
     font-weight: 700;
     text-decoration: none;
-    position: relative;
+    display: flex;
+    align-items: flex-start;
     .beta {
-      position: absolute;
-      top: 0;
-      right: -36px;
       font-size: 11px;
+      margin-left: 5px;
       font-weight: 400;
       border: 1px solid;
       line-height: 12px;
@@ -103,6 +107,7 @@
   @media (max-width: 940px) {
     .app-navbar-nav button {
       font-size: 13px !important;
+      padding: 0 10px !important;
       svg {
         display: none;
       }
@@ -172,7 +177,7 @@
       padding: 8px 13px;
       &.active,
       &:hover {
-        color: $black-color;
+        color: $main-color;
       }
       &:disabled {
         &:not(.active):hover {
@@ -656,5 +661,15 @@ label {
   .variable-row,
   .object-key-val {
     border-left: 0 !important;
+  }
+}
+
+// properties-metadata
+.properties-metadata {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  @media (max-width: 992px) {
+    grid-template-columns: auto auto;
   }
 }

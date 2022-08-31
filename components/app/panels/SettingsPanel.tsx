@@ -72,6 +72,7 @@ const SettingsPanel = () => {
     collectionSize: collection?.collectionSize,
     prefix: collection?.prefix,
     size: collection?.size,
+    cid: collection?.cid,
 
     // for solana
     symbol: collection?.symbol,
@@ -195,6 +196,12 @@ const SettingsPanel = () => {
                         name="prefix"
                         hint="The naming pattern used to generate a name for each Token."
                       />
+
+                      <FormControl
+                        placeholder="Custom CID"
+                        type="text"
+                        name="cid"
+                      />
                     </div>
 
                     <div className="mb-4 row">
@@ -243,7 +250,7 @@ const SettingsPanel = () => {
 
                             <FieldArrayC
                               name="creators"
-                              render={({ remove, push, form }: any) => {
+                              render={({ remove, push }: any) => {
                                 return (
                                   <div>
                                     {values.creators.map(
@@ -349,6 +356,7 @@ const SettingsPanel = () => {
                         externalUrl: values.externalUrl,
                         royalties: values.royalties,
                         creators: values.creators,
+                        cid: values.cid,
                       })}
                     />
                   </div>

@@ -122,6 +122,7 @@ section {
     font-size: 22px;
     font-weight: 400;
     margin-bottom: 5px;
+    color: $grey-color;
   }
 }
 
@@ -156,6 +157,9 @@ section {
   border: 1px solid rgba($grey-color, 0.2);
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
+  &.collection-loading {
+    cursor: default;
+  }
   &:hover {
     box-shadow: 0px 4px 16px rgba($black-color, 0.15);
   }
@@ -178,11 +182,23 @@ section {
       color: rgba($grey-color, 0.7);
     }
   }
+  .collection-size {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    background: $white-color;
+    border-radius: 100px;
+    font-size: 12px;
+    padding: 2px 7px;
+    font-weight: 500;
+  }
   .collection-name {
     background-color: $white-color;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     padding: 11px 17px;
+    line-height: 14px;
   }
   .collection-dropdown {
     position: absolute;
@@ -302,7 +318,6 @@ section {
   border-radius: 4px;
   text-align: center;
   padding: 2px 10px;
-  margin-bottom: 10px;
   cursor: default;
   h6 {
     overflow: hidden;
@@ -537,20 +552,30 @@ footer {
 // tabs
 .nav-tabs {
   border: 0;
-  margin-bottom: 40px;
-  .nav-link {
-    font-size: 16px;
-    padding: 0;
-    font-weight: 400;
+  margin-bottom: 20px;
+  overflow: auto;
+  white-space: nowrap;
+  display: block;
+  padding-bottom: 20px;
+  .nav-item {
+    display: inline-block;
     margin-right: 25px;
-    border: 0;
-    color: $grey-color;
-    &.active {
-      font-weight: 600;
+    &:last-of-type {
+      margin-right: 0;
     }
-    &.active,
-    &:hover {
-      color: $main-color;
+    .nav-link {
+      font-size: 16px;
+      padding: 0;
+      font-weight: 400;
+      border: 0;
+      color: $grey-color;
+      &.active {
+        font-weight: 600;
+      }
+      &.active,
+      &:hover {
+        color: $main-color;
+      }
     }
   }
 }

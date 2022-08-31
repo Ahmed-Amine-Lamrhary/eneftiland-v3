@@ -21,12 +21,12 @@ const ResultsItem = ({ item, loading, index }: ResultsItemProps) => {
       <AppModal show={showDetails} onHide={() => setShowDetails(false)}>
         <div className="row">
           {/* Item preview */}
-          <div className="col-5">
+          <div className="col-md-5 mb-3 mb-md-0">
             <ImgHolder attributes={item?.attributes} layers={layers} />
           </div>
 
           {/* Item details */}
-          <div className="col-7 preview-item">
+          <div className="col-md-7 preview-item">
             <p>{collection?.collectionName}</p>
             {item?.itemIndex !== undefined && (
               <h3>
@@ -38,14 +38,14 @@ const ResultsItem = ({ item, loading, index }: ResultsItemProps) => {
             {/* properties and metadata */}
             <Tabs defaultActiveKey="properties" id="properties-metadata">
               <Tab eventKey="properties" title="Properties">
-                <div className="row">
+                <div className="properties-metadata">
                   {item?.attributes?.map((attr: any) => {
                     const total = results.filter((r: any) =>
                       r.attributes.some((a: any) => a.id === attr.id)
                     ).length
 
                     return (
-                      <div className="col-md-4 col-sm-6">
+                      <div className="">
                         <div className="attribute-details">
                           <p>{attr.trait_type}</p>
                           <h6>{attr.value}</h6>

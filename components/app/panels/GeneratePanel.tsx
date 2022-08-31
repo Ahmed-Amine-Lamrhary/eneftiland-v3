@@ -101,14 +101,14 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
             </div>
           )}
 
-          {historyItem.completed && (
+          {/* {historyItem.completed && (
             <Button
               className="btn-sm btn-outline me-3"
               onClick={() => uploadToIPFS(historyItem)}
             >
               Upload to IPFS
             </Button>
-          )}
+          )} */}
 
           <Dropdown align="end">
             <Dropdown.Toggle id="dropdown-basic">
@@ -454,8 +454,8 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
           await func()
           i++
 
-          if (i <= collectionData.results.length)
-            setGeneratingPercentage((i * 100) / collectionData.results.length)
+          if (i <= results.length)
+            setGeneratingPercentage((i * 100) / results.length)
         }, 1)
       }
 
@@ -603,7 +603,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
             <div style={{ width: "80px" }}>
               <CircularProgressbar
                 value={generatingPercentage}
-                text={`${generatingPercentage}%`}
+                text={`${generatingPercentage.toFixed(0)}%`}
                 styles={buildStyles({
                   pathColor: `#724bf4`,
                   textColor: "#724bf4",

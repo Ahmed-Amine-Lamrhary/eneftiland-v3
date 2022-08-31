@@ -13,6 +13,9 @@ import { showToast } from "../../helpers/utils"
 import LayerI from "../../types/LayerI"
 import Button from "../Button"
 import Layer from "./Layer"
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
+import "react-circular-progressbar/dist/styles.css"
+import AppModal from "../AppModal"
 
 function LayersPanel() {
   const {
@@ -20,9 +23,9 @@ function LayersPanel() {
     setLayers,
     activeLayerId,
     setActiveLayerId,
+    uploadingFolder,
     setUploadingFolder,
     uploadingImages,
-    isSaving,
   } = useContext(AppContext)
 
   const ref = React.useRef<HTMLInputElement>(null)
@@ -34,6 +37,7 @@ function LayersPanel() {
     }
   }, [ref])
 
+  const [uploadingFolderPer, setUploadingFolderPer] = useState(0)
   const [value, setValue] = useState("")
 
   const layers = collection?.layers ? [...collection?.layers] : []
@@ -130,43 +134,53 @@ function LayersPanel() {
 
       const listLayers: any = []
 
-      await Promise.all(
-        Object.keys(addedLayers).map(async (layerName: any) => {
-          const images = addedLayers[layerName]
-          const listImages: any = []
-
-          await Promise.all(
-            images.map(async (image: any) => {
-              const item: any = {
-                id: Math.random().toString(16).slice(2),
-                rarity: 50,
-                name: cleanName(image.name),
-                filename: image.name,
-              }
-
-              const { url } = await imagekit.upload({
-                file: image,
-                fileName: image.name,
-              })
-
-              item.url = url
-              listImages.push(item)
-            })
-          )
-
-          listLayers.push({
-            id: Math.random().toString(16).slice(2),
-            name: layerName,
-            images: listImages,
-            options: {
-              bypassDNA: false,
-              blend: blendList[0],
-              opacity: 1,
-            },
-            totalPoints: listImages.length * 50,
-          })
-        })
+      const numImages: any = Object.values(addedLayers).reduce(
+        (previousValue, layer: any) => previousValue + layer.length,
+        0
       )
+      let imgIndex = 0
+
+      if (numImages > 0)
+        await Promise.all(
+          Object.keys(addedLayers).map(async (layerName: any) => {
+            const images = addedLayers[layerName]
+            const listImages: any = []
+
+            await Promise.all(
+              images.map(async (image: any) => {
+                const item: any = {
+                  id: Math.random().toString(16).slice(2),
+                  rarity: 50,
+                  name: cleanName(image.name),
+                  filename: image.name,
+                }
+
+                const { url } = await imagekit.upload({
+                  file: image,
+                  fileName: image.name,
+                })
+
+                imgIndex++
+                setUploadingFolderPer((imgIndex * 100) / numImages)
+
+                item.url = url
+                listImages.push(item)
+              })
+            )
+
+            listLayers.push({
+              id: Math.random().toString(16).slice(2),
+              name: layerName,
+              images: listImages,
+              options: {
+                bypassDNA: false,
+                blend: blendList[0],
+                opacity: 1,
+              },
+              totalPoints: listImages.length * 50,
+            })
+          })
+        )
 
       if (listLayers.length === 0) {
         setUploadingFolder(false)
@@ -174,68 +188,95 @@ function LayersPanel() {
       }
 
       setLayers(listLayers)
-
-      setUploadingFolder(false)
     } catch (error: any) {
       console.log(error)
       showToast(error.message, "error")
+    } finally {
+      setUploadingFolder(false)
+      setUploadingFolderPer(0)
+      event.target.value = ""
     }
   }
 
   return (
-    <>
-      <div className="sticky-panel">
-        <div className="layers-panel">
-          {/* upload folder */}
-          <div className="text-center mb-4">
-            <Button
-              onClick={() => ref.current?.click()}
-              className="btn-sm btn-white"
-              disabled={uploadingImages}
-            >
-              <AiOutlineCloudUpload size={20} /> Upload folder
-            </Button>
-
-            <p className="paragraph" style={{ fontSize: "13px" }}>
-              You can arrange the layers by shuffling them up or down
-            </p>
-
-            <input
-              type="file"
-              ref={ref}
-              onChange={uploadFolder}
-              style={{ display: "none" }}
-            />
+    <div className="layers-panel">
+      {/* generating modal */}
+      <AppModal
+        show={uploadingFolder}
+        onHide={null}
+        size="lg"
+        closeButton={false}
+      >
+        <div className="text-center pb-5">
+          <div className="app-loader">
+            <div style={{ width: "80px" }}>
+              <CircularProgressbar
+                value={uploadingFolderPer}
+                text={`${uploadingFolderPer.toFixed(0)}%`}
+                styles={buildStyles({
+                  pathColor: `#724bf4`,
+                  textColor: "#724bf4",
+                  trailColor: "#f7fbfe",
+                })}
+              />
+            </div>
           </div>
 
-          {/* manually */}
-          <SortableList
-            items={layers}
-            onSortEnd={onSortEnd}
-            lockOffset={["0%", "10%"]}
-            distance={1}
-          />
-
-          <div className="app-layer add-layer">
-            <input
-              type="text"
-              placeholder="New Layer"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key !== "Enter") return
-                e.preventDefault()
-                onSubmit()
-              }}
-              disabled={uploadingImages}
-            />
-            <button type="button" onClick={onSubmit} disabled={uploadingImages}>
-              <AiOutlinePlus size={18} />
-            </button>
+          <div className="mt-4">
+            <h5>Uploading your images</h5>
+            <p className="paragraph">Please wait</p>
           </div>
         </div>
+      </AppModal>
+
+      {/* upload folder */}
+      <div className="text-center mb-4">
+        <Button
+          onClick={() => ref.current?.click()}
+          className="btn-sm btn-white"
+          disabled={uploadingImages}
+        >
+          <AiOutlineCloudUpload size={20} /> Upload folder
+        </Button>
+
+        <p className="paragraph" style={{ fontSize: "13px" }}>
+          You can arrange the layers by shuffling them up or down
+        </p>
+
+        <input
+          type="file"
+          ref={ref}
+          onChange={uploadFolder}
+          style={{ display: "none" }}
+        />
       </div>
-    </>
+
+      {/* manually */}
+      <SortableList
+        items={layers}
+        onSortEnd={onSortEnd}
+        lockOffset={["0%", "10%"]}
+        distance={1}
+      />
+
+      <div className="app-layer add-layer">
+        <input
+          type="text"
+          placeholder="New Layer"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key !== "Enter") return
+            e.preventDefault()
+            onSubmit()
+          }}
+          disabled={uploadingImages}
+        />
+        <button type="button" onClick={onSubmit} disabled={uploadingImages}>
+          <AiOutlinePlus size={18} />
+        </button>
+      </div>
+    </div>
   )
 }
 

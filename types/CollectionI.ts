@@ -10,6 +10,7 @@ export default interface CollectionI {
   symbol: string
 
   size: number
+  cid?: string
 
   network: string
   externalUrl: string

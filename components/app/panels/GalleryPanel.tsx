@@ -14,7 +14,7 @@ import {
 } from "../../../helpers/utils"
 import { parseResults } from "../../../services/parser"
 import { useRouter } from "next/router"
-import { startCreating } from "../../../helpers/generator"
+import { IoCloseOutline } from "react-icons/io5"
 
 const STEP = 20
 
@@ -26,16 +26,27 @@ const GalleryPanel = () => {
     setFilteredItems,
     loading,
     setLoading,
-    setCollection,
     setResults,
     setView,
     setIsSaving,
   }: any = useContext(AppContext)
 
+  const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
+
   const router = useRouter()
   const { id: collectionId } = router.query
 
   const [generationTime, setGenerationTime] = useState<string>("")
+
+  const resetedFilters = () => {
+    const f: any = {}
+    layers.forEach((layer) => {
+      f[layer.name] = []
+    })
+    return f
+  }
+
+  const [filters, setFilters] = useState<any>(resetedFilters())
 
   const [count, setCount] = useState({
     prev: 0,
@@ -248,31 +259,62 @@ const GalleryPanel = () => {
       {/* show items */}
       <div className="collection-images">
         <div className="container-fluid">
-          {generationTime && (
+          {/* {generationTime && (
             <div className="options-bar text-center mb-4">
               <div className="container">
                 <p className="paragraph">Generation Time: {generationTime}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           <div className="collections-block">
-            <div className="d-flex justify-content-end">
-              <div className="form-group">
-                <select className="form-select" onChange={sortBy}>
-                  <option value="name">Item index</option>
-                  <option value="rarity">Rarity score</option>
-                </select>
-              </div>
-            </div>
-
             <div className="row">
               {/* Filter */}
               <div className="col-md-3 col-sm-4">
-                <FiltersPanel loading={loading} generate={generate} />
+                <FiltersPanel
+                  loading={loading}
+                  filters={filters}
+                  resetedFilters={resetedFilters}
+                  setFilters={setFilters}
+                />
               </div>
 
               <div className="col-md-9 col-sm-8">
+                {/* filters */}
+                <div className="d-md-flex justify-content-between mb-3">
+                  <div className="d-flex align-items-center mt-2 mt-md-0">
+                    <p className="m-0 me-3 paragraph">
+                      {filteredItems?.length} item
+                      {filteredItems?.length !== 1 ? "s" : ""}
+                    </p>
+
+                    {filteredItems?.length !== results.length && (
+                      <Button
+                        theme="white"
+                        className="btn-sm me-3"
+                        onClick={() => setFilters(resetedFilters())}
+                      >
+                        <IoCloseOutline /> Clear filters
+                      </Button>
+                    )}
+
+                    <Button
+                      className="btn-sm"
+                      onClick={() => generate(false)}
+                      disabled={loading}
+                    >
+                      <AiOutlineReload /> Regenerate
+                    </Button>
+                  </div>
+
+                  <div className="form-group m-0 mt-3 mt-md-0">
+                    <select className="form-select" onChange={sortBy}>
+                      <option value="name">Item index</option>
+                      <option value="rarity">Rarity score</option>
+                    </select>
+                  </div>
+                </div>
+
                 <InfiniteScroll
                   dataLength={current?.length}
                   next={getMoreData}

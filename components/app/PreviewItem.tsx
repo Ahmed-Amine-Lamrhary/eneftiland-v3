@@ -5,7 +5,7 @@ import AppContext from "../../context/AppContext"
 import Button from "../Button"
 
 const PreviewItem = () => {
-  const { collection, setView }: any = useContext(AppContext)
+  const { collection, setView, results }: any = useContext(AppContext)
   const layers = collection?.layers ? [...collection?.layers] : []
   const router = useRouter()
 
@@ -36,24 +36,26 @@ const PreviewItem = () => {
             ))}
         </div>
 
-        <div className="text-center mt-3">
-          <Button
-            className="btn-sm btn-outline"
-            onClick={() => {
-              router.push(
-                {
-                  pathname: `/app/${collection?.id}`,
-                  query: { page: "gallery" },
-                },
-                undefined,
-                { scroll: false }
-              )
-              setView("gallery")
-            }}
-          >
-            Preview more
-          </Button>
-        </div>
+        {results && results.length > 0 && (
+          <div className="text-center mt-3">
+            <Button
+              className="btn-sm btn-outline"
+              onClick={() => {
+                router.push(
+                  {
+                    pathname: `/app/${collection?.id}`,
+                    query: { page: "gallery" },
+                  },
+                  undefined,
+                  { scroll: false }
+                )
+                setView("gallery")
+              }}
+            >
+              Preview more
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -24,6 +24,7 @@ const settingsSchema = Yup.object().shape({
     .max(2400, errorMessages.sizeMax)
     .required(errorMessages.requiredField),
   prefix: Yup.string(),
+  cid: Yup.string().nullable(),
 
   // for solana
   symbol: Yup.string(),
