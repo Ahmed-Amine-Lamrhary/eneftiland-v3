@@ -1,20 +1,17 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect } from "react"
 import { FiLayers, FiSettings } from "react-icons/fi"
 import { HiOutlineCollection } from "react-icons/hi"
 import { BiImage } from "react-icons/bi"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { RiPencilRuler2Line } from "react-icons/ri"
 import AppContext from "../../../context/AppContext"
-import NavLink from "../../NavLink"
-import { useWeb3React } from "@web3-react/core"
-import { callApi, showToast } from "../../../helpers/utils"
-import { BsCheck2 } from "react-icons/bs"
 import Button from "../../Button"
 import { useRouter } from "next/router"
+import AppSelect from "../AppSelect"
+import { useSession } from "next-auth/react"
 
 const AppNavbar = () => {
-  const { account } = useWeb3React()
-
+  const { status } = useSession()
   const router = useRouter()
 
   const {
@@ -26,33 +23,30 @@ const AppNavbar = () => {
     setView,
   } = useContext(AppContext)
 
-  const [myCollections, setMyCollections] = useState<any>([])
-  const [getLoading, setGetLoading] = useState(false)
+  // const [myCollections, setMyCollections] = useState<any>([])
+  // const [getLoading, setGetLoading] = useState(false)
 
   useEffect(() => {
-    if (account) getMyCollections()
-  }, [account])
+    // if (status === "authenticated") getMyCollections()
+  }, [status])
 
-  const getMyCollections = async () => {
-    try {
-      setGetLoading(true)
+  // const getMyCollections = async () => {
+  //   try {
+  //     setGetLoading(true)
 
-      const { data } = await callApi({
-        route: "me/mycollections",
-        body: {
-          address: account,
-        },
-      })
+  //     const { data } = await callApi({
+  //       route: "me/mycollections",
+  //     })
 
-      if (!data.success) return showToast(data.message, "error")
+  //     if (!data.success) return showToast(data.message, "error")
 
-      setMyCollections(data.data.filter((c: any) => c.id !== collection?.id))
-    } catch (error: any) {
-      throw error
-    } finally {
-      setGetLoading(false)
-    }
-  }
+  //     setMyCollections(data.data.filter((c: any) => c.id !== collection?.id))
+  //   } catch (error: any) {
+  //     throw error
+  //   } finally {
+  //     setGetLoading(false)
+  //   }
+  // }
 
   const disableButtons = uploadingFolder || isSaving || uploadingImages
 
@@ -78,10 +72,33 @@ const AppNavbar = () => {
     </Button>
   )
 
+  const viewsList = [
+    {
+      value: "layers",
+      label: <>{renderBtn("layers", FiLayers)}</>,
+    },
+    {
+      value: "settings",
+      label: <>{renderBtn("settings", FiSettings)}</>,
+    },
+    {
+      value: "rules",
+      label: <>{renderBtn("rules", RiPencilRuler2Line)}</>,
+    },
+    {
+      value: "gallery",
+      label: <>{renderBtn("gallery", HiOutlineCollection)}</>,
+    },
+    {
+      value: "generate",
+      label: <>{renderBtn("generate", BiImage)}</>,
+    },
+  ]
+
   return (
     <ul className="navbar-nav app-navbar-nav">
       {/* other collections */}
-      <li className="nav-item dropdown other-collections-dropdown">
+      {/* <li className="nav-item dropdown other-collections-dropdown">
         <a
           className="nav-link dropdown-toggle"
           href="#"
@@ -120,9 +137,17 @@ const AppNavbar = () => {
             </NavLink>
           </li>
         </ul>
-      </li>
+      </li> */}
 
-      {/*  */}
+      {/* views */}
+      <AppSelect
+        options={viewsList}
+        value={viewsList?.find((v: any) => v.value === view)}
+        onChange={(e: any) => setView(e.value)}
+        placeholder=""
+        isSearchable={false}
+      />
+
       <ul>
         <li className="nav-item">{renderBtn("layers", FiLayers)}</li>
         <li className="nav-item">{renderBtn("settings", FiSettings)}</li>
@@ -134,7 +159,7 @@ const AppNavbar = () => {
       </ul>
 
       {isSaving && (
-        <li className="nav-item ms-2">
+        <li className="nav-item ms-2" style={{ padding: "7px 0" }}>
           <button type="button" disabled>
             <AiOutlineLoading3Quarters className="loading-icon" />
 

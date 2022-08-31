@@ -94,13 +94,13 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
           {historyItem.collectionSize > 1 && "s"}
         </p>
 
-        {!historyItem.completed && (
-          <div className="d-flex align-items-center">
-            <p className="error-text me-4">Error while generating</p>
-          </div>
-        )}
-
         <div className="d-flex align-items-center">
+          {!historyItem.completed && (
+            <div className="d-flex align-items-center">
+              <p className="error-text me-4">Error while generating</p>
+            </div>
+          )}
+
           {historyItem.completed && (
             <Button
               className="btn-sm btn-outline me-3"
@@ -155,9 +155,8 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
   const downloadFiles = async (nfts: any, metas: any) => {
     var zip = new JSZip()
-    var file: any = zip.folder("collection")
-    var imagesFolder: any = file.folder("images")
-    var metaFolder: any = file.folder("meta")
+    var imagesFolder: any = zip.folder("images")
+    var metaFolder: any = zip.folder("meta")
 
     nfts.sort((a: any, b: any) => a.index - b.index)
 
@@ -180,12 +179,19 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
     var link = document.createElement("a")
     link.href = window.URL.createObjectURL(content)
-    link.download = `collection.zip`
+    link.download = `${collection.collectionName}.zip`
     link.click()
   }
 
-  const generate = async () => {
-    if (plans && plans.length > 0) {
+  interface generateI {
+    skipPayment?: boolean
+    isWatermark?: boolean
+  }
+
+  const generate = async (options?: generateI) => {
+    const { skipPayment, isWatermark } = options || {}
+
+    if (plans && plans.length > 0 && !skipPayment) {
       const currentPlan = getUsedPlan()
       if (currentPlan) {
         setCurrentPlan(currentPlan)
@@ -248,6 +254,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
           setGeneratingStatus("")
         },
+        ...(isWatermark !== undefined && { isWatermark }),
       })
     } catch (error: any) {}
   }
@@ -293,7 +300,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
           var link = document.createElement("a")
           link.href = window.URL.createObjectURL(content)
-          link.download = `collection.zip`
+          link.download = `${collection.collectionName}-metadata.zip`
           link.click()
           // download
 
@@ -386,8 +393,8 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
       let i = 0
 
       const func = async () => {
-        if (i < collectionData.results.length) {
-          const item = collectionData.results[i]
+        if (i < results.length) {
+          const item = results[i]
 
           // metadata
           const { metadata, edition } = getMetadata(collectionData, item, i)
@@ -582,7 +589,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
         <Pay
           description={collection?.collectionName}
           currentPlan={currentPlan}
-          generate={startGenerating}
+          generate={generate}
           setShowPayment={setShowPayment}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
@@ -618,9 +625,9 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
       <div className="container">
         <div className="mb-5">
-          <h3>Generate tokens</h3>
+          <h3>Generate collection</h3>
           <p className="paragraph">
-            Ready to generate your tokens? Let’s get started!
+            Ready to generate your collection? Let’s get started!
           </p>
           <p className="paragraph">
             This will generate a tokenset based on the preview you have seen in
@@ -630,7 +637,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
         {/* generate */}
         <div className="d-flex justify-content-center mb-4">
-          <Button theme="white" onClick={generate}>
+          <Button theme="white" onClick={() => generate()}>
             <MdOutlineCollections size={20} /> Generate Now
           </Button>
 

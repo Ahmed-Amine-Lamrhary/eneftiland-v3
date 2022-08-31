@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { convertToEth, showToast } from "../../helpers/utils"
 import Button from "../Button"
-import { CURRENCY } from "../../helpers/constants"
 import { useWeb3React } from "@web3-react/core"
 import Web3 from "web3"
 
@@ -21,7 +20,7 @@ const Wallet = ({ amount, generate, myMetamaskAddress }: WalletProps) => {
 
   useEffect(() => {
     connectToWallet()
-  })
+  }, [])
 
   const connectToWallet = async () => {
     const win: any = window

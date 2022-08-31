@@ -44,8 +44,8 @@ const FiltersPanel = ({ loading, generate }: any) => {
                 (attr: any) =>
                   attr.trait_type === layerName &&
                   filters[layerName].includes(attr.value)
-              ) 
-              // && !newResults.some((colItem: any) => colItem.name === item.name)
+              )
+            // && !newResults.some((colItem: any) => colItem.name === item.name)
           )
 
           newResults.push(...items)
@@ -54,8 +54,6 @@ const FiltersPanel = ({ loading, generate }: any) => {
     } else {
       newResults = [...results]
     }
-
-    console.log(newResults.length)
 
     setFilteredItems(newResults)
   }, [filters])

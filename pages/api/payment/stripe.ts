@@ -1,25 +1,15 @@
 import { PrismaClient } from "@prisma/client"
 import { CURRENCY, getPaymentAmount } from "../../../helpers/constants"
-import jwt from "jsonwebtoken"
+import { getSession } from "next-auth/react"
 
 export default async (req: any, res: any) => {
-  // jwt verification
-  const token = req.headers.authorization
-  if (!token)
-    return res.json({
-      success: false,
-      message: "Not authorized",
-    })
+  const session: any = await getSession({ req })
 
-  try {
-    jwt.verify(token, "secret")
-  } catch (err) {
+  if (!session)
     return res.json({
       success: false,
       message: "Not authorized",
     })
-  }
-  // jwt verification
 
   let { description, amount, id } = req.body
 

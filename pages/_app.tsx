@@ -6,8 +6,9 @@ import "../styles/globals.scss"
 import "../styles/app.scss"
 import "../styles/elements.scss"
 import "react-toastify/dist/ReactToastify.css"
-import WalletAuthProvider from "../helpers/wallet/WalletAuthProvider"
 import { ethers } from "ethers"
+import { SessionProvider } from "next-auth/react"
+import WalletAuthProvider from "../helpers/wallet/WalletAuthProvider"
 
 declare const window: any
 
@@ -19,9 +20,10 @@ const getLibrary = (provider: any) => {
   return library
 }
 
-function App({ Component, pageProps }: any) {
-  const pageLayout = Component.layout || ((page: any) => page)
-
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: any) {
   useEffect(() => {
     require("bootstrap/dist/js/bootstrap")
   }, [])
@@ -40,13 +42,13 @@ function App({ Component, pageProps }: any) {
     })()
   }, [])
 
-  return pageLayout(
+  return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <WalletAuthProvider>
-        <Component {...pageProps} />
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
       </WalletAuthProvider>
     </Web3ReactProvider>
   )
 }
-
-export default App

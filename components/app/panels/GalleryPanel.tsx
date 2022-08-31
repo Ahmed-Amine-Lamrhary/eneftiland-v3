@@ -6,6 +6,15 @@ import FiltersPanel from "../FiltersPanel"
 import ResultsItem from "../ResultsItem"
 import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
+import swal from "sweetalert2"
+import {
+  callApi,
+  millisToMinutesAndSeconds,
+  showToast,
+} from "../../../helpers/utils"
+import { parseResults } from "../../../services/parser"
+import { useRouter } from "next/router"
+import { startCreating } from "../../../helpers/generator"
 
 const STEP = 20
 
@@ -15,10 +24,18 @@ const GalleryPanel = () => {
     results,
     collection,
     setFilteredItems,
-    generate,
-    generationTime,
     loading,
+    setLoading,
+    setCollection,
+    setResults,
+    setView,
+    setIsSaving,
   }: any = useContext(AppContext)
+
+  const router = useRouter()
+  const { id: collectionId } = router.query
+
+  const [generationTime, setGenerationTime] = useState<string>("")
 
   const [count, setCount] = useState({
     prev: 0,
@@ -72,10 +89,135 @@ const GalleryPanel = () => {
 
     const sorted = filteredItems.slice().sort((item1: any, item2: any) => {
       if (value === "name") return item1.itemIndex - item2.itemIndex
-      else if (value === "rarity") return item1.totalRarity - item2.totalRarity
+      return item1.totalRarity - item2.totalRarity
     })
 
     setFilteredItems(sorted)
+  }
+
+  const updateResults = async (resultsString: string) => {
+    try {
+      setIsSaving(true)
+
+      const currentCollection: any = {
+        results: resultsString,
+        galleryLayers: JSON.stringify(collection?.layers),
+      }
+
+      const { data } = await callApi({
+        route: "me/updatecollection",
+        body: {
+          id: collectionId,
+          currentCollection,
+        },
+      })
+
+      if (!data.success) return showToast(data.message, "error")
+    } catch (error: any) {
+      showToast(error.message, "error")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const generate = async (ignoreWarning: boolean) => {
+    try {
+      if (!ignoreWarning && results && results.length > 0) {
+        const willRegenerate = await swal.fire({
+          title: "Are you sure?",
+          text: "Your current data will be lost",
+          icon: "warning",
+          confirmButtonText: "Yes, Regenerate",
+          cancelButtonText: "No, Cancel",
+          showCancelButton: true,
+          showCloseButton: true,
+        })
+
+        if (!willRegenerate.isConfirmed) return
+      }
+
+      if (!ignoreWarning) window.scrollTo(0, 0)
+
+      setLoading(true)
+
+      // generating
+      const { data: generatedData } = await callApi({
+        route: "generate",
+        body: {
+          collection,
+        },
+      })
+
+      const { success, data, message } = generatedData
+
+      if (!success) {
+        setLoading(false)
+        showToast(message, "error")
+        return
+      }
+
+      const resultsString = data?.metadata
+        .map((i: any) => {
+          const attrs = i.attributes.map((a: any) => {
+            const layer = collection?.layers?.find(
+              (l: any) => l.name === a.trait_type
+            )
+            const layerIndex = collection?.layers?.findIndex(
+              (l: any) => l.name === a.trait_type
+            )
+
+            const imageIndex = layer?.images?.findIndex(
+              (img: any) => img.name === a.value
+            )
+
+            return `${layerIndex}+${imageIndex}`
+          })
+
+          return attrs.join(",")
+        })
+        .join("|")
+
+      const resultsData = parseResults(collection, resultsString, true)
+
+      if (!ignoreWarning) {
+        router.push(
+          {
+            pathname: `/app/${collection?.id}`,
+            query: { page: "gallery" },
+          },
+          undefined,
+          { scroll: false }
+        )
+        setView("gallery")
+      }
+
+      setLoading(false)
+
+      // generation time
+      setGenerationTime(millisToMinutesAndSeconds(data?.genTime))
+
+      setResults(resultsData)
+
+      // update results
+      await updateResults(resultsString)
+    } catch (error: any) {
+      console.log(error)
+      // if (error.name !== "ValidationError") setError(error)
+
+      showToast(error.message, "error")
+      if (!ignoreWarning) {
+        router.push(
+          {
+            pathname: `/app/${collection?.id}`,
+            query: { page: "gallery" },
+          },
+          undefined,
+          { scroll: false }
+        )
+        setView("gallery")
+      }
+      setLoading(false)
+    }
   }
 
   // Error

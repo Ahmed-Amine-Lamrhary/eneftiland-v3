@@ -1,26 +1,16 @@
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
-import jwt from "jsonwebtoken"
+import { getSession } from "next-auth/react"
 import { parseCollection } from "../../../services/parser"
 
 const ioHandler = async (req: any, res: any) => {
-  // jwt verification
-  const token = req.headers.authorization
-  if (!token)
-    return res.json({
-      success: false,
-      message: "Not authorized",
-    })
+  const session: any = await getSession({ req })
 
-  try {
-    jwt.verify(token, "secret")
-  } catch (err) {
+  if (!session)
     return res.json({
       success: false,
       message: "Not authorized",
     })
-  }
-  // jwt verification
 
   const { id, layers } = req.body
 
@@ -33,9 +23,10 @@ const ioHandler = async (req: any, res: any) => {
       })
     )
 
-    await prisma.collection.update({
+    await prisma.collection.updateMany({
       where: {
         id,
+        userId: session.user.id,
       },
       data: {
         layers: JSON.stringify(layers),

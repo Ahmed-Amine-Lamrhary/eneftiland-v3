@@ -17,6 +17,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "^3.14.0",
     "@stripe/react-stripe-js": "^1.8.0-0",
     "@stripe/stripe-js": "^1.29.0",
@@ -44,6 +45,7 @@
     "minimist": "^1.2.6",
     "moment": "^2.29.3",
     "next": "^12.0.11-canary.4",
+    "next-auth": "^4.10.3",
     "nextjs-cors": "^2.1.1",
     "nft.storage": "^6.4.1",
     "nodemailer": "^6.6.3",

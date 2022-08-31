@@ -1,4 +1,4 @@
-import { useWeb3React } from "@web3-react/core"
+import { useSession } from "next-auth/react"
 import React, { useContext } from "react"
 import PageContext from "../context/PageContext"
 import Button from "./Button"
@@ -15,9 +15,9 @@ const GetStartedButton = ({
   theme,
 }: GetStartedButtonProps) => {
   const { setShowAuthModal } = useContext(PageContext)
-  const { account } = useWeb3React()
+  const { status } = useSession()
 
-  if (account)
+  if (status === "authenticated")
     return (
       <Button to="/app" className={className} theme={theme}>
         {children}

@@ -322,23 +322,6 @@ export const getMetadataPreview = (collection: any) => {
   return metadata
 }
 
-// connected user
-export const saveConnectedUser = ({ user, token }: any) => {
-  if (user) {
-    localStorage.setItem("eneftiland-connected-user", JSON.stringify(user))
-    localStorage.setItem("eneftiland-token", token)
-  }
-}
-export const removeConnectedUser = () => {
-  localStorage.removeItem("eneftiland-connected-user")
-  localStorage.removeItem("eneftiland-token")
-}
-export const getConnectedUser = () => {
-  const connectedUser = localStorage.getItem("eneftiland-connected-user")
-  return connectedUser ? JSON.parse(connectedUser) : null
-}
-export const getToken = () => localStorage.getItem("eneftiland-token")
-
 // call api
 interface CallApiI {
   route: string
@@ -347,13 +330,7 @@ interface CallApiI {
 
 export const callApi = async ({ route, body }: CallApiI) => {
   try {
-    const headers: any = {
-      Authorization: getToken(),
-    }
-
-    const response = await axios.post(`/api/${route}`, body, {
-      headers,
-    })
+    const response = await axios.post(`/api/${route}`, body)
 
     return response
   } catch (error) {

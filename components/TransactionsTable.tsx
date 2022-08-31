@@ -66,7 +66,7 @@ const TransactionsTable = ({ getTransactions }: TransactionsTableProps) => {
                 <td>{transaction.id}</td>
                 <td>{transaction.label}</td>
                 <td>
-                  {transaction.amount} {transaction.currency}
+                  {transaction.amount.toFixed(4)} {transaction.currency}
                 </td>
                 <td>{transaction.method}</td>
                 <td>{formatDate(transaction.dateCreated)}</td>

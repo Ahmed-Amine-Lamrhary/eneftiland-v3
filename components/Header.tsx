@@ -1,34 +1,22 @@
 import NavLink from "./NavLink"
 import { AiOutlineUser } from "react-icons/ai"
 import { FiLogOut } from "react-icons/fi"
-import { removeConnectedUser } from "../helpers/utils"
 import { FaRegUserCircle } from "react-icons/fa"
-import { useWeb3React } from "@web3-react/core"
 import { useContext } from "react"
 import PageContext from "../context/PageContext"
 import GetStartedButton from "./GetStartedButton"
-import NetworkSwitcher from "./NetworkSwitcher"
+import { signOut, useSession } from "next-auth/react"
 
 export default function Header({ children }: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
-  const { active, account, deactivate } = useWeb3React()
+  const { data: session } = useSession()
 
   const businessName = settings?.businessName ? settings?.businessName : ""
 
-  const handleSignout = async (e: any) => {
-    e.preventDefault()
-    removeConnectedUser()
-    deactivate()
-  }
-
   const myAccountBtn = () => (
     <ul className="navbar-nav myAccountBtn">
-      {active && (
+      {session && (
         <>
-          <li className="nav-item me-2 ms-2">
-            <NetworkSwitcher />
-          </li>
-
           <li className="nav-item dropdown">
             <a
               className="nav-link dropdown-toggle"
@@ -39,12 +27,7 @@ export default function Header({ children }: any) {
               aria-expanded="false"
             >
               <span>
-                <span className="user-avatar-name">
-                  {`${account?.substring(0, 6)}...${account?.substring(
-                    account?.length - 4,
-                    account?.length
-                  )}`}
-                </span>
+                <span className="user-avatar-name">{session?.user?.name}</span>
               </span>
             </a>
             <ul
@@ -61,9 +44,9 @@ export default function Header({ children }: any) {
                 <NavLink
                   className="dropdown-item logout"
                   to=""
-                  onClick={handleSignout}
+                  onClick={signOut}
                 >
-                  <FiLogOut /> Disconnect wallet
+                  <FiLogOut /> Logout
                 </NavLink>
               </li>
             </ul>
@@ -80,15 +63,14 @@ export default function Header({ children }: any) {
           className="container-fluid"
           style={children ? { flexWrap: "nowrap" } : {}}
         >
-          {!children && (
-            <NavLink className="navbar-brand" to="/">
-              {settings?.logoUrl ? (
-                <img src={settings?.logoUrl} className="navbar-brand-logo" />
-              ) : (
-                businessName
-              )}
-            </NavLink>
-          )}
+          <NavLink className="navbar-brand" to="/">
+            {settings?.logoUrl ? (
+              <img src={settings?.logoUrl} className="navbar-brand-logo" />
+            ) : (
+              businessName
+            )}
+            {settings?.isBeta && <span className="beta">Beta</span>}
+          </NavLink>
 
           {children}
 
@@ -138,7 +120,7 @@ export default function Header({ children }: any) {
                 </>
               )}
 
-              {!active && (
+              {!session && (
                 <>
                   <li className="nav-item">
                     <button
@@ -146,7 +128,7 @@ export default function Header({ children }: any) {
                       className="nav-link btn"
                     >
                       <FaRegUserCircle size={20} className="me-2" />
-                      Connect wallet
+                      Login to start
                     </button>
                   </li>
                 </>

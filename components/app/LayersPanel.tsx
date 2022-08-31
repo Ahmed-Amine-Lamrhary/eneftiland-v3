@@ -196,6 +196,10 @@ function LayersPanel() {
               <AiOutlineCloudUpload size={20} /> Upload folder
             </Button>
 
+            <p className="paragraph" style={{ fontSize: "13px" }}>
+              You can arrange the layers by shuffling them up or down
+            </p>
+
             <input
               type="file"
               ref={ref}

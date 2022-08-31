@@ -1,74 +1,27 @@
 import { PrismaClient } from "@prisma/client"
 import { startCreating } from "../../helpers/generator"
 const prisma = new PrismaClient()
-import jwt from "jsonwebtoken"
+import { getSession } from "next-auth/react"
 
 const ioHandler = async (req: any, res: any) => {
   try {
-    // jwt verification
-    const token = req.headers.authorization
-    if (!token)
-      return res.json({
-        success: false,
-        message: "Not authorized",
-      })
+    const session: any = await getSession({ req })
 
-    try {
-      jwt.verify(token, "secret")
-    } catch (err) {
+    if (!session)
       return res.json({
         success: false,
         message: "Not authorized",
       })
-    }
-    // jwt verification
 
     const { collection } = req.body
 
-    const {
-      id,
-      layers,
-      collectionDesc,
-      collectionName,
-      collectionSize,
-      creators,
-      externalUrl,
-      network,
-      prefix,
-      royalties,
-      symbol,
-    } = collection
-
-    const metadata = {
-      symbol,
-      seller_fee_basis_points: royalties,
-      external_url: externalUrl,
-      creators,
-    }
-
-    const layerConfigurations = [
-      {
-        growEditionSizeTo: collectionSize,
-        layersOrder: layers
-          .slice()
-          .reverse()
-          .filter((l: any) => l.images.length > 0),
-      },
-    ]
-
     const rules = await prisma.rule.findMany({
       where: {
-        collectionId: id,
+        collectionId: collection.id,
       },
     })
 
-    const { success, data, error } = await startCreating(id, rules, {
-      layerConfigurations,
-      namePrefix: prefix ? prefix : collectionName,
-      description: collectionDesc,
-      network,
-      metadata,
-    })
+    const { success, data, error } = await startCreating(rules, collection)
 
     if (!success) return res.json({ success: false, message: error })
 
@@ -83,8 +36,8 @@ const ioHandler = async (req: any, res: any) => {
 
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: "100mb",
+    api: {
+      responseLimit: "8mb",
     },
   },
 }

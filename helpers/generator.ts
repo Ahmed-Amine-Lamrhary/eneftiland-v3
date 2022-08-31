@@ -11,8 +11,6 @@ var attributesList: any = []
 var dnaList = new Set()
 const DNA_DELIMITER = "-"
 
-let giffer: any = null
-
 const cleanDna = (_str: any) => {
   const withoutOptions = removeQueryStrings(_str)
   var dna = Number(withoutOptions.split(":").shift())
@@ -114,7 +112,9 @@ const addMetadata = (
     }
   }
 
-  metadataList.push({ ...tempMetadata, itemIndex: index })
+  const item = { ...tempMetadata, itemIndex: index }
+  metadataList.push(item)
+
   attributesList = []
 }
 
@@ -266,11 +266,36 @@ function shuffle(array: any) {
   return array
 }
 
-const startCreating = async (
-  collectionId: any,
-  rules: any,
-  { layerConfigurations, namePrefix, description, network, metadata }: any
-) => {
+const startCreating = async (rules: any, collection: any) => {
+  const {
+    collectionDesc,
+    collectionName,
+    collectionSize,
+    creators,
+    externalUrl,
+    network,
+    prefix,
+    royalties,
+    symbol,
+  } = collection
+
+  const metadata = {
+    symbol,
+    seller_fee_basis_points: royalties,
+    external_url: externalUrl,
+    creators,
+  }
+
+  const layerConfigurations = [
+    {
+      growEditionSizeTo: collectionSize,
+      layersOrder: collection.layers
+        .slice()
+        .reverse()
+        .filter((l: any) => l.images.length > 0),
+    },
+  ]
+
   metadataList = []
   var startTime = performance.now()
 
@@ -297,9 +322,8 @@ const startCreating = async (
     const layers = layersSetup(
       layerConfigurations[layerConfigIndex].layersOrder
     )
-    while (
-      editionCount <= layerConfigurations[layerConfigIndex].growEditionSizeTo
-    ) {
+
+    while (editionCount <= collectionSize) {
       let newDna = createDna(layers, rules)
 
       if (newDna && isDnaUnique(dnaList, newDna)) {
@@ -310,25 +334,24 @@ const startCreating = async (
           loadedElements.push(layer)
         })
 
-        await Promise.all(loadedElements).then((renderObjectArray) => {
-          renderObjectArray.forEach((renderObject, index) => {
-            addAttributes(renderObject)
-          })
-
-          addMetadata(
-            editionCount - 1,
-            newDna,
-            abstractedIndexes[0],
-            namePrefix,
-            description,
-            network,
-            metadata
-          )
+        loadedElements.forEach((renderObject: any) => {
+          addAttributes(renderObject)
         })
 
+        addMetadata(
+          editionCount - 1,
+          newDna,
+          abstractedIndexes[0],
+          prefix ? prefix : collectionName,
+          collectionDesc,
+          network,
+          metadata
+        )
+
         dnaList.add(filterDNAOptions(newDna))
-        editionCount++
         abstractedIndexes.shift()
+
+        editionCount++
       } else {
         // DNA exists
         failedCount++

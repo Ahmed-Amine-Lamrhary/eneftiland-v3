@@ -1,32 +1,20 @@
 import { PrismaClient } from "@prisma/client"
+import { getSession } from "next-auth/react"
 const prisma = new PrismaClient()
-import jwt from "jsonwebtoken"
 
 export default async (req: any, res: any) => {
-  // jwt verification
-  const token = req.headers.authorization
-  if (!token)
+  const session: any = await getSession({ req })
+
+  if (!session)
     return res.json({
       success: false,
       message: "Not authorized",
     })
-
-  try {
-    jwt.verify(token, "secret")
-  } catch (err) {
-    return res.json({
-      success: false,
-      message: "Not authorized",
-    })
-  }
-  // jwt verification
-
-  const { address } = req.body
 
   try {
     await prisma.user.deleteMany({
       where: {
-        metamaskAddress: address,
+        id: session.user.id,
       },
     })
 

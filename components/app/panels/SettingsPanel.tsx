@@ -1,6 +1,5 @@
-import { useWeb3React } from "@web3-react/core"
-import axios from "axios"
 import { ErrorMessage, FieldArray, Form, Formik } from "formik"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
 import { OverlayTrigger, Tooltip } from "react-bootstrap"
@@ -18,7 +17,7 @@ const Error: any = ErrorMessage
 const FieldArrayC: any = FieldArray
 
 const SettingsPanel = () => {
-  const { active, account, activate, deactivate } = useWeb3React()
+  const { status } = useSession()
 
   const [loading, setLoading] = useState(false)
 
@@ -27,8 +26,8 @@ const SettingsPanel = () => {
   const { id }: any = router.query
 
   useEffect(() => {
-    if (collection) setLayers(collection.layers)
-  }, [account])
+    if (status === "authenticated") setLayers(collection?.layers)
+  }, [status])
 
   const updateSettings = async (values: any, submitProps: any) => {
     try {

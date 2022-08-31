@@ -3,13 +3,7 @@ import * as Yup from "yup"
 import { Form, Formik } from "formik"
 import FormControl from "../../components/FormControl"
 import Button from "../../components/Button"
-import axios from "axios"
-import {
-  callApi,
-  getConnectedUser,
-  saveConnectedUser,
-  showToast,
-} from "../../helpers/utils"
+import { callApi, showToast } from "../../helpers/utils"
 import TransactionsTable from "../../components/TransactionsTable"
 import { PrismaClient } from "@prisma/client"
 import { Tab, Tabs } from "react-bootstrap"
@@ -18,7 +12,7 @@ import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import CollectionBlock from "../../components/CollectionBlock"
 import debounce from "lodash.debounce"
-import { useWeb3React } from "@web3-react/core"
+import { getSession, useSession } from "next-auth/react"
 
 const UserSchema = Yup.object().shape({
   name: Yup.string(),
@@ -26,6 +20,14 @@ const UserSchema = Yup.object().shape({
 })
 
 export async function getServerSideProps(context: any) {
+  const { req } = context
+  const session = await getSession({ req })
+
+  if (!session)
+    return {
+      redirect: { destination: "/" },
+    }
+
   const prisma = new PrismaClient()
 
   const settings = await prisma.settings.findFirst()
@@ -38,7 +40,7 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function MePage({ settings }: any) {
-  const { active, account, activate, deactivate, error } = useWeb3React()
+  const { data: session, status } = useSession()
 
   const [myCollections, setMyCollections] = useState<any>([])
   const [myCollectionsCount, setMyCollectionsCount] = useState(0)
@@ -49,7 +51,7 @@ export default function MePage({ settings }: any) {
   const [query, setQuery] = useState("")
 
   useEffect(() => {
-    if (account) verify(query)
+    if (status === "authenticated") verify(query)
   }, [query])
 
   const verify = useCallback(
@@ -66,7 +68,6 @@ export default function MePage({ settings }: any) {
       const { data } = await callApi({
         route: "me/mycollections",
         body: {
-          address: account,
           query,
         },
       })
@@ -83,15 +84,14 @@ export default function MePage({ settings }: any) {
   }
 
   useEffect(() => {
-    if (account) getMyCollections()
-  }, [account])
+    if (status === "authenticated") getMyCollections()
+  }, [status])
 
   const getTransactions = async (page?: any) => {
     try {
       const { data } = await callApi({
         route: "me/transactions",
         body: {
-          address: account,
           page,
         },
       })
@@ -107,15 +107,12 @@ export default function MePage({ settings }: any) {
       const { data } = await callApi({
         route: "me/update",
         body: {
-          address: account,
           ...values,
         },
       })
 
       if (!data.success) return showToast(data.message, "error")
       showToast(data.message, "success")
-
-      saveConnectedUser(data.data)
     } catch (error: any) {
       showToast(error.message, "error")
     }
@@ -128,7 +125,6 @@ export default function MePage({ settings }: any) {
       const { data } = await callApi({
         route: "me/duplicatecollection",
         body: {
-          address: account,
           id: collectionId,
         },
       })
@@ -161,7 +157,6 @@ export default function MePage({ settings }: any) {
       const { data } = await callApi({
         route: "me/deletecollection",
         body: {
-          address: account,
           id: collectionId,
         },
       })
@@ -199,7 +194,7 @@ export default function MePage({ settings }: any) {
   }
 
   return (
-    <Page title="My account" settings={settings} isProtected>
+    <Page title="My account" settings={settings}>
       <div className="my-account">
         <div className="container" style={{ position: "relative" }}>
           {updateLoading && <div className="overlay" />}
@@ -265,40 +260,43 @@ export default function MePage({ settings }: any) {
             </Tab>
 
             <Tab eventKey="update-profile" title="Update profile">
-              <Formik
-                initialValues={{
-                  name: getConnectedUser()?.name,
-                  email: getConnectedUser()?.email,
-                }}
-                validationSchema={UserSchema}
-                onSubmit={updateMe}
-              >
-                {(form) => (
-                  <Form>
-                    <div className="row">
-                      <div>
-                        <FormControl
-                          type="text"
-                          name="name"
-                          placeholder="Name (Optional)"
-                        />
+              {session?.user && (
+                <Formik
+                  initialValues={{
+                    name: session?.user?.name,
+                    email: session?.user?.email,
+                  }}
+                  validationSchema={UserSchema}
+                  onSubmit={updateMe}
+                >
+                  {(form) => (
+                    <Form>
+                      <div className="row">
+                        <div>
+                          <FormControl
+                            type="text"
+                            name="name"
+                            placeholder="Name (Optional)"
+                          />
+                        </div>
+
+                        <div>
+                          <FormControl
+                            type="email"
+                            name="email"
+                            placeholder="Email (Optional)"
+                            disabled
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <FormControl
-                          type="email"
-                          name="email"
-                          placeholder="Email (Optional)"
-                        />
-                      </div>
-                    </div>
-
-                    <Button className="btn-sm me-2" type="submit">
-                      Update
-                    </Button>
-                  </Form>
-                )}
-              </Formik>
+                      <Button className="btn-sm me-2" type="submit">
+                        Update
+                      </Button>
+                    </Form>
+                  )}
+                </Formik>
+              )}
             </Tab>
 
             <Tab eventKey="trans" title="My transactions">

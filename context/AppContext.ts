@@ -21,8 +21,6 @@ interface AppContextInterface {
   setIsSaving: any
   uploadingImages: boolean
   setUploadingImages: any
-  generate: any
-  generationTime: string
   view: "layers" | "settings" | "rules" | "gallery" | "generate"
   setView: any
 }
@@ -47,8 +45,6 @@ const AppContext = React.createContext<AppContextInterface>({
   setIsSaving: null,
   uploadingImages: false,
   setUploadingImages: null,
-  generate: null,
-  generationTime: "",
   view: "layers",
   setView: null,
 })

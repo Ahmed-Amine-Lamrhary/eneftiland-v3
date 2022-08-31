@@ -3,7 +3,6 @@ import { callApi, convertToEth } from "../../helpers/utils"
 import Wallet from "./Wallet"
 import AppContext from "../../context/AppContext"
 import payMethodsType from "../../types/payMethods"
-import { useWeb3React } from "@web3-react/core"
 
 import Razorpay from "./Razorpay"
 import Paypal from "./Paypal"
@@ -32,8 +31,6 @@ const Pay = ({
   paymentMethod,
   setPaymentMethod,
 }: PayProps) => {
-  const { active, account, activate, deactivate } = useWeb3React()
-
   const [amount, setAmount] = useState(currentPlan.price)
   const [payText, setPayText] = useState("")
   const { settings, collection } = useContext(AppContext)
@@ -79,7 +76,6 @@ const Pay = ({
       await callApi({
         route: "transactions/add",
         body: {
-          address: account,
           label: `Generated ${collection?.results?.length} tokens`,
           amount: paymentMethod === "wallet" ? ethAmount : amount,
           method: paymentMethod ? paymentMethod : null,
@@ -87,7 +83,7 @@ const Pay = ({
         },
       })
 
-    await generate({ isWatermark: false })
+    await generate({ skipPayment: true, isWatermark: false })
   }
 
   return (
@@ -128,7 +124,12 @@ const Pay = ({
 
                   {amount === 0 && (
                     <div className="text-center mt-3">
-                      <Button className="btn-sm" onClick={generate}>
+                      <Button
+                        className="btn-sm"
+                        onClick={() =>
+                          generate({ skipPayment: true, isWatermark: true })
+                        }
+                      >
                         Generate with watermark
                       </Button>
                     </div>

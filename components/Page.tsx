@@ -1,102 +1,23 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Head from "next/head"
 import Footer from "./Footer"
 import { ToastContainer, Zoom } from "react-toastify"
 import Header from "./Header"
 import Script from "next/script"
-import { useWeb3React } from "@web3-react/core"
-import { useRouter } from "next/router"
-import { injected, walletlink } from "../helpers/wallet/connectors"
-import {
-  callApi,
-  getConnectedUser,
-  saveConnectedUser,
-  showToast,
-} from "../helpers/utils"
 import PageContext from "../context/PageContext"
-import ConnectWallet from "./ConnectWallet"
-import AppLoader from "./AppLoader"
+import LoginModal from "./LoginModal"
 
 interface PageProps {
   title: string
   children?: any
   settings: any
   hideNavbar?: boolean
-  isProtected?: boolean
 }
 
-const Page = ({
-  title,
-  children,
-  settings,
-  hideNavbar,
-  isProtected,
-}: PageProps) => {
+const Page = ({ title, children, settings, hideNavbar }: PageProps) => {
   const businessName = settings?.businessName ? settings?.businessName : ""
 
-  const { active, account, activate, error } = useWeb3React()
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
-  const [loaded, setLoaded] = useState(false)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (isProtected) {
-      injected.isAuthorized().then((isAuthorized) => {
-        const connectedUser = getConnectedUser()
-
-        if (connectedUser && isAuthorized && !error) {
-          setLoaded(true)
-        } else {
-          router.push("/")
-        }
-      })
-    }
-  }, [activate, active, error])
-
-  useEffect(() => {
-    if (account) connectServer()
-  }, [account])
-
-  const connectServer = async () => {
-    try {
-      const { data } = await callApi({
-        route: "auth",
-        body: {
-          address: account,
-        },
-      })
-
-      if (!data.success) return showToast(data.message, "error")
-
-      saveConnectedUser(data.data)
-    } catch (error: any) {
-      console.log(error)
-      // showToast(error.message, "error")
-    }
-  }
-
-  const connectBrowser = async (connectorMethod: "metamask" | "coinbase") => {
-    try {
-      let connector: any
-      if (connectorMethod === "metamask") connector = injected
-      else if (connectorMethod === "coinbase") connector = walletlink
-
-      await activate(connector, (error) => console.log(error), true)
-
-      setShowAuthModal(false)
-      router.push("/account")
-    } catch (error: any) {
-      console.log(error)
-      // showToast(error.message, "error")
-    }
-  }
-
-  if (isProtected && !loaded)
-    return (
-      <div className="loading-panel">
-        <AppLoader />
-      </div>
-    )
 
   return (
     <div>
@@ -147,6 +68,7 @@ const Page = ({
           transition={Zoom}
           icon={false}
           closeButton={false}
+          autoClose={1500}
         />
 
         <PageContext.Provider
@@ -154,13 +76,12 @@ const Page = ({
             showAuthModal,
             setShowAuthModal,
             settings,
-            connectBrowser,
           }}
         >
           <>
-            {/* Connect wallet modal */}
-            <ConnectWallet />
-            {/* Connect wallet modal */}
+            {/* login modal */}
+            <LoginModal />
+            {/* login modal */}
 
             {!hideNavbar && <Header />}
 

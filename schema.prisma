@@ -7,23 +7,45 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 model session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  Admin        admin?   @relation(fields: [adminId], references: [id])
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin        admin?   @relation(fields: [adminId], references: [id])
   adminId      String?
 }
 
 model user {
-  id              String        @id @default(cuid())
-  name            String?
-  email           String?       @unique
-  image           String?
-  metamaskAddress String?
-  Transaction     transaction[]
-  Collection      collection[]
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  Transaction   transaction[]
+  Collection    collection[]
+  accounts      account[]
+  sessions      session[]
 }
 
 model verificationtoken {
@@ -76,6 +98,8 @@ model settings {
   isStripe             Boolean @default(false)
   razorpayPublicKey    String?
   isRazorpay           Boolean @default(false)
+
+  isBeta Boolean?
 }
 
 model privacypage {

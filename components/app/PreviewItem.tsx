@@ -1,10 +1,13 @@
+import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { MdOutlineCollections } from "react-icons/md"
 import AppContext from "../../context/AppContext"
+import Button from "../Button"
 
 const PreviewItem = () => {
-  const { collection }: any = useContext(AppContext)
+  const { collection, setView }: any = useContext(AppContext)
   const layers = collection?.layers ? [...collection?.layers] : []
+  const router = useRouter()
 
   return (
     <div className="sticky-panel">
@@ -31,6 +34,25 @@ const PreviewItem = () => {
                 <MdOutlineCollections size={60} />
               </div>
             ))}
+        </div>
+
+        <div className="text-center mt-3">
+          <Button
+            className="btn-sm btn-outline"
+            onClick={() => {
+              router.push(
+                {
+                  pathname: `/app/${collection?.id}`,
+                  query: { page: "gallery" },
+                },
+                undefined,
+                { scroll: false }
+              )
+              setView("gallery")
+            }}
+          >
+            Preview more
+          </Button>
         </div>
       </div>
     </div>

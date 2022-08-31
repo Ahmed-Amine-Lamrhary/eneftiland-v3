@@ -8,19 +8,32 @@
   position: sticky;
   top: 0;
   z-index: 999;
-  // .user-avatar-name {
-  //   max-width: 120px;
-  //   display: block;
-  //   overflow: hidden;
-  //   text-overflow: ellipsis;
-  //   line-height: 18px;
-  //   margin-top: -8px;
-  // }
+  .user-avatar-name {
+    max-width: 120px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .navbar-brand {
     font-weight: 700;
     text-decoration: none;
+    position: relative;
+    .beta {
+      position: absolute;
+      top: 0;
+      right: -36px;
+      font-size: 11px;
+      font-weight: 400;
+      border: 1px solid;
+      line-height: 12px;
+      padding: 2px 2px;
+      border-radius: 3px;
+    }
     .navbar-brand-logo {
       height: 30px;
+    }
+    @media (max-width: 767px) {
+      font-size: 15px;
     }
   }
   .navbar-nav .nav-item {
@@ -126,9 +139,12 @@
   .app-navbar-nav {
     flex-direction: row;
     align-items: center;
+    .react-select-box {
+      display: none;
+    }
     @media (max-width: 767px) {
-      .other-collections-dropdown {
-        display: none;
+      .react-select-box {
+        display: block;
       }
     }
     & > ul {
@@ -138,8 +154,7 @@
       list-style-type: none;
       padding: 0;
       @media (max-width: 767px) {
-        max-width: 150px;
-        overflow: auto;
+        display: none;
       }
     }
     a,
@@ -183,6 +198,9 @@
       .dropdown-menu {
         right: auto;
         left: 0;
+      }
+      @media (max-width: 767px) {
+        display: none;
       }
     }
   }
@@ -612,15 +630,13 @@ label {
     margin-right: 8px;
     width: 20px;
   }
+  button {
+    padding: 6px 4px !important;
+  }
 }
 .navbar .react-select-box {
   max-width: 165px;
   margin: auto;
-}
-@media (max-width: 500px) {
-  .navbar .react-select-box {
-    max-width: 82px;
-  }
 }
 
 // modal-sm

@@ -5,8 +5,17 @@ import Page from "../../components/Page"
 import { PrismaClient } from "@prisma/client"
 import { useRouter } from "next/router"
 import AppLoader from "../../components/AppLoader"
+import { getSession, useSession } from "next-auth/react"
 
 export async function getServerSideProps(context: any) {
+  const { req } = context
+  const session = await getSession({ req })
+
+  if (!session)
+    return {
+      redirect: { destination: "/" },
+    }
+
   const prisma = new PrismaClient()
 
   const settings = await prisma.settings.findFirst()
@@ -19,16 +28,13 @@ export async function getServerSideProps(context: any) {
 }
 
 const index = ({ settings }: any) => {
-  const { active, account, activate, deactivate } = useWeb3React()
   const router = useRouter()
+  const { data: session } = useSession()
 
   const createNewCollection = async () => {
     try {
       const { data } = await callApi({
         route: "me/newcollection",
-        body: {
-          address: account,
-        },
       })
 
       if (!data.success) return showToast(data.message, "error")
@@ -41,11 +47,11 @@ const index = ({ settings }: any) => {
   }
 
   useEffect(() => {
-    if (account) createNewCollection()
-  }, [account])
+    if (session) createNewCollection()
+  }, [session])
 
   return (
-    <Page title="Creating new collection" settings={settings} isProtected>
+    <Page title="Creating new collection" settings={settings}>
       <div className="container">
         <div className="creating-collection-page">
           <AppLoader />

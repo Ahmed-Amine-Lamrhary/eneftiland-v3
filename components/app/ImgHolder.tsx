@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useContext } from "react"
+import AppContext from "../../context/AppContext"
 
 interface ImgHolderProps {
   attributes: any[]
@@ -6,6 +7,8 @@ interface ImgHolderProps {
 }
 
 const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
+  const { settings } = useContext(AppContext)
+
   return (
     <div className="img-holder">
       {attributes?.map((attr: any) => (
@@ -17,6 +20,12 @@ const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
           }
         />
       ))}
+      {settings && settings.watermarkUrl && (
+        <img
+          src={settings.watermarkUrl}
+          className={`watermark ${settings.watermarkPos}`}
+        />
+      )}
     </div>
   )
 }

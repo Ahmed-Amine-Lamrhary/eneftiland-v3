@@ -252,12 +252,47 @@ section {
   }
   img {
     position: absolute;
-    width: 100%;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    object-fit: contain;
+    &:not(.watermark) {
+      width: 100%;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      left: 0;
+      object-fit: contain;
+    }
+    &.watermark {
+      $watermark-space: 5px;
+      width: 25%;
+      &.top-left {
+        top: $watermark-space;
+        left: $watermark-space;
+      }
+      &.top-right {
+        top: $watermark-space;
+        right: $watermark-space;
+      }
+      &.bottom-left {
+        bottom: $watermark-space;
+        left: $watermark-space;
+      }
+      &.bottom-right {
+        bottom: $watermark-space;
+        right: $watermark-space;
+      }
+      &.center {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      &.full {
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+      }
+    }
   }
 }
 

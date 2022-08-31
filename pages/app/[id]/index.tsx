@@ -1,28 +1,30 @@
 import React, { useCallback, useEffect, useState } from "react"
 import Page from "../../../components/Page"
 import AppContext from "../../../context/AppContext"
-import { parseResults } from "../../../services/parser"
 import { PrismaClient } from "@prisma/client"
-import { useWeb3React } from "@web3-react/core"
 import { useRouter } from "next/router"
-import {
-  callApi,
-  millisToMinutesAndSeconds,
-  showToast,
-} from "../../../helpers/utils"
+import { callApi, showToast } from "../../../helpers/utils"
 import Header from "../../../components/Header"
 import AppNavbar from "../../../components/app/panels/AppNavbar"
 import debounce from "lodash.debounce"
-import swal from "sweetalert2"
 import SettingsPanel from "../../../components/app/panels/SettingsPanel"
 import RulesPanel from "../../../components/app/panels/RulesPanel"
 import GalleryPanel from "../../../components/app/panels/GalleryPanel"
 import GeneratePanel from "../../../components/app/panels/GeneratePanel"
 import DesignerPanel from "../../../components/app/panels/DesignerPanel"
 import AppLoader from "../../../components/AppLoader"
+import { getSession, useSession } from "next-auth/react"
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query
+
+  const { req } = context
+  const session = await getSession({ req })
+
+  if (!session)
+    return {
+      redirect: { destination: "/" },
+    }
 
   const prisma = new PrismaClient()
 
@@ -56,7 +58,7 @@ export async function getServerSideProps(context: any) {
 }
 
 const AppWrapper = ({ settings, plans }: any) => {
-  const { account } = useWeb3React()
+  const { data: session, status } = useSession()
 
   const router = useRouter()
   const { id: collectionId, page }: any = router.query
@@ -86,8 +88,6 @@ const AppWrapper = ({ settings, plans }: any) => {
   // loadings
 
   const [count, setCount] = useState<number>(0)
-  const [error, setError] = useState<any>(null)
-  const [generationTime, setGenerationTime] = useState<string>("")
 
   const verify = useCallback(
     debounce((layers) => {
@@ -142,131 +142,9 @@ const AppWrapper = ({ settings, plans }: any) => {
     }
   }
 
-  const updateResults = async (resultsString: string) => {
-    try {
-      setIsSaving(true)
-
-      const currentCollection: any = {
-        results: resultsString,
-        galleryLayers: JSON.stringify(collection?.layers),
-      }
-
-      const { data } = await callApi({
-        route: "me/updatecollection",
-        body: {
-          id: collectionId,
-          currentCollection,
-        },
-      })
-
-      if (!data.success) return showToast(data.message, "error")
-    } catch (error: any) {
-      showToast(error.message, "error")
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const generate = async (ignoreWarning: boolean) => {
-    try {
-      if (!ignoreWarning && results && results.length > 0) {
-        const willRegenerate = await swal.fire({
-          title: "Are you sure?",
-          text: "Your current data will be lost",
-          icon: "warning",
-          confirmButtonText: "Yes, Regenerate",
-          cancelButtonText: "No, Cancel",
-          showCancelButton: true,
-          showCloseButton: true,
-        })
-
-        if (!willRegenerate.isConfirmed) return
-      }
-
-      if (!ignoreWarning) window.scrollTo(0, 0)
-
-      setLoading(true)
-
-      const { data: generatedData } = await callApi({
-        route: "generate",
-        body: {
-          collection,
-        },
-      })
-
-      const { success, data, message } = generatedData
-
-      if (!success) {
-        setLoading(false)
-        return showToast(message, "error")
-      }
-
-      const resultsString = data.metadata
-        .map((i: any) => {
-          const attrs = i.attributes.map((a: any) => {
-            const layer = collection?.layers?.find(
-              (l: any) => l.name === a.trait_type
-            )
-            const layerIndex = collection?.layers?.findIndex(
-              (l: any) => l.name === a.trait_type
-            )
-
-            const imageIndex = layer?.images?.findIndex(
-              (img: any) => img.name === a.value
-            )
-
-            return `${layerIndex}+${imageIndex}`
-          })
-
-          return attrs.join(",")
-        })
-        .join("|")
-
-      const resultsData = parseResults(collection, resultsString, true)
-
-      setCollection({ ...collection, galleryLayers: collection?.layers })
-      setResults(resultsData)
-      if (!ignoreWarning) {
-        router.push(
-          {
-            pathname: `/app/${collection?.id}`,
-            query: { page: "gallery" },
-          },
-          undefined,
-          { scroll: false }
-        )
-        setView("gallery")
-      }
-      setLoading(false)
-
-      // generation time
-      setGenerationTime(millisToMinutesAndSeconds(data.genTime))
-
-      // update results
-      await updateResults(resultsString)
-    } catch (error: any) {
-      console.log(error)
-      if (error.name !== "ValidationError") setError(error)
-
-      showToast(error.message, "error")
-      if (!ignoreWarning) {
-        router.push(
-          {
-            pathname: `/app/${collection?.id}`,
-            query: { page: "gallery" },
-          },
-          undefined,
-          { scroll: false }
-        )
-        setView("gallery")
-      }
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    if (account) getData()
-  }, [account])
+    if (status === "authenticated") getData()
+  }, [status])
 
   const getData = async () => {
     try {
@@ -274,7 +152,6 @@ const AppWrapper = ({ settings, plans }: any) => {
         route: "me/mycollection",
         body: {
           id: collectionId,
-          address: account,
         },
       })
 
@@ -322,7 +199,7 @@ const AppWrapper = ({ settings, plans }: any) => {
     )
 
   return (
-    <Page title="NFT Generator" settings={settings} hideNavbar isProtected>
+    <Page title="NFT Generator" settings={settings} hideNavbar>
       <AppContext.Provider
         value={{
           collection,
@@ -344,8 +221,6 @@ const AppWrapper = ({ settings, plans }: any) => {
           setIsSaving,
           uploadingImages,
           setUploadingImages,
-          generate,
-          generationTime,
           view,
           setView,
         }}
