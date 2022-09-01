@@ -64,7 +64,7 @@
 .app-panel {
   position: relative;
   .app-container {
-    padding: 15px 0;
+    padding: 30px 0;
     position: relative;
   }
 
@@ -153,7 +153,7 @@
 .layers-panel {
   position: sticky;
   top: calc($navbar-height + 11px);
-  max-height: calc(100vh - 90px);
+  max-height: calc(100vh - 105px);
   overflow: auto;
   padding-right: 15px;
 
@@ -222,7 +222,7 @@
   .filter-panel {
     position: sticky;
     top: calc($navbar-height + 11px);
-    max-height: calc(100vh - 90px);
+    max-height: calc(100vh - 105px);
     overflow: auto;
     padding-right: 15px;
     @media (max-width: 767px) {
@@ -311,7 +311,7 @@
 
 .sticky-panel {
   position: sticky;
-  top: 80px;
+  top: calc($navbar-height + 11px);
 }
 
 .no-data-found {
@@ -621,7 +621,7 @@
 
 // my-account
 .my-account {
-  padding: 30px 0;
+  padding: 45px 0;
 }
 
 // swal2-container

@@ -1,14 +1,7 @@
 import Heading from "../components/Heading"
-import Section from "../components/Section"
 import FeatureBlock from "../components/FeatureBlock"
 import { BsCodeSlash } from "react-icons/bs"
-import { AiOutlineEye } from "react-icons/ai"
-import {
-  HiOutlineDatabase,
-  HiOutlineDocumentText,
-  HiOutlineUpload,
-} from "react-icons/hi"
-import { BiImages } from "react-icons/bi"
+import { HiOutlineDocumentText } from "react-icons/hi"
 import { GoSettings } from "react-icons/go"
 
 import Page from "../components/Page"
@@ -19,6 +12,14 @@ import GetStartedButton from "../components/GetStartedButton"
 import NavLink from "../components/NavLink"
 import Image from "next/image"
 import { FaRegSave } from "react-icons/fa"
+import { Accordion } from "react-bootstrap"
+import { FiArrowRight } from "react-icons/fi"
+import Devider from "../components/Devider"
+import { AnimationOnScroll } from "react-animation-on-scroll"
+
+import ethImg from "../assets/home/compatible/eth.png"
+import solImg from "../assets/home/compatible/sol.png"
+import polImg from "../assets/home/compatible/pol.png"
 
 declare var $crisp: any
 
@@ -42,220 +43,467 @@ export async function getServerSideProps(context: any) {
 
 export default function IndexPage({ settings, plans }: any) {
   return (
-    <Page title="Home" settings={settings}>
+    <Page title="No code NFT generator" settings={settings} isHeaderFixed>
       {/* Header */}
       <header className="header-section d-flex align-items-center">
         <div className="container">
           <div className="row">
-            <div className="col-lg-7">
-              <h1>
-                Create NFT Collections <br /> Easily With No Code
-              </h1>
-              <div className="mb-4">
-                <p>
-                  Turn image layers into thousands of uniquely <br /> code
-                  generated atworks.
-                </p>
-              </div>
+            <div className="col-lg-6">
+              <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+                <h1>
+                  Create NFT Collections <br /> Easily With No Code
+                </h1>
+                <div className="mb-4">
+                  <p>
+                    Turn image layers into thousands of uniquely <br /> code
+                    generated atworks.
+                  </p>
+                </div>
 
-              <GetStartedButton theme="white">Get Started</GetStartedButton>
+                <GetStartedButton theme="white">
+                  Get Started <FiArrowRight />
+                </GetStartedButton>
+              </AnimationOnScroll>
             </div>
 
             <div className="col-lg-5 d-none d-lg-block">
-              <Image
-                className=""
-                src={require("../assets/home/header-home.png")}
-              />
+              <AnimationOnScroll
+                animateIn="animate__bounceInUp"
+                delay={100}
+                animateOnce
+              >
+                <Image src={require("../assets/home/home.png")} />
+              </AnimationOnScroll>
             </div>
           </div>
         </div>
       </header>
 
-      {/* How it works */}
-      <Section className="bg-grey">
-        <Heading title="How it works" className="mb-5" />
-        <div className="row">
-          {/* Upload your art */}
-          <div className="col-lg-3 col-md-6 mt-4">
-            <HiOutlineUpload size={40} />
-            <h5 className="mt-3">1. Upload your art</h5>
-            <p className="paragraph">Upload your layers to get started.</p>
-          </div>
-          {/* Set rules and rarity */}
-          <div className="col-lg-3 col-md-6 mt-4">
-            <GoSettings size={40} />
-            <h5 className="mt-3">2. Set rules and rarity</h5>
-            <p className="paragraph">
-              Play around with trait rules and rarity until you like what you
-              see.
-            </p>
-          </div>
-          {/* Preview */}
-          <div className="col-lg-3 col-md-6 mt-4">
-            <AiOutlineEye size={40} />
-            <h5 className="mt-3">3. Preview</h5>
-            <p className="paragraph">
-              Check the art and metadata with as many previews as you like.
-            </p>
-          </div>
-          {/* Export */}
-          <div className="col-lg-3 col-md-6 mt-4">
-            <BiImages size={40} />
-            <h5 className="mt-3">4. Export</h5>
-            <p className="paragraph">
-              When you’re ready, generate and upload your collection to IPFS.
-            </p>
+      {/* Compatible with */}
+      <div className="compatible-with-section">
+        <div className="container small-container">
+          <p>Compatible with</p>
+
+          <div className="images">
+            <div className="row">
+              <div className="col">
+                <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+                  <div
+                    className="item"
+                    style={{ backgroundImage: `url(${ethImg.src})` }}
+                  />
+                </AnimationOnScroll>
+              </div>
+              <div className="col">
+                <AnimationOnScroll
+                  animateIn="animate__bounceInUp"
+                  delay={50}
+                  animateOnce
+                >
+                  <div
+                    className="item"
+                    style={{ backgroundImage: `url(${solImg.src})` }}
+                  />
+                </AnimationOnScroll>
+              </div>
+              <div className="col">
+                <AnimationOnScroll
+                  animateIn="animate__bounceInUp"
+                  delay={100}
+                  animateOnce
+                >
+                  <div
+                    className="item"
+                    style={{ backgroundImage: `url(${polImg.src})` }}
+                  />
+                </AnimationOnScroll>
+              </div>
+            </div>
           </div>
         </div>
-      </Section>
+      </div>
+
+      {/* How it works */}
+      <div id="how-it-works" className="how-it-works">
+        <div className="container small-container">
+          <Devider />
+
+          <Heading title="How it works" className="text-center mb-5" />
+
+          <div className="row">
+            {/* Upload your art */}
+            <div className="col-md-6 mt-4">
+              <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+                <div className="item">
+                  <div className="img">
+                    <Image
+                      src={require("../assets/home/how-it-works/icon-01.png")}
+                    />
+                  </div>
+
+                  <div>
+                    <h5>Upload your art</h5>
+                    <p className="paragraph">
+                      Upload your layers to get started.
+                    </p>
+                  </div>
+                </div>
+              </AnimationOnScroll>
+            </div>
+
+            {/* Set rules and rarity */}
+            <div className="col-md-6 mt-4">
+              <AnimationOnScroll
+                animateIn="animate__bounceInUp"
+                delay={100}
+                animateOnce
+              >
+                <div className="item">
+                  <div className="img">
+                    <Image
+                      src={require("../assets/home/how-it-works/icon-01.png")}
+                    />
+                  </div>
+
+                  <div>
+                    <h5>Set rules and rarity</h5>
+                    <p className="paragraph">
+                      Play around with trait rules and rarity until you like
+                      what you see.
+                    </p>
+                  </div>
+                </div>
+              </AnimationOnScroll>
+            </div>
+
+            {/* Preview */}
+            <div className="col-md-6 mt-4">
+              <AnimationOnScroll
+                animateIn="animate__bounceInUp"
+                delay={200}
+                animateOnce
+              >
+                <div className="item">
+                  <div className="img">
+                    <Image
+                      src={require("../assets/home/how-it-works/icon-01.png")}
+                    />
+                  </div>
+
+                  <div>
+                    <h5>Preview</h5>
+                    <p className="paragraph">
+                      Check the art and metadata with as many previews as you
+                      like.
+                    </p>
+                  </div>
+                </div>
+              </AnimationOnScroll>
+            </div>
+
+            {/* Export */}
+            <div className="col-md-6 mt-4">
+              <AnimationOnScroll
+                animateIn="animate__bounceInUp"
+                delay={300}
+                animateOnce
+              >
+                <div className="item">
+                  <div className="img">
+                    <Image
+                      src={require("../assets/home/how-it-works/icon-01.png")}
+                    />
+                  </div>
+
+                  <div>
+                    <h5>Export</h5>
+                    <p className="paragraph">
+                      When you’re ready, generate and download your collection.
+                    </p>
+                  </div>
+                </div>
+              </AnimationOnScroll>
+            </div>
+          </div>
+
+          <Devider />
+        </div>
+      </div>
+
+      {/* stats */}
+      {/* <div className="stats-section">
+        <div className="container">
+          <div className="row">
+            <div className="col">
+              <AnimationOnScroll animateIn="animate__bounceIn" animateOnce>
+                <h2>4,000+</h2>
+                <p>Wallets Connected</p>
+              </AnimationOnScroll>
+            </div>
+            <div className="col">
+              <AnimationOnScroll
+                animateIn="animate__bounceIn"
+                delay={100}
+                animateOnce
+              >
+                <h2>4,000+</h2>
+                <p>Wallets Connected</p>
+              </AnimationOnScroll>
+            </div>
+            <div className="col">
+              <AnimationOnScroll
+                animateIn="animate__bounceIn"
+                delay={200}
+                animateOnce
+              >
+                <h2>4,000+</h2>
+                <p>Wallets Connected</p>
+              </AnimationOnScroll>
+            </div>
+          </div>
+        </div>
+
+        <Devider />
+      </div> */}
+
+      {/* About */}
+      <div className="about-section">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <AnimationOnScroll
+                animateIn="animate__bounceInLeft"
+                delay={100}
+                animateOnce
+              >
+                <Heading
+                  title="The easiest way to create NFT collectibles on the blockchain"
+                  subTitle="Simple"
+                  paragraph="Create up to 20,000 NFT collections, by uploading the layers. Without requiring code"
+                />
+              </AnimationOnScroll>
+            </div>
+
+            <div className="col-md-6">
+              <AnimationOnScroll
+                animateIn="animate__bounceInRight"
+                delay={200}
+                animateOnce
+              >
+                <Image src={require("../assets/home/about/about.png")} />
+              </AnimationOnScroll>
+            </div>
+          </div>
+
+          <Devider />
+        </div>
+      </div>
 
       {/* Features */}
-      <Section id="features" className="features-section">
-        <Heading
-          subTitle="Fully Featured"
-          title="Everything you need"
-          paragraph="Built for artists and NFT creators"
-        />
+      <div id="features" className="features-section">
+        <div className="container">
+          <Heading
+            subTitle="Fully Featured"
+            title="Everything you need"
+            paragraph="Built for artists and NFT creators"
+          />
 
-        <div className="row justify-content-center">
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={BsCodeSlash}
-              title="Super Simple (no code)"
-              content="Create NFT collectibles with ease, using the all-in-one generator."
-            />
+          <div className="row justify-content-center">
+            <div className="col-md-4">
+              <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
+                <FeatureBlock
+                  Icon={BsCodeSlash}
+                  title="Super Simple (no code)"
+                  content="Create NFT collectibles with ease, using the all-in-one generator."
+                />
+              </AnimationOnScroll>
+            </div>
+
+            <div className="col-md-4">
+              <AnimationOnScroll
+                animateIn="animate__fadeIn"
+                delay={100}
+                animateOnce
+              >
+                <FeatureBlock
+                  Icon={FaRegSave}
+                  title="Save your collections"
+                  content="Your collections will be saved in your account, so you can always come back and edit them."
+                />
+              </AnimationOnScroll>
+            </div>
+
+            <div className="col-md-4">
+              <AnimationOnScroll
+                animateIn="animate__fadeIn"
+                delay={200}
+                animateOnce
+              >
+                <FeatureBlock
+                  Icon={GoSettings}
+                  title="Attribute Rarity"
+                  content="You can configure certain attributes to be more rare than others."
+                />
+              </AnimationOnScroll>
+            </div>
+
+            <div className="col-md-4">
+              <AnimationOnScroll
+                animateIn="animate__fadeIn"
+                delay={300}
+                animateOnce
+              >
+                <FeatureBlock
+                  Icon={HiOutlineDocumentText}
+                  title="Metadata"
+                  content="We generate metadata compatible with Ethereum, Solana &amp; Polygon Blockchain."
+                />
+              </AnimationOnScroll>
+            </div>
+
+            <div className="col-md-4">
+              <AnimationOnScroll
+                animateIn="animate__fadeIn"
+                delay={400}
+                animateOnce
+              >
+                <FeatureBlock
+                  Icon={RiRulerLine}
+                  title="Set advanced trait rules"
+                  content="Put layers in order and separate traits that don’t mix well with others."
+                />
+              </AnimationOnScroll>
+            </div>
           </div>
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={FaRegSave}
-              title="Save your collections"
-              content="Your collections will be saved in your account, so you can always come back and edit them."
-            />
-          </div>
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={GoSettings}
-              title="Attribute Rarity"
-              content="You can configure certain attributes to be more rare than others. You will be able to easily tell what are the change for an attribute to be applied."
-            />
-          </div>
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={HiOutlineDocumentText}
-              title="Metadata"
-              content="We generate metadata compatible with Ethereum, Solana &amp; Polygon Blockchain."
-            />
-          </div>
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={RiRulerLine}
-              title="Set advanced trait rules"
-              content="Put layers in order and separate traits that don’t mix well with others."
-            />
-          </div>
-          <div className="col-md-4">
-            <FeatureBlock
-              Icon={HiOutlineDatabase}
-              title="Store your collection via IPFS"
-              content="Your collection will be automatically uploaded to IPFS after the generation."
-            />
-          </div>
+
+          <Devider />
         </div>
-      </Section>
+      </div>
 
       {/* Pricing */}
       {plans.length > 0 && (
-        <Section id="pricing" className="pricing-section bg-grey">
-          <Heading subTitle="Pricing" title="Use for FREE" />
+        <div id="pricing" className="pricing-section">
+          <div className="container">
+            <Heading subTitle="Pricing" title="Use for FREE" />
 
-          <PricingCalculator plans={plans} />
-        </Section>
+            <PricingCalculator plans={plans} />
+
+            <Devider />
+          </div>
+        </div>
       )}
 
       {/* Frequently asked questions */}
-      <Section>
-        <Heading title="Frequently asked questions" className="text-center">
-          <p className="paragraph">
-            If you still got a question you're always welcome to{" "}
-            <NavLink
-              to=""
-              onClick={(e: any) => {
-                e.preventDefault()
-                $crisp.push(["do", "chat:open"])
-              }}
-            >
-              contact us
-            </NavLink>
-          </p>
-        </Heading>
-
-        <div className="row">
-          {/*  */}
-          <div className="col-sm-6 mb-5">
-            <h6>What are NFTs?</h6>
+      <div id="faq" className="faq-section">
+        <div className="container small-container">
+          <Heading title="FAQ" className="text-center">
             <p className="paragraph">
-              NFTs, or non-fungible tokens, are unique digital assets stored on
-              a blockchain. NFTs aren't interchangeable, which means each is one
-              of a kind. They can come in the form of illustrations, animated
-              GIFs, songs, items for video games, and other forms of digital
-              art.
+              If you still got a question you're always welcome to{" "}
+              <NavLink
+                to=""
+                onClick={(e: any) => {
+                  e.preventDefault()
+                  $crisp.push(["do", "chat:open"])
+                }}
+              >
+                contact us
+              </NavLink>
             </p>
-            <p className="paragraph">
-              Some of the first NFTs ever made were PFPs, aka profile pics,
-              designed to be used as avatars. CryptoPunks, Robotos, BAYC, Cool
-              Cats, and Doodles are among the most famous PFP NFT projects.
-            </p>
-          </div>
+          </Heading>
 
-          {/*  */}
-          <div className="col-sm-6 mb-5">
-            <h6>How is the metadata.json structured?</h6>
-            <p className="paragraph">
-              The metadata contains information on the rarity of each trait and
-              asset, the specific files use to make a particular NFT, the name
-              of your collection, and the description of your collection.
-            </p>
-          </div>
+          <div className="faq">
+            <Accordion defaultActiveKey="0" flush>
+              <Accordion.Item eventKey="0">
+                <Accordion.Header>What are NFTs?</Accordion.Header>
+                <Accordion.Body>
+                  <p className="paragraph">
+                    NFTs, or non-fungible tokens, are unique digital assets
+                    stored on a blockchain. NFTs aren't interchangeable, which
+                    means each is one of a kind. They can come in the form of
+                    illustrations, animated GIFs, songs, items for video games,
+                    and other forms of digital art.
+                  </p>
+                  <p className="paragraph">
+                    Some of the first NFTs ever made were PFPs, aka profile
+                    pics, designed to be used as avatars. CryptoPunks, Robotos,
+                    BAYC, Cool Cats, and Doodles are among the most famous PFP
+                    NFT projects.
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
 
-          {/*  */}
-          <div className="col-sm-6 mb-5">
-            <h6>Can I set trait rules and rarity?</h6>
-            <p className="paragraph">
-              Yes! You can easily set rules and make some traits rarer than
-              others with the click of a button.
-            </p>
-          </div>
+              <Accordion.Item eventKey="1">
+                <Accordion.Header>
+                  How is the metadata.json structured?
+                </Accordion.Header>
+                <Accordion.Body>
+                  <p className="paragraph">
+                    The metadata contains information on the rarity of each
+                    trait and asset, the specific files use to make a particular
+                    NFT, the name of your collection, and the description of
+                    your collection.
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
 
-          {/*  */}
-          <div className="col-sm-6 mb-5">
-            <h6>What files should I use as layers?</h6>
-            <p className="paragraph">
-              For the moment we support .png, .jpeg, .jpg and .svg files. Your
-              layers should have the variations of each trait of your NFT
-              character.
-            </p>
-          </div>
+              <Accordion.Item eventKey="3">
+                <Accordion.Header>
+                  Can I set trait rules and rarity?
+                </Accordion.Header>
+                <Accordion.Body>
+                  <p className="paragraph">
+                    Yes! You can easily set rules and make some traits rarer
+                    than others with the click of a button.
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
 
-          {/*  */}
-          <div className="col-sm-6">
-            <h6>How many NFTs can I create?</h6>
-            <p className="paragraph">You can create as many as you want.</p>
+              <Accordion.Item eventKey="4">
+                <Accordion.Header>
+                  What files should I use as layers?
+                </Accordion.Header>
+                <Accordion.Body>
+                  <p className="paragraph">
+                    For the moment we support .png, .jpeg, .jpg and .svg files.
+                    Your layers should have the variations of each trait of your
+                    NFT character.
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              <Accordion.Item eventKey="5">
+                <Accordion.Header>How many NFTs can I create?</Accordion.Header>
+                <Accordion.Body>
+                  <p className="paragraph">
+                    You can create as many as you want.
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
           </div>
         </div>
-      </Section>
+      </div>
 
       {/* Ready? */}
-      <Section className="ready-section text-center bg-grey">
-        <Heading
-          paragraph="Start uploading and create the next big NFT collection"
-          title="Ready to get started?"
-          className="mb-4"
-        />
+      <div className="ready-section text-center">
+        <div className="ready-section-overlay">
+          <div className="container">
+            <Heading
+              paragraph="Start uploading and create the next big NFT collection"
+              title="Ready to get started?"
+              className="mb-4"
+            />
 
-        <GetStartedButton className="btn-outline">
-          Generate Your Collection
-        </GetStartedButton>
-      </Section>
+            <AnimationOnScroll
+              animateIn="animate__fadeIn"
+              delay={100}
+              animateOnce
+            >
+              <GetStartedButton>GET STARTED</GetStartedButton>
+            </AnimationOnScroll>
+          </div>
+        </div>
+      </div>
     </Page>
   )
 }

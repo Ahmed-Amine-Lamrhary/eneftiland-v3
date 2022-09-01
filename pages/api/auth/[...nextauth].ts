@@ -18,10 +18,6 @@ export default NextAuth({
       clientId: process.env.NEXT_PUBLIC_GITHUB_ID || "",
       clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET || "",
     }),
-    DiscordProvider({
-      clientId: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.NEXT_PUBLIC_DISCORD_CLIENT_SECRET || "",
-    }),
   ],
   pages: {
     signIn: "/",

@@ -3,6 +3,7 @@ import Slider from "rc-slider"
 import "rc-slider/assets/index.css"
 import { nFormatter } from "../helpers/utils"
 import PlanBlock from "./PlanBlock"
+import { AnimationOnScroll } from "react-animation-on-scroll"
 
 const PricingCalculator = ({ plans }: any) => {
   const f = plans[plans.length - 1]?.assetsNumber
@@ -77,46 +78,58 @@ const PricingCalculator = ({ plans }: any) => {
   return (
     <>
       <div className="row justify-content-center">
-        {plans?.map((plan: any) => (
+        {plans?.map((plan: any, i: number) => (
           <div key={`plan-${plan.id}`} className="col-lg-3 col-md-6 mb-4">
-            <PlanBlock plan={plan} active={getUsedPlan().id === plan.id} />
+            <AnimationOnScroll
+              animateIn="animate__bounceInUp"
+              delay={i * 100}
+              animateOnce
+            >
+              <PlanBlock plan={plan} active={getUsedPlan().id === plan.id} />
+            </AnimationOnScroll>
           </div>
         ))}
       </div>
 
-      <div className="pricing-calc mt-4">
-        <h2>Price Calculator</h2>
-        <p>Select your collection size to estimate costs.</p>
+      <AnimationOnScroll
+        animateIn="animate__bounceInUp"
+        delay={200}
+        animateOnce
+      >
+        <div className="pricing-calc mt-4">
+          <h2>Price Calculator</h2>
+          <p>Select your collection size to estimate costs.</p>
 
-        <div className="mt-4 mb-5">
-          <Slider
-            trackStyle={{
-              backgroundColor: "rgba(75, 75, 75, 0.1)",
-            }}
-            handleStyle={{
-              backgroundColor: "#724bf4",
-              borderColor: "#724bf4",
-              height: 20,
-              marginLeft: 0,
-              marginTop: -8,
-              width: 20,
-            }}
-            dotStyle={{ borderColor: "#724bf4" }}
-            marks={marks}
-            value={chance}
-            onChange={handleSliderChange}
-          />
+          <div className="mt-4 mb-4">
+            <Slider
+              trackStyle={{
+                backgroundColor: "rgba(75, 75, 75, 0.1)",
+              }}
+              handleStyle={{
+                backgroundColor: "#724bf4",
+                borderColor: "#724bf4",
+                height: 20,
+                marginLeft: 0,
+                marginTop: -8,
+                width: 20,
+              }}
+              dotStyle={{ borderColor: "#724bf4" }}
+              marks={marks}
+              value={chance}
+              onChange={handleSliderChange}
+            />
+          </div>
+
+          <p>Your collection will have {currentCollectionSize} NFTs.</p>
+          <p>
+            The final cost will be <b>${price}</b>
+            {getUsedPlan().priceToRemoveWatermark &&
+              `, pay $${
+                getUsedPlan().priceToRemoveWatermark
+              } to remove watermark.`}
+          </p>
         </div>
-
-        <p>Your collection will have {currentCollectionSize} NFTs.</p>
-        <p>
-          The final cost will be <b>${price}</b>
-          {getUsedPlan().priceToRemoveWatermark &&
-            `, pay $${
-              getUsedPlan().priceToRemoveWatermark
-            } to remove watermark.`}
-        </p>
-      </div>
+      </AnimationOnScroll>
     </>
   )
 }

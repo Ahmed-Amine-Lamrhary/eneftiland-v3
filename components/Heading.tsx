@@ -1,11 +1,12 @@
-import React from "react";
+import React from "react"
+import { AnimationOnScroll } from "react-animation-on-scroll"
 
 interface HeadingProps {
-  title: string;
-  subTitle?: string;
-  paragraph?: string;
-  className?: string;
-  children?: any;
+  title: string
+  subTitle?: string
+  paragraph?: string
+  className?: string
+  children?: any
 }
 
 const Heading = ({
@@ -16,14 +17,16 @@ const Heading = ({
   children,
 }: HeadingProps) => {
   return (
-    <div className={`heading-section ${className}`}>
-      {subTitle && <h6 className="subtitle">{subTitle}</h6>}
-      <h2 className="title">{title}</h2>
-      {paragraph && <p className="paragraph">{paragraph}</p>}
+    <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+      <div className={`heading-section ${className}`}>
+        {subTitle && <h6 className="subtitle">{subTitle}</h6>}
+        <h2 className="title">{title}</h2>
+        {paragraph && <p className="paragraph">{paragraph}</p>}
 
-      {children}
-    </div>
-  );
-};
+        {children}
+      </div>
+    </AnimationOnScroll>
+  )
+}
 
-export default Heading;
+export default Heading

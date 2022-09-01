@@ -11,10 +11,10 @@ const Footer = () => {
 
   return (
     <footer className="footer">
-      <div className="container-lg">
+      <div className="container small-container">
         {/* main */}
         <div className="main row">
-          <div className="col-md-3 col-sm-6 mb-3">
+          <div className="col-md-4 col-sm-6 mb-3">
             <h6>Social Media</h6>
             <ul className="links-list sm d-flex">
               <li>
@@ -45,7 +45,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-md-3 col-sm-6 mb-3">
+          <div className="col-md-4 col-sm-6 mb-3">
             <h6>Legal</h6>
             <ul className="links-list">
               <li>
@@ -57,16 +57,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-md-3 col-sm-6 mb-3">
-            <h6>Links</h6>
-            <ul className="links-list">
-              <li>
-                <NavLink to="/">About us</NavLink>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-md-3 col-sm-6 mb-3">
+          <div className="col-md-4 col-sm-6 mb-3">
             <h6>Products</h6>
             <ul className="links-list">
               <li>

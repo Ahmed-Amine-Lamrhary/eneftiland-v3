@@ -84,11 +84,10 @@ const SettingsPanel = () => {
   return (
     <div className="project-panel">
       <div className="container-fluid">
-        <Heading
-          className="small"
-          title="Settings"
-          paragraph="Manage your collection settings."
-        />
+        <div className="mb-5">
+          <h3>Settings</h3>
+          <p className="paragraph">Manage your collection settings.</p>
+        </div>
 
         <Formik
           initialValues={initialValues}

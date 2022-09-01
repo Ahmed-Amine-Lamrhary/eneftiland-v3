@@ -11,6 +11,7 @@ body {
   font-family: "Poppins", sans-serif;
   background-color: $white-color;
   color: $black-color;
+  overflow-x: hidden;
 }
 h1,
 h2,
@@ -49,6 +50,11 @@ a {
   background-color: #f1f3f5 !important;
 }
 
+// container
+.small-container {
+  max-width: 1000px;
+}
+
 // Section
 section {
   padding: 80px 0;
@@ -59,15 +65,16 @@ section {
   margin: auto;
   margin-bottom: 70px;
   .title {
-    line-height: 44px;
-    font-size: 40px;
-    font-weight: 600;
+    line-height: 64px;
+    font-size: 64px;
+    font-weight: 500;
   }
   .subtitle {
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 400;
+    font-size: 14px;
     text-transform: uppercase;
-    color: $main-color;
+    letter-spacing: 1px;
+    @include text-gradient;
   }
   .paragraph {
     font-size: 19px;
@@ -104,33 +111,135 @@ section {
 
 // Header Section
 .header-section {
-  padding: 100px 0;
+  padding: 120px 0 40px;
   position: relative;
   overflow: hidden;
-  background-color: $white-color;
   color: $black-color;
+  @media (max-width: 767px) {
+    padding: 160px 0 70px;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../assets/home/header-bg.png");
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: -1;
+  }
   h1 {
-    font-size: 60px;
-    // line-height: 1.2;
+    font-size: 65px;
+    line-height: 67px;
     font-weight: 600;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    @media (max-width: 767px) {
+      font-size: 55px;
+      line-height: 58px;
+    }
     span {
       color: $main-color;
     }
   }
   p {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 400;
     margin-bottom: 5px;
+    color: rgba($grey-color, 0.6);
+    line-height: 29px;
+  }
+  .btn {
+    font-size: 15px;
+    padding: 14px 36px;
+    border-radius: 100px;
+    font-weight: 600;
+    svg {
+      margin-left: 6px;
+      margin-right: 0;
+      font-size: 21px;
+    }
+  }
+}
+
+// compatible-with
+.compatible-with-section {
+  .container {
+    max-width: 800px;
+  }
+  p {
+    text-transform: uppercase;
+    color: rgba($grey-color, 0.6);
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .images {
+    .item {
+      border-radius: 24px;
+      border: 1px solid rgba(131, 131, 131, 0.25);
+      height: 90px;
+      background-size: 50%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+// how-it-works
+.how-it-works {
+  .item {
+    box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    .img {
+      max-width: 70px;
+      min-width: 70px;
+      margin-right: 30px;
+    }
+    h5 {
+      font-size: 25px;
+      font-weight: 500;
+    }
+    p {
+      opacity: 0.9;
+    }
+  }
+}
+
+// stats-section
+.stats-section {
+  text-align: center;
+  padding: 10px 0;
+  h2 {
+    font-size: 72px;
+    @include text-gradient;
+  }
+  p {
+    font-size: 16px;
     color: $grey-color;
   }
+}
+
+// about-section
+.about-section {
+  // padding: 30px 0;
 }
 
 // Features Section
 .features-section {
   text-align: center;
   .feature-block {
-    margin-bottom: 40px;
+    margin-bottom: 10px;
+    border-radius: 24px;
+    box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
+    padding: 20px 10px;
     h5 {
       font-size: 20px;
       margin-bottom: 10px;
@@ -142,10 +251,52 @@ section {
     }
     .icon {
       margin: auto;
-      color: $main-color;
       text-align: center;
       margin-bottom: 15px;
+      color: $white-color;
+      background: $bg-gradient;
+      border-radius: 25px;
+      width: 64px;
+      height: 64px;
+      line-height: 64px;
     }
+  }
+}
+
+// faq-section
+.faq-section {
+  padding-bottom: 40px;
+  .faq {
+    border-radius: 24px;
+    box-shadow: 0 3px 8px -1px rgb(0 0 0 / 8%);
+    padding: 48px;
+    .accordion-button {
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: -0.025rem;
+      font-weight: 700;
+      padding: 25px 0;
+      box-shadow: none;
+      &:not(.collapsed) {
+        background-color: transparent;
+        color: $black-color;
+      }
+    }
+    .accordion-body {
+      padding: 0px 0 45px;
+      p {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+// ready-section
+.ready-section {
+  background-image: url("../assets/home/ready/bg.png");
+  .ready-section-overlay {
+    padding: 150px 0;
+    background-color: rgba($white-color, 0.9);
   }
 }
 
@@ -340,13 +491,10 @@ section {
 
 .plan-block {
   background-color: $white-color;
-  border: 1px solid rgba($grey-color, 0.2);
   border-radius: 10px;
   text-align: center;
-  &.active {
-    border-color: rgba($main-color, 1);
-    border-width: 2px;
-  }
+  box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(131, 131, 131, 0.25);
   .paragraph {
     font-size: 13px;
   }
@@ -383,15 +531,15 @@ section {
     list-style-type: none;
     margin: 0;
     text-align: left;
-    border-top: 1px solid rgba($grey-color, 0.2);
+    border-top: 1px solid rgba($grey-color, 0.1);
     li {
-      font-size: 14px;
+      font-size: 15px;
       color: $grey-color;
       margin-bottom: 12px;
       font-weight: 300;
       svg {
         color: $main-color;
-        font-size: 22px;
+        font-size: 19px;
         margin-right: 4px;
       }
     }
@@ -540,9 +688,6 @@ footer {
 
 // Media query
 @media (max-width: 768px) {
-  .header-section {
-    padding: 30px 0;
-  }
   footer {
     p {
       text-align: center;
@@ -660,6 +805,9 @@ footer {
   max-width: 500px;
   margin: auto;
   padding: 0 10px;
+  border-radius: 24px;
+  box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
+  padding: 48px;
   h2 {
     font-size: 20px;
   }

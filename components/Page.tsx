@@ -12,9 +12,16 @@ interface PageProps {
   children?: any
   settings: any
   hideNavbar?: boolean
+  isHeaderFixed?: boolean
 }
 
-const Page = ({ title, children, settings, hideNavbar }: PageProps) => {
+const Page = ({
+  title,
+  children,
+  settings,
+  hideNavbar,
+  isHeaderFixed,
+}: PageProps) => {
   const businessName = settings?.businessName ? settings?.businessName : ""
 
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
@@ -83,7 +90,7 @@ const Page = ({ title, children, settings, hideNavbar }: PageProps) => {
             <LoginModal />
             {/* login modal */}
 
-            {!hideNavbar && <Header />}
+            {!hideNavbar && <Header isFixed={isHeaderFixed} />}
 
             <main>{children}</main>
 

@@ -6,6 +6,7 @@ import "../styles/globals.scss"
 import "../styles/app.scss"
 import "../styles/elements.scss"
 import "react-toastify/dist/ReactToastify.css"
+import "animate.css/animate.min.css";
 import { ethers } from "ethers"
 import { SessionProvider } from "next-auth/react"
 import WalletAuthProvider from "../helpers/wallet/WalletAuthProvider"

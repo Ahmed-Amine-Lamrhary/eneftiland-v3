@@ -2,18 +2,50 @@
 
 // Navbar
 .navbar {
-  padding: 0;
+  padding: 5px 0;
   background-color: $white-color !important;
   border-bottom: 1px solid rgba($grey-color, 0.1);
   position: sticky;
   top: 0;
   z-index: 999;
+  transition: all 0.2s ease-in-out;
+  &.fixed {
+    padding: 12px 0;
+    position: fixed;
+    width: 100%;
+    background-color: transparent !important;
+    border-bottom: 0;
+    @media (max-width: 991px) {
+      background-color: $white-color !important;
+    }
+  }
+  &.scrolled {
+    &.fixed {
+      background-color: $white-color !important;
+      box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
+    }
+  }
+  .login-nav-item {
+    padding: 7px 0 !important;
+    margin-left: 10px !important;
+    button {
+      border: 2px solid rgba($black-color, 0.1) !important;
+      border-radius: 100px;
+      padding: 11px 0 !important;
+      margin: 0 !important;
+      min-width: 150px;
+      font-size: 15px !important;
+      &:hover {
+        border-color: $main-color !important;
+      }
+    }
+  }
   .user-avatar-name {
-    max-width: 120px;
+    max-width: 200px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
-    @media (max-width: 854px) {
+    @media (max-width: 991px) {
       .name {
         display: none;
       }
@@ -27,11 +59,12 @@
     .beta {
       font-size: 11px;
       margin-left: 5px;
-      font-weight: 400;
-      border: 1px solid;
+      font-weight: 600;
       line-height: 12px;
-      padding: 2px 2px;
+      padding: 2px 4px;
       border-radius: 3px;
+      background-color: $black-color;
+      color: $white-color;
     }
     .navbar-brand-logo {
       height: 30px;
@@ -50,10 +83,14 @@
     padding: 0;
     padding-right: 1rem !important;
     padding-left: 1rem !important;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 700;
     text-decoration: none;
     margin-top: 2px;
+    color: $black-color;
+    &:hover {
+      color: $main-color;
+    }
     &.logout-btn {
       color: $red-color;
     }
@@ -63,25 +100,30 @@
     border: 0;
   }
   .dropdown {
-    border-left: 1px solid rgba($grey-color, 0.05);
     .dropdown-toggle {
-      font-size: 13px;
-      font-weight: 400;
-      color: $grey-color;
+      font-size: 14px;
+      font-weight: 500;
+      color: $black-color;
       display: flex;
       align-items: center;
       padding-right: 0 !important;
+      @media (max-width: 767px) {
+        padding-left: 0 !important;
+      }
+      &::after {
+        display: none;
+      }
     }
     .dropdown-menu {
       border: 0;
-      box-shadow: 0 0.125rem 0.625rem rgba(90, 97, 105, 0.1);
+      box-shadow: 0 3px 8px -1px rgb(0, 0, 0, 0.08);
       left: auto;
       right: 0;
       position: absolute;
       max-height: 200px;
       overflow: auto;
       .dropdown-item {
-        font-size: 12px;
+        font-size: 13px;
         text-decoration: none;
         transition: all 0.2s ease-in-out;
         svg {
@@ -104,17 +146,15 @@
     }
   }
 
-  @media (max-width: 940px) {
+  @media (max-width: 1040px) {
     .app-navbar-nav button {
-      font-size: 13px !important;
-      padding: 0 10px !important;
       svg {
         display: none;
       }
     }
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 991px) {
     .navbar-collapse {
       text-align: center;
       .nav-item {
@@ -148,15 +188,19 @@
     background-color: transparent;
     font-size: 14px;
     font-weight: 500;
-    color: rgba($grey-color, 0.7);
+    color: rgba($black-color, 0.8);
     transition: all 0.2s ease-in-out;
     display: flex;
     align-items: center;
     text-transform: capitalize;
-    padding: 8px 13px;
+    padding: 8px 9px;
     &.active,
     &:hover {
       color: $main-color;
+      svg {
+        background: $main-color;
+        color: $white-color;
+      }
     }
     &:disabled {
       &:not(.active):hover {
@@ -166,6 +210,12 @@
     svg {
       font-size: 18px;
       margin-right: 6px;
+      width: 30px;
+      height: 30px;
+      background: rgba($grey-color, 0.05);
+      border-radius: 100px;
+      padding: 7px;
+      transition: all 0.2s ease-in-out;
     }
   }
 
@@ -588,6 +638,9 @@ label {
 // Toastify
 .Toastify__toast-container {
   width: auto !important;
+  @media (max-width: 767px) {
+    width: 100% !important;
+  }
 }
 .Toastify__toast {
   font-family: "Poppins", sans-serif !important;
@@ -677,6 +730,12 @@ label {
     grid-template-columns: auto auto;
   }
 }
+.preview-item .nav-tabs {
+  margin-bottom: 0 !important;
+  .nav-item {
+    margin-right: 0 !important;
+  }
+}
 
 // share-btn
 .share-btn {
@@ -689,4 +748,11 @@ label {
       font-size: 21px !important;
     }
   }
+}
+
+// img-divider
+.img-divider {
+  display: block;
+  margin: 80px auto;
+  width: 80px;
 }
