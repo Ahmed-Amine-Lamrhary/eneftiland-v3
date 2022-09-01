@@ -54,10 +54,17 @@ export default NextAuth({
           delete collection.id
           delete collection.dateCreated
 
-          await prisma.collection.create({
+          const newCollection = await prisma.collection.create({
             data: {
               ...collection,
               userId: message.user.id,
+            },
+          })
+
+          // create share collection
+          await prisma.collectionshare.create({
+            data: {
+              collectionId: newCollection.id,
             },
           })
         }

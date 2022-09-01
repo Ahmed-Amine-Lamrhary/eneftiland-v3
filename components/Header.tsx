@@ -1,5 +1,5 @@
 import NavLink from "./NavLink"
-import { AiOutlineUser } from "react-icons/ai"
+import { AiOutlineShareAlt, AiOutlineUser } from "react-icons/ai"
 import { FiLogOut } from "react-icons/fi"
 import { FaRegUserCircle } from "react-icons/fa"
 import { useContext } from "react"
@@ -8,7 +8,7 @@ import GetStartedButton from "./GetStartedButton"
 import { signOut, useSession } from "next-auth/react"
 import { BiUserCircle } from "react-icons/bi"
 
-export default function Header({ children }: any) {
+export default function Header({ children, setShowShare }: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
   const { data: session } = useSession()
 
@@ -18,6 +18,15 @@ export default function Header({ children }: any) {
     <ul className="navbar-nav myAccountBtn">
       {session && (
         <>
+          {setShowShare && (
+            <button
+              className="nav-btn share-btn"
+              onClick={() => setShowShare(true)}
+            >
+              <AiOutlineShareAlt /> <span>share</span>
+            </button>
+          )}
+
           <li className="nav-item dropdown">
             <a
               className="nav-link dropdown-toggle"

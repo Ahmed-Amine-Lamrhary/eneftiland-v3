@@ -4,13 +4,13 @@ import CollectionI from "../types/CollectionI"
 interface AppContextInterface {
   collection: CollectionI | null
   setCollection: any
-  setLayers: any
+  setLayers?: any
   activeLayerId: string | null
   setActiveLayerId: any
   loading: boolean
   setLoading: any
   setResults: any
-  addToResults: any
+  addToResults?: any
   settings: any
   filteredItems: any[]
   setFilteredItems: any
@@ -21,8 +21,8 @@ interface AppContextInterface {
   setIsSaving: any
   uploadingImages: boolean
   setUploadingImages: any
-  view: "layers" | "settings" | "rules" | "gallery" | "generate"
-  setView: any
+  view?: "layers" | "settings" | "rules" | "gallery" | "generate"
+  setView?: any
 }
 
 const AppContext = React.createContext<AppContextInterface>({

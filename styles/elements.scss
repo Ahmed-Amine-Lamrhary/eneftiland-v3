@@ -13,7 +13,7 @@
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
-    @media (max-width: 767px) {
+    @media (max-width: 854px) {
       .name {
         display: none;
       }
@@ -141,6 +141,34 @@
   }
 
   // app navbar
+  a.nav-btn,
+  button.nav-btn {
+    text-decoration: none;
+    border: 0;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba($grey-color, 0.7);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    padding: 8px 13px;
+    &.active,
+    &:hover {
+      color: $main-color;
+    }
+    &:disabled {
+      &:not(.active):hover {
+        color: rgba($grey-color, 0.7) !important;
+      }
+    }
+    svg {
+      font-size: 18px;
+      margin-right: 6px;
+    }
+  }
+
   .app-navbar-nav {
     flex-direction: row;
     align-items: center;
@@ -162,34 +190,6 @@
         display: none;
       }
     }
-    a,
-    button {
-      text-decoration: none;
-      border: 0;
-      background-color: transparent;
-      font-size: 14px;
-      font-weight: 500;
-      color: rgba($grey-color, 0.7);
-      transition: all 0.2s ease-in-out;
-      display: flex;
-      align-items: center;
-      text-transform: capitalize;
-      padding: 8px 13px;
-      &.active,
-      &:hover {
-        color: $main-color;
-      }
-      &:disabled {
-        &:not(.active):hover {
-          color: rgba($grey-color, 0.7) !important;
-        }
-      }
-      svg {
-        font-size: 18px;
-        margin-right: 6px;
-      }
-    }
-
     .nav-item.dropdown {
       border-left: 0 !important;
       border-right: 1px solid rgba(75, 75, 75, 0.1);
@@ -609,6 +609,10 @@ label {
 .Toastify__toast--error {
   background-color: $red-color !important;
 }
+.Toastify__toast--info {
+  background-color: $beige-color !important;
+  color: $black-color !important;
+}
 
 // pagination
 .app-pagination {
@@ -671,5 +675,18 @@ label {
   gap: 10px;
   @media (max-width: 992px) {
     grid-template-columns: auto auto;
+  }
+}
+
+// share-btn
+.share-btn {
+  @media (max-width: 767px) {
+    span {
+      display: none;
+    }
+    svg {
+      margin-right: 0 !important;
+      font-size: 21px !important;
+    }
   }
 }

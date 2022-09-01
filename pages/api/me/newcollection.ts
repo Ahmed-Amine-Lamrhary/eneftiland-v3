@@ -32,6 +32,13 @@ export default async (req: any, res: any) => {
       },
     })
 
+    // create share collection
+    await prisma.collectionshare.create({
+      data: {
+        collectionId: collection.id,
+      },
+    })
+
     res.json({
       success: true,
       message: "Operation was done successfully",

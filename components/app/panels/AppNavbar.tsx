@@ -52,7 +52,7 @@ const AppNavbar = () => {
 
   const renderBtn = (route: string, Icon: any, title?: string) => (
     <Button
-      className={view === route ? "active" : ""}
+      className={`${view === route ? "active" : ""} nav-btn`}
       disabled={disableButtons}
       onClick={() => {
         router.push(
@@ -156,13 +156,13 @@ const AppNavbar = () => {
           {renderBtn("gallery", HiOutlineCollection)}
         </li>
         <li className="nav-item">
-          {renderBtn("generate", BiImage, "Generate & Download")}
+          {renderBtn("generate", BiImage)}
         </li>
       </ul>
 
       {isSaving && (
-        <li className="nav-item ms-2" style={{ padding: "7px 0" }}>
-          <button type="button" disabled>
+        <li className="nav-btn" style={{ padding: "7px 0" }}>
+          <button className="nav-btn" type="button" disabled>
             <AiOutlineLoading3Quarters className="loading-icon" />
 
             <span className="text">Saving...</span>

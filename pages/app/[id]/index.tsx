@@ -14,6 +14,9 @@ import GeneratePanel from "../../../components/app/panels/GeneratePanel"
 import DesignerPanel from "../../../components/app/panels/DesignerPanel"
 import AppLoader from "../../../components/AppLoader"
 import { getSession, useSession } from "next-auth/react"
+import AppModal from "../../../components/AppModal"
+import Button from "../../../components/Button"
+import Share from "../../../components/Share"
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query
@@ -49,16 +52,23 @@ export async function getServerSideProps(context: any) {
       },
     }
 
+  const collectionshare = await prisma.collectionshare.findFirst({
+    where: {
+      collectionId: collection.id,
+    },
+  })
+
   return {
     props: {
       settings,
       plans,
+      collectionshare,
     },
   }
 }
 
-const AppWrapper = ({ settings, plans }: any) => {
-  const { data: session, status } = useSession()
+const AppWrapper = ({ settings, plans, collectionshare }: any) => {
+  const { status } = useSession()
 
   const router = useRouter()
   const { id: collectionId, page }: any = router.query
@@ -78,6 +88,8 @@ const AppWrapper = ({ settings, plans }: any) => {
       ? page
       : "layers"
   )
+
+  const [showShare, setShowShare] = useState<boolean>(false)
 
   // loadings
   const [isSaving, setIsSaving] = useState<boolean>(false)
@@ -199,7 +211,7 @@ const AppWrapper = ({ settings, plans }: any) => {
     )
 
   return (
-    <Page title="NFT Generator" settings={settings} hideNavbar>
+    <Page title={collection.collectionName} settings={settings} hideNavbar>
       <AppContext.Provider
         value={{
           collection,
@@ -226,9 +238,15 @@ const AppWrapper = ({ settings, plans }: any) => {
         }}
       >
         <div className="app-panel">
-          <Header>
+          <Header setShowShare={setShowShare}>
             <AppNavbar />
           </Header>
+
+          <Share
+            showShare={showShare}
+            setShowShare={setShowShare}
+            collectionshare={collectionshare}
+          />
 
           <div className="app-container">
             {view === "layers" && <DesignerPanel />}

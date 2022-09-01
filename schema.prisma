@@ -146,6 +146,16 @@ model collection {
   metaCid      String?
   completed    Boolean @default(false)
   isHistory    Boolean @default(false)
+
+  // share
+  collectionshare collectionshare[]
+}
+
+model collectionshare {
+  id           String     @id @default(cuid())
+  collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  isActive     Boolean    @default(false)
 }
 
 model rule {

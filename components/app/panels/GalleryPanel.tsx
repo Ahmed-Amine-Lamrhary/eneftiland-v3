@@ -18,7 +18,11 @@ import { IoCloseOutline } from "react-icons/io5"
 
 const STEP = 20
 
-const GalleryPanel = () => {
+interface GalleryPanelProps {
+  isReadonly?: boolean
+}
+
+const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
   const {
     filteredItems,
     results,
@@ -298,13 +302,15 @@ const GalleryPanel = () => {
                       </Button>
                     )}
 
-                    <Button
-                      className="btn-sm"
-                      onClick={() => generate(false)}
-                      disabled={loading}
-                    >
-                      <AiOutlineReload /> Regenerate
-                    </Button>
+                    {!isReadonly && (
+                      <Button
+                        className="btn-sm"
+                        onClick={() => generate(false)}
+                        disabled={loading}
+                      >
+                        <AiOutlineReload /> Regenerate
+                      </Button>
+                    )}
                   </div>
 
                   <div className="form-group m-0 mt-3 mt-md-0">
