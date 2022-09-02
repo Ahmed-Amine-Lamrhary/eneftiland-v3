@@ -507,6 +507,9 @@ section {
   text-align: center;
   box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(131, 131, 131, 0.25);
+  hr {
+    background-color: rgba($grey-color, 0.3);
+  }
   .paragraph {
     font-size: 13px;
   }

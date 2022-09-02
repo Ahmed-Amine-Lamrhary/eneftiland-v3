@@ -40,7 +40,7 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function MePage({ settings }: any) {
-  const { data: session, status } = useSession()
+  const { data: session, status }: any = useSession()
 
   const [myCollections, setMyCollections] = useState<any>([])
   const [myCollectionsCount, setMyCollectionsCount] = useState(0)

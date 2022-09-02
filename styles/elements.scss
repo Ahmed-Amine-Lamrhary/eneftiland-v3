@@ -412,6 +412,11 @@ label {
       }
     }
   }
+  &.btn-black {
+    background-color: $black-color;
+    border-color: $black-color;
+    color: $white-color;
+  }
   &.btn-white {
     background-color: $beige-color;
     border-color: $beige-color;

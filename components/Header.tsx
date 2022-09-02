@@ -1,5 +1,5 @@
 import NavLink from "./NavLink"
-import { AiOutlineShareAlt, AiOutlineUser } from "react-icons/ai"
+import { AiOutlineShareAlt } from "react-icons/ai"
 import { FiLogOut } from "react-icons/fi"
 import { useContext, useEffect } from "react"
 import PageContext from "../context/PageContext"
@@ -141,6 +141,11 @@ export default function Header({ children, setShowShare, isFixed }: any) {
                 <li className="nav-item">
                   <NavLink className="nav-link" to="/#pricing">
                     Pricing
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/lifetime-deal">
+                    Lifetime Deal
                   </NavLink>
                 </li>
                 <li className="nav-item">

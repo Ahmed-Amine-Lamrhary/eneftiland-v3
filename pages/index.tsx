@@ -20,6 +20,7 @@ import { AnimationOnScroll } from "react-animation-on-scroll"
 import ethImg from "../assets/home/compatible/eth.png"
 import solImg from "../assets/home/compatible/sol.png"
 import polImg from "../assets/home/compatible/pol.png"
+import LifetimePlan from "../components/LifetimePlan"
 
 declare var $crisp: any
 
@@ -379,6 +380,18 @@ export default function IndexPage({ settings, plans }: any) {
             <Heading subTitle="Pricing" title="Use for FREE" />
 
             <PricingCalculator plans={plans} />
+
+            <div className="mt-5">
+              <Heading subTitle="Special Offer" title="Lifetime Deal">
+                <NavLink to="/lifetime-deal">Find out more</NavLink>
+              </Heading>
+            </div>
+
+            <div className="row justify-content-center">
+              <div className="col-md-4">
+                <LifetimePlan />
+              </div>
+            </div>
 
             <Devider />
           </div>

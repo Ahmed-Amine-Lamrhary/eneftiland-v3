@@ -100,7 +100,7 @@ const PricingCalculator = ({ plans }: any) => {
           <h2>Price Calculator</h2>
           <p>Select your collection size to estimate costs.</p>
 
-          <div className="mt-4 mb-4">
+          <div className="mt-4 mb-5">
             <Slider
               trackStyle={{
                 backgroundColor: "rgba(75, 75, 75, 0.1)",

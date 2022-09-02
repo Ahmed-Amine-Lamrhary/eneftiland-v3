@@ -42,10 +42,12 @@ model user {
   email         String?       @unique
   emailVerified DateTime?
   image         String?
+  lifetime      Boolean       @default(false)
   Transaction   transaction[]
   Collection    collection[]
   accounts      account[]
   sessions      session[]
+  redumption    redumption[]
 }
 
 model verificationtoken {
@@ -175,4 +177,13 @@ model admin {
   password String?
   isSuper  Boolean   @default(false)
   sessions session[]
+}
+
+model redumption {
+  id          String    @id @default(cuid())
+  isActive    Boolean   @default(true)
+  useDate     DateTime?
+  dateCreated DateTime  @default(now())
+  userId      String?
+  user        user?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

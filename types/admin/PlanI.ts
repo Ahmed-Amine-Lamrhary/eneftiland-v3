@@ -1,7 +1,7 @@
 export default interface PlanI {
-  id: string
+  id?: string
   price: number
   assetsNumber: number
   features: string
-  priceToRemoveWatermark: number
+  priceToRemoveWatermark?: number
 }

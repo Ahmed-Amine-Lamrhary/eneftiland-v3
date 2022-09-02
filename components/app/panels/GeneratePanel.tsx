@@ -28,6 +28,7 @@ import NoDataFound from "../../NoDataFound"
 import Pay from "../../payments/Pay"
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
+import { useSession } from "next-auth/react"
 
 interface GeneratePanelProps {
   plans: any
@@ -35,6 +36,8 @@ interface GeneratePanelProps {
 }
 
 const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
+  const { data: session }: any = useSession()
+
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<any>(null)
 
@@ -191,7 +194,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
   const generate = async (options?: generateI) => {
     const { skipPayment, isWatermark } = options || {}
 
-    if (plans && plans.length > 0 && !skipPayment) {
+    if (!session?.user.lifetime && plans && plans.length > 0 && !skipPayment) {
       const currentPlan = getUsedPlan()
       if (currentPlan) {
         setCurrentPlan(currentPlan)
@@ -384,7 +387,9 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
       // watermark
       const watermarkUrl = settings?.watermarkUrl
-      const watermarkImg = watermarkUrl ? await loadImage(watermarkUrl) : null
+      const watermarkImg: any = watermarkUrl
+        ? await loadImage(watermarkUrl)
+        : null
       // watermark
 
       const nfts: any = []
@@ -415,7 +420,9 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
 
           if (watermark && watermarkImg) {
             const { x, y, w, h } = getWatermarkCred({
-              dimensions,
+              watermarkWidth: watermarkImg.width,
+              watermarkHeight: watermarkImg.height,
+              canvasDimensions: dimensions,
               position: settings?.watermarkPos,
             })
 

@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
+import { DEMO_LAYERS, DEMO_RESULTS } from "../../../helpers/constants"
 
 const prisma = new PrismaClient()
 
@@ -31,6 +32,7 @@ export default NextAuth({
         ...session,
         user: {
           id: user.id,
+          lifetime: user.lifetime,
           ...session.user,
         },
       }
@@ -40,29 +42,31 @@ export default NextAuth({
   events: {
     async signIn(message) {
       if (message.isNewUser) {
-        // create eneftiland demo collection
-        const collection: any = await prisma.collection.findUnique({
-          where: { id: "eneftiland-demo" },
+        const newCollection = await prisma.collection.create({
+          data: {
+            userId: message.user.id,
+            layers: DEMO_LAYERS,
+            galleryLayers: DEMO_LAYERS,
+            results: DEMO_RESULTS,
+            collectionDesc: "Eneftiland",
+            collectionName: "Eneftiland Demo",
+            collectionSize: 100,
+            creators: "[]",
+            externalUrl: "",
+            network: "eth",
+            prefix: "",
+            royalties: 0,
+            symbol: "",
+            size: 500,
+          },
         })
 
-        if (collection) {
-          delete collection.id
-          delete collection.dateCreated
-
-          const newCollection = await prisma.collection.create({
-            data: {
-              ...collection,
-              userId: message.user.id,
-            },
-          })
-
-          // create share collection
-          await prisma.collectionshare.create({
-            data: {
-              collectionId: newCollection.id,
-            },
-          })
-        }
+        // create share collection
+        await prisma.collectionshare.create({
+          data: {
+            collectionId: newCollection.id,
+          },
+        })
       }
     },
   },

@@ -33,44 +33,44 @@ export const getLayersImages = async ({
   return allLayersImages
 }
 
-export const getWatermarkCred = ({ dimensions, position }: any) => {
-  const watermarkSize = dimensions / 4
+export const getWatermarkCred = ({
+  watermarkWidth,
+  watermarkHeight,
+  canvasDimensions,
+  position,
+}: any) => {
+  watermarkWidth = watermarkWidth / 2
+  watermarkHeight = watermarkHeight / 2
 
-  let x,
-    y,
-    w = watermarkSize,
-    h = watermarkSize
+  const space = 5
+
+  let x = 0,
+    y = 0,
+    w = watermarkWidth,
+    h = watermarkHeight
 
   switch (position) {
-    case "top-left":
-      x = 0
-      y = 0
-      break
     case "top-right":
-      x = dimensions - watermarkSize
-      y = 0
+      x = canvasDimensions - watermarkWidth
       break
     case "bottom-left":
-      x = 0
-      y = dimensions - watermarkSize
+      y = canvasDimensions - watermarkHeight
       break
     case "bottom-right":
-      x = dimensions - watermarkSize
-      y = dimensions - watermarkSize
+      x = canvasDimensions - watermarkWidth
+      y = canvasDimensions - watermarkHeight
       break
     case "center":
-      x = dimensions / 2 - watermarkSize / 2
-      y = dimensions / 2 - watermarkSize / 2
+      x = canvasDimensions / 2 - watermarkWidth / 2
+      y = canvasDimensions / 2 - watermarkHeight / 2
       break
     case "full":
-      x = 0
-      y = 0
-      w = dimensions
-      h = dimensions
+      w = canvasDimensions
+      h = canvasDimensions
       break
   }
 
-  return { x, y, w, h }
+  return { x: x - space, y: y - space, w, h }
 }
 
 export function loadImage(url: string) {
