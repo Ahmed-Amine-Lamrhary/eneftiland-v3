@@ -18,6 +18,7 @@ export default async (req: any, res: any) => {
     await prisma.collectionshare.deleteMany({
       where: {
         collectionId: id,
+        forAdmin: false,
       },
     })
 

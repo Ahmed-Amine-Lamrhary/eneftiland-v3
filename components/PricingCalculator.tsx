@@ -81,7 +81,7 @@ const PricingCalculator = ({ plans }: any) => {
         {plans?.map((plan: any, i: number) => (
           <div key={`plan-${plan.id}`} className="col-lg-3 col-md-6 mb-4">
             <AnimationOnScroll
-              animateIn="animate__bounceInUp"
+              animateIn="animate__fadeIn"
               delay={i * 100}
               animateOnce
             >
@@ -92,7 +92,7 @@ const PricingCalculator = ({ plans }: any) => {
       </div>
 
       <AnimationOnScroll
-        animateIn="animate__bounceInUp"
+        animateIn="animate__fadeIn"
         delay={200}
         animateOnce
       >

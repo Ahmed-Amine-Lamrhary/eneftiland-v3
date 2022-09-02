@@ -55,6 +55,7 @@ export async function getServerSideProps(context: any) {
   const collectionshare = await prisma.collectionshare.findFirst({
     where: {
       collectionId: collection.id,
+      forAdmin: false,
     },
   })
 

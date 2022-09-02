@@ -156,6 +156,7 @@ model collectionshare {
   collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   collectionId String
   isActive     Boolean    @default(false)
+  forAdmin     Boolean    @default(false)
 }
 
 model rule {

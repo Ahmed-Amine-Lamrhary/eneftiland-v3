@@ -4,7 +4,7 @@ import { AnimationOnScroll } from "react-animation-on-scroll"
 
 const Devider = () => {
   return (
-    <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+    <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
       <div className="img-divider">
         <Image
           className="img-divider"

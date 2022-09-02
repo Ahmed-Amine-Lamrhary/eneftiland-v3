@@ -87,15 +87,15 @@ export default function Header({ children, setShowShare, isFixed }: any) {
       }`}
     >
       <div
-        className={`${children ? "container-fluid" : "container"}`}
+        className={`${!isFixed ? "container-fluid" : "container"}`}
         style={children ? { flexWrap: "nowrap" } : {}}
       >
         <NavLink className="navbar-brand" to="/">
-          {settings?.logoUrl ? (
+          <div className="contain">
             <img src={settings?.logoUrl} className="navbar-brand-logo" />
-          ) : (
-            businessName
-          )}
+            <span className="text">{businessName}</span>
+          </div>
+
           {settings?.isBeta && <span className="beta">Beta</span>}
         </NavLink>
 

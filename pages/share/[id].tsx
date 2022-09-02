@@ -55,6 +55,7 @@ export async function getServerSideProps(context: any) {
   return {
     props: {
       settings,
+      forAdmin: collectionshare.forAdmin,
     },
   }
 }

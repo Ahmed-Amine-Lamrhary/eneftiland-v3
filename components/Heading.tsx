@@ -17,7 +17,7 @@ const Heading = ({
   children,
 }: HeadingProps) => {
   return (
-    <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+    <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
       <div className={`heading-section ${className}`}>
         {subTitle && <h6 className="subtitle">{subTitle}</h6>}
         <h2 className="title">{title}</h2>

@@ -87,7 +87,7 @@ export default function IndexPage({ settings, plans }: any) {
           <div className="images">
             <div className="row">
               <div className="col">
-                <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+                <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
                   <div
                     className="item"
                     style={{ backgroundImage: `url(${ethImg.src})` }}
@@ -96,7 +96,7 @@ export default function IndexPage({ settings, plans }: any) {
               </div>
               <div className="col">
                 <AnimationOnScroll
-                  animateIn="animate__bounceInUp"
+                  animateIn="animate__fadeIn"
                   delay={50}
                   animateOnce
                 >
@@ -108,7 +108,7 @@ export default function IndexPage({ settings, plans }: any) {
               </div>
               <div className="col">
                 <AnimationOnScroll
-                  animateIn="animate__bounceInUp"
+                  animateIn="animate__fadeIn"
                   delay={100}
                   animateOnce
                 >
@@ -133,12 +133,10 @@ export default function IndexPage({ settings, plans }: any) {
           <div className="row">
             {/* Upload your art */}
             <div className="col-md-6 mt-4">
-              <AnimationOnScroll animateIn="animate__bounceInUp" animateOnce>
+              <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
                 <div className="item">
-                  <div className="img">
-                    <Image
-                      src={require("../assets/home/how-it-works/icon-01.png")}
-                    />
+                  <div className="index">
+                    <span>01</span>
                   </div>
 
                   <div>
@@ -154,15 +152,13 @@ export default function IndexPage({ settings, plans }: any) {
             {/* Set rules and rarity */}
             <div className="col-md-6 mt-4">
               <AnimationOnScroll
-                animateIn="animate__bounceInUp"
+                animateIn="animate__fadeIn"
                 delay={100}
                 animateOnce
               >
                 <div className="item">
-                  <div className="img">
-                    <Image
-                      src={require("../assets/home/how-it-works/icon-01.png")}
-                    />
+                  <div className="index">
+                    <span>02</span>
                   </div>
 
                   <div>
@@ -179,15 +175,13 @@ export default function IndexPage({ settings, plans }: any) {
             {/* Preview */}
             <div className="col-md-6 mt-4">
               <AnimationOnScroll
-                animateIn="animate__bounceInUp"
+                animateIn="animate__fadeIn"
                 delay={200}
                 animateOnce
               >
                 <div className="item">
-                  <div className="img">
-                    <Image
-                      src={require("../assets/home/how-it-works/icon-01.png")}
-                    />
+                  <div className="index">
+                    <span>03</span>
                   </div>
 
                   <div>
@@ -204,15 +198,13 @@ export default function IndexPage({ settings, plans }: any) {
             {/* Export */}
             <div className="col-md-6 mt-4">
               <AnimationOnScroll
-                animateIn="animate__bounceInUp"
+                animateIn="animate__fadeIn"
                 delay={300}
                 animateOnce
               >
                 <div className="item">
-                  <div className="img">
-                    <Image
-                      src={require("../assets/home/how-it-works/icon-01.png")}
-                    />
+                  <div className="index">
+                    <span>04</span>
                   </div>
 
                   <div>
@@ -235,14 +227,14 @@ export default function IndexPage({ settings, plans }: any) {
         <div className="container">
           <div className="row">
             <div className="col">
-              <AnimationOnScroll animateIn="animate__bounceIn" animateOnce>
+              <AnimationOnScroll animateIn="animate__fadeIn" animateOnce>
                 <h2>4,000+</h2>
                 <p>Wallets Connected</p>
               </AnimationOnScroll>
             </div>
             <div className="col">
               <AnimationOnScroll
-                animateIn="animate__bounceIn"
+                animateIn="animate__fadeIn"
                 delay={100}
                 animateOnce
               >
@@ -252,7 +244,7 @@ export default function IndexPage({ settings, plans }: any) {
             </div>
             <div className="col">
               <AnimationOnScroll
-                animateIn="animate__bounceIn"
+                animateIn="animate__fadeIn"
                 delay={200}
                 animateOnce
               >
@@ -272,7 +264,7 @@ export default function IndexPage({ settings, plans }: any) {
           <div className="row align-items-center">
             <div className="col-md-6">
               <AnimationOnScroll
-                animateIn="animate__bounceInLeft"
+                animateIn="animate__fadeIn"
                 delay={100}
                 animateOnce
               >
@@ -286,7 +278,7 @@ export default function IndexPage({ settings, plans }: any) {
 
             <div className="col-md-6">
               <AnimationOnScroll
-                animateIn="animate__bounceInRight"
+                animateIn="animate__fadeIn"
                 delay={200}
                 animateOnce
               >

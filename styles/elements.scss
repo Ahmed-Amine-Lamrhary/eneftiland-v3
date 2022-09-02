@@ -53,9 +53,15 @@
   }
   .navbar-brand {
     font-weight: 700;
+    font-size: 18px;
     text-decoration: none;
     display: flex;
     align-items: flex-start;
+    .contain {
+      display: flex;
+      align-items: center;
+      text-transform: lowercase;
+    }
     .beta {
       font-size: 11px;
       margin-left: 5px;
@@ -68,9 +74,12 @@
     }
     .navbar-brand-logo {
       height: 30px;
+      margin-right: 6px;
     }
     @media (max-width: 767px) {
-      font-size: 15px;
+      .text {
+        display: none;
+      }
     }
   }
   .navbar-nav .nav-item {
@@ -178,6 +187,11 @@
   // myAccountBtn
   .myAccountBtn {
     flex-direction: row;
+    .dropdown:hover .dropdown-menu {
+      display: block;
+      top: 100%;
+      margin-top: 0.125rem;
+    }
   }
 
   // app navbar
@@ -240,6 +254,7 @@
         display: none;
       }
     }
+
     .nav-item.dropdown {
       border-left: 0 !important;
       border-right: 1px solid rgba(75, 75, 75, 0.1);
