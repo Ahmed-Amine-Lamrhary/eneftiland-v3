@@ -1,5 +1,7 @@
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/router"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
+import AppContext from "../context/AppContext"
 import { callApi, showToast } from "../helpers/utils"
 import AppModal from "./AppModal"
 import Button from "./Button"
@@ -13,6 +15,9 @@ interface ShareProps {
 const Share = ({ showShare, setShowShare, collectionshare }: ShareProps) => {
   const router = useRouter()
   const { id: collectionId }: any = router.query
+  const { data: session }: any = useSession()
+
+  const { collection } = useContext(AppContext)
 
   const [key, setKey] = useState(collectionshare?.id)
   const [isActive, setIsActive] = useState(collectionshare?.isActive)
@@ -108,6 +113,17 @@ const Share = ({ showShare, setShowShare, collectionshare }: ShareProps) => {
               Create new link
             </Button>
           </>
+        )}
+
+        {collection?.userId === session?.user?.id && (
+          <div className="mt-3">
+            <Button
+              className="btn-xs btn-outline"
+              to={`/app/${collection?.id}/collaborators`}
+            >
+              Add collaborators
+            </Button>
+          </div>
         )}
       </div>
     </AppModal>

@@ -10,8 +10,6 @@ import Button from "../../components/Button"
 import * as Yup from "yup"
 import Section from "../../components/Section"
 import Heading from "../../components/Heading"
-import PlanBlock from "../../components/PlanBlock"
-import { FiCheckCircle } from "react-icons/fi"
 import LifetimePlan from "../../components/LifetimePlan"
 
 const CodeSchema = Yup.object().shape({

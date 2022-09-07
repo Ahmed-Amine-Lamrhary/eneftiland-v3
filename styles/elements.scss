@@ -196,7 +196,8 @@
 
   // app navbar
   a.nav-btn,
-  button.nav-btn {
+  button.nav-btn,
+  div.nav-btn {
     text-decoration: none;
     border: 0;
     background-color: transparent;
@@ -230,6 +231,16 @@
       border-radius: 100px;
       padding: 7px;
       transition: all 0.2s ease-in-out;
+    }
+
+    .badge {
+      background-color: rgba($main-color, 0.1);
+      color: $main-color;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 7px 14px;
+      cursor: default;
+      border-radius: 100px;
     }
   }
 
@@ -434,6 +445,10 @@ label {
     padding: 0.5rem 1.3rem;
     font-size: 12px;
     line-height: 1.6;
+  }
+  &.btn-xs {
+    padding: 6px 13px;
+    font-size: 11px;
   }
   svg {
     font-size: 1rem;
@@ -658,33 +673,26 @@ label {
 // Toastify
 .Toastify__toast-container {
   width: auto !important;
-  @media (max-width: 767px) {
-    width: 100% !important;
-  }
 }
 .Toastify__toast {
   font-family: "Poppins", sans-serif !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
   min-height: auto !important;
-  border-radius: 3px !important;
-  color: $white-color !important;
+  border-radius: 8px !important;
   text-align: center !important;
-  padding: 4px 8px !important;
+  padding: 15px 80px 15px 15px !important;
   margin: 0 !important;
-
+  cursor: default !important;
   .Toastify__close-button {
-    font-size: 29px !important;
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    svg {
+      height: 20px;
+      width: 17px;
+    }
   }
-}
-.Toastify__toast--success {
-  background-color: $green-color !important;
-}
-.Toastify__toast--error {
-  background-color: $red-color !important;
-}
-.Toastify__toast--info {
-  background-color: $beige-color !important;
-  color: $black-color !important;
 }
 
 // pagination

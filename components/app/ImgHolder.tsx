@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import React, { useContext } from "react"
 import AppContext from "../../context/AppContext"
 
@@ -8,6 +9,7 @@ interface ImgHolderProps {
 
 const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
   const { settings } = useContext(AppContext)
+  const { data: session }: any = useSession()
 
   return (
     <div className="img-holder">
@@ -20,7 +22,7 @@ const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
           }
         />
       ))}
-      {settings && settings.watermarkUrl && (
+      {settings && settings.watermarkUrl && !session?.user?.lifetime && (
         <img
           src={settings.watermarkUrl}
           className={`watermark ${settings.watermarkPos}`}

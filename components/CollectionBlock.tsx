@@ -1,7 +1,7 @@
 import Link from "next/link"
 import React from "react"
 import { Dropdown } from "react-bootstrap"
-import { AiOutlinePlus } from "react-icons/ai"
+import { AiOutlinePlus, AiOutlineTeam } from "react-icons/ai"
 import { BiDotsVerticalRounded } from "react-icons/bi"
 import { FiTrash2 } from "react-icons/fi"
 import { HiOutlineDuplicate } from "react-icons/hi"
@@ -80,6 +80,12 @@ const CollectionBlock = ({
                     onClick={() => duplicateCollection(collection.id)}
                   >
                     <HiOutlineDuplicate /> Duplicate
+                  </Dropdown.Item>
+                )}
+
+                {duplicateCollection && (
+                  <Dropdown.Item href={`/app/${collection.id}/collaborators`}>
+                    <AiOutlineTeam /> Collaborations
                   </Dropdown.Item>
                 )}
 

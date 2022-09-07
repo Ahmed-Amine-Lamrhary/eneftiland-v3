@@ -683,3 +683,54 @@
     }
   }
 }
+
+// collaborators
+.collaborators {
+  padding: 50px 0;
+  .collaborators-box {
+    border: 1px solid rgba($grey-color, 0.1);
+    border-radius: 5px;
+    padding: 35px;
+    svg {
+      color: rgba($grey-color, 0.6);
+    }
+  }
+
+  .collaboration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba($grey-color, 0.1);
+    padding: 10px 0;
+
+    span {
+      display: block;
+      text-align: left;
+      &.name {
+        font-weight: 500;
+        font-size: 14px;
+        margin-bottom: 3px;
+      }
+      &.email {
+        font-weight: 400;
+        font-size: 13px;
+        color: rgba($grey-color, 0.6);
+      }
+    }
+
+    .btn {
+      background-color: transparent;
+      border: 0;
+      color: $red-color;
+    }
+  }
+}
+.collab-select-option {
+  .name {
+    font-weight: 600;
+  }
+  .email {
+    color: rgba($grey-color, 0.7);
+    font-size: 13px;
+  }
+}

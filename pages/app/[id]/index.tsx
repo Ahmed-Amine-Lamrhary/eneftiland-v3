@@ -12,17 +12,15 @@ import RulesPanel from "../../../components/app/panels/RulesPanel"
 import GalleryPanel from "../../../components/app/panels/GalleryPanel"
 import GeneratePanel from "../../../components/app/panels/GeneratePanel"
 import DesignerPanel from "../../../components/app/panels/DesignerPanel"
-import AppLoader from "../../../components/AppLoader"
-import { getSession, useSession } from "next-auth/react"
-import AppModal from "../../../components/AppModal"
-import Button from "../../../components/Button"
+import { getSession } from "next-auth/react"
 import Share from "../../../components/Share"
+import { parseCollection } from "../../../services/parser"
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query
 
   const { req } = context
-  const session = await getSession({ req })
+  const session: any = await getSession({ req })
 
   if (!session)
     return {
@@ -31,20 +29,28 @@ export async function getServerSideProps(context: any) {
 
   const prisma = new PrismaClient()
 
-  const settings = await prisma.settings.findFirst()
-  const plans = await prisma.plan.findMany({
-    orderBy: {
-      assetsNumber: "asc",
-    },
-  })
-
-  const collection = await prisma.collection.findUnique({
+  const collection = await prisma.collection.findFirst({
     where: {
       id,
     },
   })
 
   if (!collection)
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    }
+
+  const isCollaborator = await prisma.collaborations.findFirst({
+    where: {
+      collectionId: id,
+      userId: session?.user?.id,
+    },
+  })
+
+  if (collection.userId !== session?.user?.id && !isCollaborator)
     return {
       redirect: {
         destination: "/404",
@@ -59,24 +65,37 @@ export async function getServerSideProps(context: any) {
     },
   })
 
+  const settings = await prisma.settings.findFirst()
+  const plans = await prisma.plan.findMany({
+    orderBy: {
+      assetsNumber: "asc",
+    },
+  })
+
   return {
     props: {
       settings,
       plans,
       collectionshare,
+      collectionData: parseCollection(collection),
+      isCollaborator: isCollaborator ? true : false,
     },
   }
 }
 
-const AppWrapper = ({ settings, plans, collectionshare }: any) => {
-  const { status } = useSession()
-
+const AppWrapper = ({
+  settings,
+  plans,
+  collectionshare,
+  collectionData,
+  isCollaborator,
+}: any) => {
   const router = useRouter()
   const { id: collectionId, page }: any = router.query
 
-  const [collection, setCollection] = useState<any>()
+  const [collection, setCollection] = useState<any>(collectionData)
 
-  const [results, setResults] = useState<any>()
+  const [results, setResults] = useState<any>(collectionData.results)
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
   const [filteredItems, setFilteredItems] = useState<any>([])
 
@@ -94,7 +113,6 @@ const AppWrapper = ({ settings, plans, collectionshare }: any) => {
 
   // loadings
   const [isSaving, setIsSaving] = useState<boolean>(false)
-  const [loadingPage, setLoadingPage] = useState<boolean>(true)
   const [loading, setLoading] = useState<boolean>(false)
   const [uploadingFolder, setUploadingFolder] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
@@ -155,33 +173,6 @@ const AppWrapper = ({ settings, plans, collectionshare }: any) => {
     }
   }
 
-  useEffect(() => {
-    if (status === "authenticated") getData()
-  }, [status])
-
-  const getData = async () => {
-    try {
-      const { data } = await callApi({
-        route: "me/mycollection",
-        body: {
-          id: collectionId,
-        },
-      })
-
-      if (!data.success) {
-        return router.push("/404")
-      }
-
-      setCollection(data.data)
-      setResults(data.data.results)
-
-      setLoadingPage(false)
-    } catch (error: any) {
-      console.log(error)
-      router.push("/404")
-    }
-  }
-
   // paypal
   useEffect(() => {
     if (settings && settings.paypalClientId) {
@@ -203,13 +194,6 @@ const AppWrapper = ({ settings, plans, collectionshare }: any) => {
   const addToResults = (item: any) => {
     setResults([...results, item])
   }
-
-  if (loadingPage)
-    return (
-      <div className="loading-panel">
-        <AppLoader />
-      </div>
-    )
 
   return (
     <Page title={collection.collectionName} settings={settings} hideNavbar>
@@ -239,15 +223,17 @@ const AppWrapper = ({ settings, plans, collectionshare }: any) => {
         }}
       >
         <div className="app-panel">
-          <Header setShowShare={setShowShare}>
+          <Header setShowShare={setShowShare} isCollaborator={isCollaborator}>
             <AppNavbar />
           </Header>
 
-          <Share
-            showShare={showShare}
-            setShowShare={setShowShare}
-            collectionshare={collectionshare}
-          />
+          {typeof window !== "undefined" && (
+            <Share
+              showShare={showShare}
+              setShowShare={setShowShare}
+              collectionshare={collectionshare}
+            />
+          )}
 
           <div className="app-container">
             {view === "layers" && <DesignerPanel />}

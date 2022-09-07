@@ -6,7 +6,12 @@ import PageContext from "../context/PageContext"
 import { signOut, useSession } from "next-auth/react"
 import { RiAccountPinCircleLine } from "react-icons/ri"
 
-export default function Header({ children, setShowShare, isFixed }: any) {
+export default function Header({
+  children,
+  setShowShare,
+  isFixed,
+  isCollaborator,
+}: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
   const { data: session } = useSession()
 
@@ -23,6 +28,12 @@ export default function Header({ children, setShowShare, isFixed }: any) {
             >
               <AiOutlineShareAlt /> <span>share</span>
             </button>
+          )}
+
+          {isCollaborator && (
+            <div className="nav-btn">
+              <span className="badge">Collaborator</span>
+            </div>
           )}
 
           <li className="nav-item dropdown">

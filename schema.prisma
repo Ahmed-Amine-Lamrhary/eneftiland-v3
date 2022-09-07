@@ -37,17 +37,18 @@ model session {
 }
 
 model user {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  lifetime      Boolean       @default(false)
-  Transaction   transaction[]
-  Collection    collection[]
-  accounts      account[]
-  sessions      session[]
-  redumption    redumption[]
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  lifetime       Boolean          @default(false)
+  Transaction    transaction[]
+  Collection     collection[]
+  accounts       account[]
+  sessions       session[]
+  redumption     redumption[]
+  collaborations collaborations[]
 }
 
 model verificationtoken {
@@ -151,6 +152,7 @@ model collection {
 
   // share
   collectionshare collectionshare[]
+  collaborations  collaborations[]
 }
 
 model collectionshare {
@@ -186,4 +188,13 @@ model redumption {
   dateCreated DateTime  @default(now())
   userId      String?
   user        user?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model collaborations {
+  id           String     @id @default(cuid())
+  dateCreated  DateTime   @default(now())
+  userId       String
+  user         user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collectionId String
+  collection   collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 }

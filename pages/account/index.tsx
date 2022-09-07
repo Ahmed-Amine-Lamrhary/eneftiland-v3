@@ -10,9 +10,9 @@ import { Tab, Tabs } from "react-bootstrap"
 import swal from "sweetalert2"
 import { useCallback, useState } from "react"
 import { useEffect } from "react"
-import CollectionBlock from "../../components/CollectionBlock"
 import debounce from "lodash.debounce"
 import { getSession, useSession } from "next-auth/react"
+import ListCollections from "../../components/ListCollections"
 
 const UserSchema = Yup.object().shape({
   name: Yup.string(),
@@ -45,7 +45,12 @@ export default function MePage({ settings }: any) {
   const [myCollections, setMyCollections] = useState<any>([])
   const [myCollectionsCount, setMyCollectionsCount] = useState(0)
 
-  const [getLoading, setGetLoading] = useState(false)
+  const [myCollabs, setMyCollabs] = useState<any>([])
+  const [myCollabsCount, setMyCollabsCount] = useState(0)
+
+  const [mycollectionsLoading, setMycollectionsLoading] = useState(false)
+  const [mycollabsLoading, setMycollabsLoading] = useState(false)
+
   const [updateLoading, setUpdateLoading] = useState(false)
 
   const [query, setQuery] = useState("")
@@ -63,7 +68,7 @@ export default function MePage({ settings }: any) {
 
   const getMyCollections = async (query?: string) => {
     try {
-      setGetLoading(true)
+      setMycollectionsLoading(true)
 
       const { data } = await callApi({
         route: "me/mycollections",
@@ -79,12 +84,36 @@ export default function MePage({ settings }: any) {
     } catch (error: any) {
       throw error
     } finally {
-      setGetLoading(false)
+      setMycollectionsLoading(false)
+    }
+  }
+
+  const getMyCollabs = async (query?: string) => {
+    try {
+      setMycollabsLoading(true)
+
+      const { data } = await callApi({
+        route: "me/mycollabs",
+      })
+
+      if (!data.success) return showToast(data.message, "error")
+
+      console.log(data.data)
+
+      setMyCollabsCount(data.count)
+      setMyCollabs(data.data)
+    } catch (error: any) {
+      throw error
+    } finally {
+      setMycollabsLoading(false)
     }
   }
 
   useEffect(() => {
-    if (status === "authenticated") getMyCollections()
+    if (status === "authenticated") {
+      getMyCollections()
+      getMyCollabs()
+    }
   }, [status])
 
   const getTransactions = async (page?: any) => {
@@ -171,28 +200,6 @@ export default function MePage({ settings }: any) {
     }
   }
 
-  const sortMyCollections = (e: any) => {
-    const sortBy = e.target.value
-
-    const sorted = myCollections
-      .slice()
-      .sort((collection1: any, collection2: any) => {
-        const v1 =
-          sortBy === "dateCreated"
-            ? new Date(collection1[sortBy]).getTime()
-            : collection1[sortBy]
-        const v2 =
-          sortBy === "dateCreated"
-            ? new Date(collection2[sortBy]).getTime()
-            : collection2[sortBy]
-
-        if (sortBy === "collectionName") return v1 < v2 ? -1 : 1
-        return v2 - v1
-      })
-
-    setMyCollections(sorted)
-  }
-
   return (
     <Page title="My account" settings={settings}>
       <div className="my-account">
@@ -201,62 +208,24 @@ export default function MePage({ settings }: any) {
 
           <Tabs defaultActiveKey="my-collections" id="account-tabs">
             <Tab eventKey="my-collections" title="My collections">
-              <div className="d-flex justify-content-between">
-                <div>
-                  <div className="form-group">
-                    <select
-                      className="form-select"
-                      onChange={sortMyCollections}
-                    >
-                      <option value="">Sort by</option>
-                      <option value="collectionName">Name</option>
-                      <option value="dateCreated">Latest</option>
-                      <option value="collectionSize">Largest</option>
-                    </select>
-                  </div>
-                </div>
+              <ListCollections
+                data={myCollections}
+                setData={setMyCollections}
+                count={myCollectionsCount}
+                loading={mycollectionsLoading}
+                setQuery={setQuery}
+                duplicateCollection={duplicateCollection}
+                deleteCollection={deleteCollection}
+              />
+            </Tab>
 
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search by name"
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <p className="mb-3 paragraph">
-                You have {myCollectionsCount} collections
-              </p>
-
-              <div className="row">
-                <div className="col-lg-3 col-md-4 col-6 mb-4">
-                  <CollectionBlock addNew />
-                </div>
-
-                {getLoading ? (
-                  <>
-                    {Array.from(Array(3).keys()).map(() => (
-                      <div className="col-lg-3 col-md-4 col-6 mb-4">
-                        <CollectionBlock loading />
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    {myCollections.map((c: any, index: number) => (
-                      <div className="col-lg-3 col-md-4 col-6 mb-4">
-                        <CollectionBlock
-                          collection={c}
-                          duplicateCollection={duplicateCollection}
-                          deleteCollection={deleteCollection}
-                        />
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
+            <Tab eventKey="my-collaborations" title="My collaborations">
+              <ListCollections
+                data={myCollabs}
+                setData={setMyCollabs}
+                count={myCollabsCount}
+                loading={mycollabsLoading}
+              />
             </Tab>
 
             <Tab eventKey="update-profile" title="Update profile">

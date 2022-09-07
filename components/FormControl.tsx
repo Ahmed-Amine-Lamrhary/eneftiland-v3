@@ -3,6 +3,7 @@ import React from "react"
 import { OverlayTrigger, Tooltip } from "react-bootstrap"
 import { AiFillQuestionCircle } from "react-icons/ai"
 import AppEditor from "./AppEditor"
+import AsyncSelect from "react-select/async"
 
 const Error: any = ErrorMessage
 
@@ -14,6 +15,7 @@ interface FormControlProps {
   hint?: string
   hideLabel?: boolean
   disabled?: boolean
+  loadOptions?: any
 }
 
 const renderControl = (
@@ -21,7 +23,8 @@ const renderControl = (
   name: string,
   placeholder: string,
   children?: any,
-  disabled?: boolean
+  disabled?: boolean,
+  loadOptions?: any
 ) => {
   if (type === "textarea")
     return (
@@ -91,6 +94,26 @@ const renderControl = (
       </Field>
     )
 
+  if (type === "suggestions")
+    return (
+      <div className="react-select-box">
+        <Field name={name}>
+          {({ form, field }: any) => {
+            return (
+              <AsyncSelect
+                loadOptions={loadOptions}
+                value={field.value}
+                onChange={(value: any) => {
+                  form.setFieldValue(field.name, value)
+                }}
+                placeholder={placeholder}
+              />
+            )
+          }}
+        </Field>
+      </div>
+    )
+
   return (
     <Field
       type={type}
@@ -110,6 +133,7 @@ const FormControl = ({
   hint,
   hideLabel,
   disabled,
+  loadOptions,
 }: FormControlProps) => {
   return (
     <div className="form-group">
@@ -134,7 +158,16 @@ const FormControl = ({
         </label>
       )}
 
-      <div>{renderControl(type, name, placeholder, children, disabled)}</div>
+      <div>
+        {renderControl(
+          type,
+          name,
+          placeholder,
+          children,
+          disabled,
+          loadOptions
+        )}
+      </div>
 
       <Error name={name}>
         {(msg: any) => <div className="error-message">{msg}</div>}

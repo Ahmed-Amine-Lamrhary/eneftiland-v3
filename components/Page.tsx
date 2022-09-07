@@ -6,6 +6,7 @@ import Header from "./Header"
 import Script from "next/script"
 import PageContext from "../context/PageContext"
 import LoginModal from "./LoginModal"
+import { BiErrorCircle } from "react-icons/bi"
 
 interface PageProps {
   title: string
@@ -71,11 +72,10 @@ const Page = ({
         {/* Toast */}
         <ToastContainer
           draggable={false}
-          position="bottom-center"
+          position="bottom-left"
           transition={Zoom}
-          icon={false}
-          closeButton={false}
-          autoClose={1500}
+          autoClose={false}
+          closeOnClick={false}
         />
 
         <PageContext.Provider
