@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react"
 import Page from "../../components/Page"
 import AppContext from "../../context/AppContext"
 import { PrismaClient } from "@prisma/client"
-import { useRouter } from "next/router"
-import { callApi } from "../../helpers/utils"
 import Header from "../../components/Header"
 import GalleryPanel from "../../components/app/panels/GalleryPanel"
-import AppLoader from "../../components/AppLoader"
+import { parseCollection } from "../../services/parser"
 
 export async function getServerSideProps(context: any) {
   const { id, key } = context.query
@@ -52,87 +50,32 @@ export async function getServerSideProps(context: any) {
 
   const settings = await prisma.settings.findFirst()
 
+  const collectionData = parseCollection(collection)
+
   return {
     props: {
       settings,
       forAdmin: collectionshare.forAdmin,
+      collectionData,
     },
   }
 }
 
-const AppWrapper = ({ settings }: any) => {
-  const router = useRouter()
-  const { id: collectionId }: any = router.query
+const AppWrapper = ({ settings, collectionData }: any) => {
+  const [collection, setCollection] = useState<any>(collectionData)
 
-  const [collection, setCollection] = useState<any>()
-
-  const [results, setResults] = useState<any>()
+  const [results, setResults] = useState<any>(collectionData.results)
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
-  const [filteredItems, setFilteredItems] = useState<any>([])
+  const [filteredItems, setFilteredItems] = useState<any>(
+    collectionData.results
+  )
 
   // loadings
   const [isSaving, setIsSaving] = useState<boolean>(false)
-  const [loadingPage, setLoadingPage] = useState<boolean>(true)
   const [loading, setLoading] = useState<boolean>(false)
   const [uploadingFolder, setUploadingFolder] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
   // loadings
-
-  // rarity score
-  useEffect(() => {
-    results?.map((item: any) => {
-      const sum = item.attributes.reduce((currentSum: any, attr: any) => {
-        const total = results.filter((r: any) =>
-          r.attributes.some((a: any) => a.id === attr.id)
-        ).length
-
-        return currentSum + total
-        // return currentSum + attr.rarity
-      }, 0)
-
-      item["totalRarity"] = sum
-      return item
-    })
-  }, [results])
-  // rarity score
-
-  useEffect(() => {
-    getData()
-  }, [])
-
-  const getData = async () => {
-    try {
-      const { data } = await callApi({
-        route: "collection",
-        body: {
-          id: collectionId,
-        },
-      })
-
-      if (!data.success) {
-        return router.push("/404")
-      }
-
-      setCollection(data.data)
-      setResults(data.data.results)
-
-      setLoadingPage(false)
-    } catch (error: any) {
-      console.log(error)
-      router.push("/404")
-    }
-  }
-
-  useEffect(() => {
-    setFilteredItems(results)
-  }, [results])
-
-  if (loadingPage)
-    return (
-      <div className="loading-panel">
-        <AppLoader />
-      </div>
-    )
 
   return (
     <Page title={collection.collectionName} settings={settings} hideNavbar>
@@ -158,7 +101,7 @@ const AppWrapper = ({ settings }: any) => {
         }}
       >
         <div className="app-panel">
-          <Header />
+          <Header isApp />
 
           <div className="app-container">
             <GalleryPanel isReadonly />

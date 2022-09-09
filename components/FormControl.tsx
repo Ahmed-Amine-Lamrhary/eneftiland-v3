@@ -107,6 +107,23 @@ const renderControl = (
                   form.setFieldValue(field.name, value)
                 }}
                 placeholder={placeholder}
+                styles={{
+                  option: (provided, state) => ({
+                    ...provided,
+                    color: "#4b4b4b",
+                    backgroundColor: state.isSelected
+                      ? "rgba(75, 75, 75, 0.1)"
+                      : "white",
+                  }),
+                }}
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary: "#724bf4",
+                    primary50: "#f7fbfe",
+                  },
+                })}
               />
             )
           }}

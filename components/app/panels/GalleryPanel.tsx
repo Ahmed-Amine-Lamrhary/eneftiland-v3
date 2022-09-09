@@ -1,22 +1,15 @@
-import React, { useContext, useEffect, useState } from "react"
-import { AiOutlineReload } from "react-icons/ai"
+import React, { useContext, useState } from "react"
 import AppContext from "../../../context/AppContext"
 import Button from "../../Button"
 import FiltersPanel from "../FiltersPanel"
 import ResultsItem from "../ResultsItem"
-import InfiniteScroll from "react-infinite-scroll-component"
 import NoDataFound from "../../NoDataFound"
 import swal from "sweetalert2"
-import {
-  callApi,
-  millisToMinutesAndSeconds,
-  showToast,
-} from "../../../helpers/utils"
-import { parseResults } from "../../../services/parser"
+import { callApi, showToast } from "../../../helpers/utils"
 import { useRouter } from "next/router"
 import { IoCloseOutline } from "react-icons/io5"
-
-const STEP = 20
+import { AiOutlineReload } from "react-icons/ai"
+import { VirtuosoGrid } from "react-virtuoso"
 
 interface GalleryPanelProps {
   isReadonly?: boolean
@@ -32,15 +25,11 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
     setLoading,
     setResults,
     setView,
-    setIsSaving,
   }: any = useContext(AppContext)
 
   const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
 
   const router = useRouter()
-  const { id: collectionId } = router.query
-
-  const [generationTime, setGenerationTime] = useState<string>("")
 
   const resetedFilters = () => {
     const f: any = {}
@@ -52,53 +41,6 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
 
   const [filters, setFilters] = useState<any>(resetedFilters())
 
-  const [count, setCount] = useState({
-    prev: 0,
-    next: STEP,
-  })
-  const [hasMore, setHasMore] = useState(true)
-  const [current, setCurrent] = useState(
-    filteredItems?.slice(count.prev, count.next)
-  )
-
-  useEffect(() => {
-    if (loading) {
-      setHasMore(true)
-      setCount({
-        prev: 0,
-        next: STEP,
-      })
-      setCurrent(
-        Array.from(Array(collection?.collectionSize).keys()).slice(0, STEP)
-      )
-    } else {
-      setCurrent(filteredItems?.slice(count.prev, count.next))
-    }
-  }, [loading])
-
-  useEffect(() => {
-    setHasMore(true)
-    setCount({
-      prev: 0,
-      next: STEP,
-    })
-    setCurrent(filteredItems?.slice(0, STEP))
-  }, [filteredItems])
-
-  const getMoreData = () => {
-    if (current.length === filteredItems.length) {
-      setHasMore(false)
-      return
-    }
-    setCurrent(
-      current.concat(filteredItems.slice(count.prev + STEP, count.next + STEP))
-    )
-    setCount((prevState) => ({
-      prev: prevState.prev + STEP,
-      next: prevState.next + STEP,
-    }))
-  }
-
   const sortBy = (e: any) => {
     const value = e.target.value
 
@@ -108,31 +50,6 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
     })
 
     setFilteredItems(sorted)
-  }
-
-  const updateResults = async (resultsString: string) => {
-    try {
-      setIsSaving(true)
-
-      const currentCollection: any = {
-        results: resultsString,
-        galleryLayers: JSON.stringify(collection?.layers),
-      }
-
-      const { data } = await callApi({
-        route: "me/updatecollection",
-        body: {
-          id: collectionId,
-          currentCollection,
-        },
-      })
-
-      if (!data.success) return showToast(data.message, "error")
-    } catch (error: any) {
-      showToast(error.message, "error")
-    } finally {
-      setIsSaving(false)
-    }
   }
 
   const generate = async (ignoreWarning: boolean) => {
@@ -159,40 +76,17 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
       const { data: generatedData } = await callApi({
         route: "generate",
         body: {
-          collection,
+          collectionId: collection.id,
         },
       })
 
-      const { success, data, message } = generatedData
+      const { success, message, data } = generatedData
 
       if (!success) {
         setLoading(false)
         showToast(message, "error")
         return
       }
-
-      const resultsString = data?.metadata
-        .map((i: any) => {
-          const attrs = i.attributes.map((a: any) => {
-            const layer = collection?.layers?.find(
-              (l: any) => l.name === a.trait_type
-            )
-            const layerIndex = collection?.layers?.findIndex(
-              (l: any) => l.name === a.trait_type
-            )
-
-            const imageIndex = layer?.images?.findIndex(
-              (img: any) => img.name === a.value
-            )
-
-            return `${layerIndex}+${imageIndex}`
-          })
-
-          return attrs.join(",")
-        })
-        .join("|")
-
-      const resultsData = parseResults(collection, resultsString, true)
 
       if (!ignoreWarning) {
         router.push(
@@ -206,15 +100,9 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
         setView("gallery")
       }
 
+      setResults(data.metadata)
+      setFilteredItems(data.metadata)
       setLoading(false)
-
-      // generation time
-      setGenerationTime(millisToMinutesAndSeconds(data?.genTime))
-
-      setResults(resultsData)
-
-      // update results
-      await updateResults(resultsString)
     } catch (error: any) {
       console.log(error)
       // if (error.name !== "ValidationError") setError(error)
@@ -321,34 +209,24 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
                   </div>
                 </div>
 
-                <InfiniteScroll
-                  dataLength={current?.length}
-                  next={getMoreData}
-                  hasMore={hasMore}
-                  loader={null}
-                >
-                  <div className="row">
-                    {!current ||
-                      (current.length === 0 && (
-                        <>
-                          <NoDataFound phrase="No items were found" />
-                        </>
-                      ))}
-                    {current &&
-                      current.map((item: any, index: any) => (
-                        <div
-                          className="col-xxl-2 col-md-3 col-6"
-                          key={`result-item-${index}`}
-                        >
-                          <ResultsItem
-                            item={item}
-                            loading={loading}
-                            index={index}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                </InfiniteScroll>
+                {filteredItems.length === 0 ? (
+                  <NoDataFound phrase="No items were found" />
+                ) : (
+                  <VirtuosoGrid
+                    useWindowScroll
+                    overscan={1000}
+                    totalCount={filteredItems.length}
+                    itemContent={(index) => (
+                      <div key={`result-item-${index}`}>
+                        <ResultsItem
+                          item={filteredItems[index]}
+                          loading={loading}
+                          index={index}
+                        />
+                      </div>
+                    )}
+                  />
+                )}
               </div>
             </div>
           </div>

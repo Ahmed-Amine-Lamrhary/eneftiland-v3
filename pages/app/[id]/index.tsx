@@ -72,12 +72,14 @@ export async function getServerSideProps(context: any) {
     },
   })
 
+  const collectionData = parseCollection(collection)
+
   return {
     props: {
       settings,
       plans,
       collectionshare,
-      collectionData: parseCollection(collection),
+      collectionData,
       isCollaborator: isCollaborator ? true : false,
     },
   }
@@ -97,7 +99,7 @@ const AppWrapper = ({
 
   const [results, setResults] = useState<any>(collectionData.results)
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
-  const [filteredItems, setFilteredItems] = useState<any>([])
+  const [filteredItems, setFilteredItems] = useState<any>(collectionData.results)
 
   // view
   const [view, setView] = useState<
@@ -126,24 +128,6 @@ const AppWrapper = ({
     }, 1000),
     []
   )
-
-  // rarity score
-  useEffect(() => {
-    results?.map((item: any) => {
-      const sum = item.attributes.reduce((currentSum: any, attr: any) => {
-        const total = results.filter((r: any) =>
-          r.attributes.some((a: any) => a.id === attr.id)
-        ).length
-
-        return currentSum + total
-        // return currentSum + attr.rarity
-      }, 0)
-
-      item["totalRarity"] = sum
-      return item
-    })
-  }, [results])
-  // rarity score
 
   useEffect(() => {
     if (collection) {
@@ -183,16 +167,12 @@ const AppWrapper = ({
   }, [])
   // paypal
 
-  useEffect(() => {
-    setFilteredItems(results)
-  }, [results])
+  // useEffect(() => {
+  //   setFilteredItems(results)
+  // }, [results])
 
   const setLayers = (layers: any) => {
     setCollection({ ...collection, layers })
-  }
-
-  const addToResults = (item: any) => {
-    setResults([...results, item])
   }
 
   return (
@@ -207,7 +187,6 @@ const AppWrapper = ({
           loading,
           setLoading,
           setResults,
-          addToResults,
           settings,
           filteredItems,
           setFilteredItems,
@@ -223,7 +202,7 @@ const AppWrapper = ({
         }}
       >
         <div className="app-panel">
-          <Header setShowShare={setShowShare} isCollaborator={isCollaborator}>
+          <Header isApp setShowShare={setShowShare} isCollaborator={isCollaborator}>
             <AppNavbar />
           </Header>
 

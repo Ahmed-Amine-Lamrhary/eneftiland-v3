@@ -13,15 +13,14 @@ const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
 
   return (
     <div className="img-holder">
-      {attributes?.map((attr: any) => (
-        <img
-          src={
-            layers
-              .find((l) => l.name === attr.trait_type)
-              ?.images?.find((img: any) => img.name === attr.value)?.url
-          }
-        />
-      ))}
+      {attributes?.map((attr: any) => {
+        const url = layers
+          .find((l) => l.name === attr.trait_type)
+          ?.images?.find((img: any) => img.name === attr.value)?.url
+
+        return <img src={url} />
+      })}
+
       {settings && settings.watermarkUrl && !session?.user?.lifetime && (
         <img
           src={settings.watermarkUrl}

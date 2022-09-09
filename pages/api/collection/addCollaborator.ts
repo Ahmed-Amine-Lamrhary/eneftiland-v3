@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/react"
 const prisma = new PrismaClient()
+import sendEmail from "../../../services/email"
 
 export default async (req: any, res: any) => {
-  const session: any = await getSession({ req })
+  const session = await getSession({ req })
 
   if (!session)
     return res.json({
@@ -14,7 +15,7 @@ export default async (req: any, res: any) => {
   const { collectionId, email } = req.body
 
   try {
-    if (session.user.email === email)
+    if (session?.user?.email === email)
       return res.json({
         success: false,
         message: "You can't add yourself",
@@ -59,8 +60,26 @@ export default async (req: any, res: any) => {
         userId: true,
         collectionId: true,
         dateCreated: false,
+        user: true,
       },
-      distinct: ["userId"],
+    })
+
+    // notify invited user
+    const collection = await prisma.collection.findFirst({
+      where: { id: collectionId },
+    })
+
+    const subject = `${session.user?.name} has invited you to “${collection?.collectionName}” collection`
+
+    await sendEmail({
+      template: "add-collab",
+      to: email,
+      subject,
+      locals: {
+        inviterName: session.user?.name,
+        collectionName: collection?.collectionName,
+        url: `${req.headers.origin}/app/${collectionId}`,
+      },
     })
 
     res.json({

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/react"
 const prisma = new PrismaClient()
+import sendEmail from "../../../services/email"
 
 export default async (req: any, res: any) => {
   const session: any = await getSession({ req })
@@ -14,9 +15,26 @@ export default async (req: any, res: any) => {
   const { collaborationId } = req.body
 
   try {
+    const collaboration = await prisma.collaborations.findFirst({
+      where: { id: collaborationId },
+      select: { user: true, collection: true },
+    })
     await prisma.collaborations.deleteMany({
       where: {
         id: collaborationId,
+      },
+    })
+
+    // notify invited user
+    const subject = `${session.user?.name} has removed you from “${collaboration?.collection.collectionName}” collection`
+
+    await sendEmail({
+      template: "remove-collab",
+      to: collaboration?.user.email || "",
+      subject,
+      locals: {
+        inviterName: session.user?.name,
+        collectionName: collaboration?.collection.collectionName,
       },
     })
 

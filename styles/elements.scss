@@ -213,8 +213,7 @@
     &:hover {
       color: $main-color;
       svg {
-        background: $main-color;
-        color: $white-color;
+        color: $main-color;
       }
     }
     &:disabled {
@@ -224,10 +223,8 @@
     }
     svg {
       font-size: 18px;
-      margin-right: 6px;
       width: 30px;
       height: 30px;
-      background: rgba($grey-color, 0.05);
       border-radius: 100px;
       padding: 7px;
       transition: all 0.2s ease-in-out;

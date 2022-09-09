@@ -77,6 +77,21 @@ const parseResults = (
       })
     : []
 
+  // rarity score
+  // resultsData?.map((item: any) => {
+  //   const sum = item.attributes.reduce((currentSum: any, attr: any) => {
+  //     const total = resultsData.filter((r: any) =>
+  //       r.attributes.some((a: any) => a.id === attr.id)
+  //     ).length
+
+  //     return currentSum + total
+  //   }, 0)
+
+  //   item["totalRarity"] = sum
+  //   return item
+  // })
+  // rarity score
+
   return resultsData
 }
 

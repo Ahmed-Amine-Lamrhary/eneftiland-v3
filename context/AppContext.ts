@@ -10,7 +10,6 @@ interface AppContextInterface {
   loading: boolean
   setLoading: any
   setResults: any
-  addToResults?: any
   settings: any
   filteredItems: any[]
   setFilteredItems: any
@@ -33,7 +32,6 @@ const AppContext = React.createContext<AppContextInterface>({
   setActiveLayerId: null,
   loading: false,
   setResults: null,
-  addToResults: null,
   settings: null,
   setLoading: null,
   filteredItems: [],

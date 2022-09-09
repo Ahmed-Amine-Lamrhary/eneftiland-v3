@@ -734,3 +734,10 @@
     font-size: 13px;
   }
 }
+
+// virtuoso-grid-list
+.virtuoso-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(208px, 1fr));
+  gap: 0.5rem;
+}

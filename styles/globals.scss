@@ -318,8 +318,10 @@ section {
   cursor: pointer;
   color: $black-color;
   border: 1px solid rgba($grey-color, 0.2);
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.2s ease-in-out;
+  overflow: hidden;
+
   &.collection-loading {
     cursor: default;
   }

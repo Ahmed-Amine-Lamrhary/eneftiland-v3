@@ -11,6 +11,7 @@ export default function Header({
   setShowShare,
   isFixed,
   isCollaborator,
+  isApp,
 }: any) {
   const { setShowAuthModal, settings } = useContext(PageContext)
   const { data: session } = useSession()
@@ -104,7 +105,11 @@ export default function Header({
         <NavLink className="navbar-brand" to="/">
           <div className="contain">
             <img src={settings?.logoUrl} className="navbar-brand-logo" />
-            <span className="text">{businessName}</span>
+            {
+              !isApp && (
+                <span className="text">{businessName}</span>
+              )
+            }
           </div>
 
           {settings?.isBeta && <span className="beta">Beta</span>}

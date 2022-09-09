@@ -74,7 +74,7 @@ const Page = ({
           draggable={false}
           position="bottom-left"
           transition={Zoom}
-          autoClose={false}
+          autoClose={1500}
           closeOnClick={false}
         />
 

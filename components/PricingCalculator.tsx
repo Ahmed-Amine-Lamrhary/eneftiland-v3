@@ -9,7 +9,6 @@ const PricingCalculator = ({ plans }: any) => {
   const f = plans[plans.length - 1]?.assetsNumber
 
   const [chance, setChance] = useState(0)
-  const [results, setResults] = useState([])
   const [marks, setMarks] = useState({})
   const [price, setPrice] = useState(0)
 
@@ -50,7 +49,6 @@ const PricingCalculator = ({ plans }: any) => {
   }
 
   const handleSliderChange = (value: any) => {
-    setResults([])
     setChance(value)
   }
 

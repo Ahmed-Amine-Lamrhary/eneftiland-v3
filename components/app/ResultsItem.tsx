@@ -71,7 +71,7 @@ const ResultsItem = ({ item, loading, index }: ResultsItemProps) => {
       </AppModal>
 
       <div
-        className="collection-block mb-4"
+        className="collection-block"
         onClick={() => {
           if (!loading) setShowDetails(true)
         }}
