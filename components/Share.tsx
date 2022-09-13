@@ -118,7 +118,7 @@ const Share = ({ showShare, setShowShare, collectionshare }: ShareProps) => {
         {collection?.userId === session?.user?.id && (
           <div className="mt-2 text-end">
             <Button
-              className="btn-xs btn-outline"
+              className="btn-xs btn-black btn-outline"
               to={`/app/${collection?.id}/collaborators`}
             >
               Add collaborators

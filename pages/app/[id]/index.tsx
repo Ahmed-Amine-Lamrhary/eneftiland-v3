@@ -167,10 +167,6 @@ const AppWrapper = ({
   }, [])
   // paypal
 
-  // useEffect(() => {
-  //   setFilteredItems(results)
-  // }, [results])
-
   const setLayers = (layers: any) => {
     setCollection({ ...collection, layers })
   }

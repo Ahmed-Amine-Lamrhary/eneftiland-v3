@@ -5,11 +5,12 @@ import FiltersPanel from "../FiltersPanel"
 import ResultsItem from "../ResultsItem"
 import NoDataFound from "../../NoDataFound"
 import swal from "sweetalert2"
-import { callApi, showToast } from "../../../helpers/utils"
+import { callApi, handleSortResults, showToast } from "../../../helpers/utils"
 import { useRouter } from "next/router"
 import { IoCloseOutline } from "react-icons/io5"
 import { AiOutlineReload } from "react-icons/ai"
 import { VirtuosoGrid } from "react-virtuoso"
+import { RiLayoutGridLine } from "react-icons/ri"
 
 interface GalleryPanelProps {
   isReadonly?: boolean
@@ -25,6 +26,7 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
     setLoading,
     setResults,
     setView,
+    setCollection,
   }: any = useContext(AppContext)
 
   const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
@@ -41,14 +43,11 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
 
   const [filters, setFilters] = useState<any>(resetedFilters())
 
-  const sortBy = (e: any) => {
-    const value = e.target.value
+  const [sortBy, setSortBy] = useState<"index" | "rarity">("index")
 
-    const sorted = filteredItems.slice().sort((item1: any, item2: any) => {
-      if (value === "name") return item1.itemIndex - item2.itemIndex
-      return item1.totalRarity - item2.totalRarity
-    })
-
+  const handleSort = (e: any) => {
+    setSortBy(e.target.value)
+    const sorted = handleSortResults(filteredItems, e.target.value)
     setFilteredItems(sorted)
   }
 
@@ -100,8 +99,13 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
         setView("gallery")
       }
 
-      setResults(data.metadata)
-      setFilteredItems(data.metadata)
+      setCollection({
+        ...collection,
+        galleryLayers: [...collection.layers],
+      })
+      setSortBy("index")
+      setResults(data)
+      setFilteredItems(data)
       setLoading(false)
     } catch (error: any) {
       console.log(error)
@@ -162,16 +166,17 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
           <div className="collections-block">
             <div className="row">
               {/* Filter */}
-              <div className="col-md-3 col-sm-4">
+              <div className="col-lg-2 col-md-3 col-sm-4">
                 <FiltersPanel
                   loading={loading}
                   filters={filters}
                   resetedFilters={resetedFilters}
                   setFilters={setFilters}
+                  sortBy={sortBy}
                 />
               </div>
 
-              <div className="col-md-9 col-sm-8">
+              <div className="col-lg-10 col-md-9 col-sm-8">
                 {/* filters */}
                 <div className="d-md-flex justify-content-between mb-3">
                   <div className="d-flex align-items-center mt-2 mt-md-0">
@@ -201,16 +206,23 @@ const GalleryPanel = ({ isReadonly = false }: GalleryPanelProps) => {
                     )}
                   </div>
 
-                  <div className="form-group m-0 mt-3 mt-md-0">
-                    <select className="form-select" onChange={sortBy}>
-                      <option value="name">Item index</option>
+                  {/* <div className="form-group m-0 mt-3 mt-md-0">
+                    <select
+                      className="form-select"
+                      onChange={handleSort}
+                      value={sortBy}
+                    >
+                      <option value="index">Item index</option>
                       <option value="rarity">Rarity score</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
 
                 {filteredItems.length === 0 ? (
-                  <NoDataFound phrase="No items were found" />
+                  <NoDataFound
+                    phrase="No items were found"
+                    Icon={RiLayoutGridLine}
+                  />
                 ) : (
                   <VirtuosoGrid
                     useWindowScroll

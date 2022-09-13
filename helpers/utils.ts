@@ -341,3 +341,11 @@ export const callApi = async ({ route, body }: CallApiI) => {
     throw error
   }
 }
+
+export const handleSortResults = (array: any, sortyBy: "index" | "rarity") => {
+  const sorted = array.slice().sort((item1: any, item2: any) => {
+    if (sortyBy === "index") return item1.itemIndex - item2.itemIndex
+    return item1.totalRarity - item2.totalRarity
+  })
+  return sorted
+}

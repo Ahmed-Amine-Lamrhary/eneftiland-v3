@@ -189,8 +189,6 @@
     flex-direction: row;
     .dropdown:hover .dropdown-menu {
       display: block;
-      top: 100%;
-      margin-top: 0.125rem;
     }
   }
 
@@ -228,6 +226,7 @@
       border-radius: 100px;
       padding: 7px;
       transition: all 0.2s ease-in-out;
+      margin-right: 0;
     }
 
     .badge {
@@ -404,10 +403,10 @@ label {
     border-color: $main-color;
   }
   &.btn-outline {
-    background-color: transparent;
+    background-color: transparent !important;
     color: $main-color;
     &:hover {
-      background-color: $main-color;
+      background-color: $main-color !important;
       color: $white-color;
     }
     &.btn-danger {
@@ -417,6 +416,14 @@ label {
       &:hover {
         background-color: $red-color;
         color: $white-color;
+      }
+    }
+    &.btn-black {
+      border-color: rgba($black-color, 0.2);
+      color: $black-color;
+      &:hover {
+        background-color: transparent !important;
+        border-color: rgba($black-color, 0.5);
       }
     }
   }

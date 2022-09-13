@@ -23,9 +23,10 @@ export const cleanName = (_str: any) => {
 }
 
 const getElements = (images: any, totalPoints: any) => {
-  return images.map(({ url, file, rarity, name }: any, index: any) => {
+  return images.map(({ id, url, file, rarity, name }: any, index: any) => {
     return {
       id: index,
+      identifier: id,
       name,
       filename: file?.name,
       path: url,
@@ -37,7 +38,7 @@ const getElements = (images: any, totalPoints: any) => {
 const layersSetup = (layersOrder: any) => {
   const layers = layersOrder.map((layerObj: any, index: any) => {
     return {
-      id: index,
+      id: layerObj.id,
       elements: getElements(layerObj.images, layerObj.totalPoints),
       name:
         layerObj.options?.["displayName"] != undefined
@@ -120,6 +121,7 @@ const addMetadata = (
 
 const addAttributes = (_element: any) => {
   attributesList.push({
+    id: _element.selectedElement.identifier,
     trait_type: _element.name,
     value: _element.selectedElement.name,
     rarity: _element.selectedElement.weight,
@@ -128,14 +130,15 @@ const addAttributes = (_element: any) => {
 
 const constructLayerToDna = (_dna = "", _layers = []) => {
   let mappedDnaToLayers = _layers.map((layer: any, index) => {
-    let selectedElement = layer.elements.find(
-      (e: any) => e.id == cleanDna(_dna.split(DNA_DELIMITER)[index])
-    )
+    let selectedElement = layer.elements.find((e: any) => {
+      return e.id == cleanDna(_dna.split(DNA_DELIMITER)[index])
+    })
+
     return {
       name: layer.name,
       blend: layer.blend,
       opacity: layer.opacity,
-      selectedElement: selectedElement,
+      selectedElement,
     }
   })
   return mappedDnaToLayers
@@ -297,7 +300,7 @@ const startCreating = async (rules: any, collection: any) => {
   ]
 
   metadataList = []
-  var startTime = performance.now()
+  // var startTime = performance.now()
 
   let layerConfigIndex = 0
   let editionCount = 1
@@ -367,14 +370,11 @@ const startCreating = async (rules: any, collection: any) => {
     layerConfigIndex++
   }
 
-  var endTime = performance.now()
+  // var endTime = performance.now()
 
   return {
     success: true,
-    data: {
-      metadata: metadataList,
-      genTime: endTime - startTime,
-    },
+    data: metadataList,
   }
 }
 

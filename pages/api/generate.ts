@@ -2,9 +2,9 @@ import { PrismaClient } from "@prisma/client"
 import { startCreating } from "../../helpers/generator"
 const prisma = new PrismaClient()
 import { getSession } from "next-auth/react"
-import { parseCollection, parseResults } from "../../services/parser"
+import { parseCollection } from "../../services/parser"
 
-const ioHandler = async (req: any, res: any) => {  
+const ioHandler = async (req: any, res: any) => {
   try {
     const session: any = await getSession({ req })
 
@@ -34,7 +34,21 @@ const ioHandler = async (req: any, res: any) => {
 
     if (!success) return res.json({ success: false, message: error })
 
-    const resultsString = data?.metadata
+    // calculate rarity score
+    // data?.map((item: any) => {
+    //   const sum = item.attributes.reduce((currentSum: any, attr: any) => {
+    //     const total = data.filter((r: any) =>
+    //       r.attributes.some((a: any) => a.id === attr.id)
+    //     ).length
+
+    //     return currentSum + total
+    //   }, 0)
+
+    //   item["totalRarity"] = sum
+    // })
+    // calculate rarity score
+
+    const resultsString = data
       .map((i: any) => {
         const attrs = i.attributes.map((a: any) => {
           const layer = collection?.layers?.find(
@@ -51,11 +65,11 @@ const ioHandler = async (req: any, res: any) => {
           return `${layerIndex}+${imageIndex}`
         })
 
+        attrs.push(i.totalRarity)
+
         return attrs.join(",")
       })
       .join("|")
-
-    const results = parseResults(collection, resultsString, true)
 
     // update results
     await prisma.collection.updateMany({
@@ -71,12 +85,10 @@ const ioHandler = async (req: any, res: any) => {
 
     res.json({
       success: true,
-      data: {
-        ...data,
-        metadata: results,
-      },
+      data,
     })
   } catch (error: any) {
+    console.log(error)
     res.json({ success: false, message: error.message })
   }
 }

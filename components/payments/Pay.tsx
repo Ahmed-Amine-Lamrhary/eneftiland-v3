@@ -89,7 +89,7 @@ const Pay = ({
   return (
     <div className="app-panel pb-4">
       <div className="container">
-        <p className="paragraph mt-0 mb-3">
+        <p className="paragraph mt-0 mb-0">
           See our pricing{" "}
           <a target={"_blank"} href="/#pricing-section">
             here
@@ -102,7 +102,7 @@ const Pay = ({
           </>
         ) : (
           <>
-            {amount > 0 && <p className="paragraph mb-4">{payText}</p>}
+            {amount > 0 && <p className="paragraph mt-0 mb-4">{payText}</p>}
 
             {/* remove watermark if collection is smaller or equal to assets number */}
             {currentPlan.priceToRemoveWatermark &&

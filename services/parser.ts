@@ -46,51 +46,30 @@ const parseResults = (
 ) => {
   const resultsData = resultsString
     ? resultsString.split("|").map((item: any, index: number) => {
-        const traits = item.split(",")
+        const elementsArray = item.split(",")
+        const traits = elementsArray.splice(0, elementsArray.length - 1)
 
         const attributes = traits.map((trait: any) => {
           const layerIndex = parseInt(trait.split("+")[0])
           const imgIndex = parseInt(trait.split("+")[1])
 
-          if (useLayers === true)
-            return {
-              id: collection.layers[layerIndex].images[imgIndex].id,
-              trait_type: collection.layers[layerIndex].name,
-              value: collection.layers[layerIndex].images[imgIndex].name,
-              rarity: collection.layers[layerIndex].images[imgIndex].rarity,
-            }
-          else {
-            return {
-              id: collection.galleryLayers[layerIndex].images[imgIndex].id,
-              trait_type: collection.galleryLayers[layerIndex].name,
-              value: collection.galleryLayers[layerIndex].images[imgIndex].name,
-              rarity:
-                collection.galleryLayers[layerIndex].images[imgIndex].rarity,
-            }
+          let keyword = useLayers === true ? "layers" : "galleryLayers"
+
+          return {
+            id: collection[keyword][layerIndex].images[imgIndex].id,
+            trait_type: collection[keyword][layerIndex].name,
+            value: collection[keyword][layerIndex].images[imgIndex].name,
+            rarity: collection[keyword][layerIndex].images[imgIndex].rarity,
           }
         })
 
         return {
           attributes,
           itemIndex: index,
+          totalRarity: elementsArray[elementsArray.length - 1],
         }
       })
     : []
-
-  // rarity score
-  // resultsData?.map((item: any) => {
-  //   const sum = item.attributes.reduce((currentSum: any, attr: any) => {
-  //     const total = resultsData.filter((r: any) =>
-  //       r.attributes.some((a: any) => a.id === attr.id)
-  //     ).length
-
-  //     return currentSum + total
-  //   }, 0)
-
-  //   item["totalRarity"] = sum
-  //   return item
-  // })
-  // rarity score
 
   return resultsData
 }

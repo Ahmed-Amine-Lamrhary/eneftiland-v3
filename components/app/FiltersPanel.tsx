@@ -1,12 +1,14 @@
 import React, { useContext, useEffect } from "react"
 import { Accordion } from "react-bootstrap"
 import AppContext from "../../context/AppContext"
+import { handleSortResults } from "../../helpers/utils"
 
 interface FiltersPanelProps {
   loading: any
   filters: any
   setFilters: any
   resetedFilters: any
+  sortBy: "index" | "rarity"
 }
 
 const FiltersPanel = ({
@@ -14,6 +16,7 @@ const FiltersPanel = ({
   filters,
   setFilters,
   resetedFilters,
+  sortBy,
 }: FiltersPanelProps) => {
   const { collection, setFilteredItems, results } = useContext(AppContext)
   const layers = collection?.galleryLayers ? [...collection?.galleryLayers] : []
@@ -34,18 +37,14 @@ const FiltersPanel = ({
     }
 
     if (!filtersEmpty) {
-      console.log(filters)
-
       for (const layerName in filters) {
         if (filters[layerName].length > 0) {
-          const items = results?.filter(
-            (item: any) =>
-              item.attributes.some(
-                (attr: any) =>
-                  attr.trait_type === layerName &&
-                  filters[layerName].includes(attr.value)
-              )
-            // && !newResults.some((colItem: any) => colItem.name === item.name)
+          const items = results?.filter((item: any) =>
+            item.attributes.some(
+              (attr: any) =>
+                attr.trait_type === layerName &&
+                filters[layerName].includes(attr.value)
+            )
           )
 
           newResults.push(...items)
@@ -55,7 +54,8 @@ const FiltersPanel = ({
       newResults = [...results]
     }
 
-    setFilteredItems(newResults)
+    const sorted = handleSortResults(newResults, sortBy)
+    setFilteredItems(sorted)
   }, [filters])
 
   const handleFilter = (e: any, layerName: string) => {

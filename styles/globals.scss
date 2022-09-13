@@ -54,6 +54,9 @@ a {
 .small-container {
   max-width: 1000px;
 }
+.x-small-container {
+  max-width: 600px;
+}
 
 // Section
 section {
@@ -322,6 +325,11 @@ section {
   transition: all 0.2s ease-in-out;
   overflow: hidden;
 
+  .img-holder {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   &.collection-loading {
     cursor: default;
   }
@@ -414,6 +422,8 @@ section {
   position: relative;
   padding-top: 100%;
   overflow: hidden;
+  border-radius: 6px;
+
   &:not(.loading-img-holder) {
     background-color: rgba($grey-color, 0.1);
   }

@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react"
+import Image from "next/image"
 import React, { useContext } from "react"
 import AppContext from "../../context/AppContext"
 
@@ -18,7 +19,9 @@ const ImgHolder = ({ attributes, layers }: ImgHolderProps) => {
           .find((l) => l.name === attr.trait_type)
           ?.images?.find((img: any) => img.name === attr.value)?.url
 
-        return <img src={url} />
+        // return null
+
+        return <Image src={url} layout="fill" quality={1} />
       })}
 
       {settings && settings.watermarkUrl && !session?.user?.lifetime && (

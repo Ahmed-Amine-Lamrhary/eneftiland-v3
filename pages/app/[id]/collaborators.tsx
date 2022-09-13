@@ -5,7 +5,6 @@ import Page from "../../../components/Page"
 import { parseCollection } from "../../../services/parser"
 import * as Yup from "yup"
 import { Form, Formik } from "formik"
-import FormControl from "../../../components/FormControl"
 import Button from "../../../components/Button"
 import { IoPeopleOutline } from "react-icons/io5"
 import AppModal from "../../../components/AppModal"
@@ -69,6 +68,66 @@ export async function getServerSideProps(context: any) {
   }
 }
 
+const Item = ({ collaboration, setCollaborations, collaborations }: any) => {
+  const [loading, setLoading] = useState(false)
+
+  const removeCollab = async (collaborationId: any) => {
+    try {
+      const willDelete = await swal.fire({
+        title: "Are you sure?",
+        text: "Are you sure you want to remove this collaborator?",
+        icon: "warning",
+        confirmButtonText: "Yes, Remove",
+        cancelButtonText: "No, Cancel",
+        showCancelButton: true,
+        showCloseButton: true,
+      })
+
+      if (!willDelete.isConfirmed) return
+
+      setLoading(true)
+
+      const { data } = await callApi({
+        route: "collection/removeCollaborator",
+        body: {
+          collaborationId,
+        },
+      })
+
+      if (!data.success) return showToast(data.message, "error")
+
+      showToast(data.message, "success")
+      setCollaborations(
+        [...collaborations].filter((c) => c.id !== collaborationId)
+      )
+    } catch (error: any) {
+      showToast(error.message, "error")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="collaboration-item">
+      <div>
+        <span className="name">{collaboration.user.name}</span>
+        <span className="email">{collaboration.user.email}</span>
+      </div>
+
+      <div>
+        <Button
+          onClick={() => removeCollab(collaboration.id)}
+          className="btn-sm"
+          disabled={loading}
+          loading={loading}
+        >
+          Remove
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 const collaborators = ({ settings, collection, collaborationsData }: any) => {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -95,38 +154,6 @@ const collaborators = ({ settings, collection, collaborationsData }: any) => {
       showToast(error.message, "error")
     } finally {
       setLoading(false)
-    }
-  }
-
-  const removeCollab = async (collaborationId: any) => {
-    try {
-      const willDelete = await swal.fire({
-        title: "Are you sure?",
-        text: "Are you sure you want to remove this collaborator?",
-        icon: "warning",
-        confirmButtonText: "Yes, Remove",
-        cancelButtonText: "No, Cancel",
-        showCancelButton: true,
-        showCloseButton: true,
-      })
-
-      if (!willDelete.isConfirmed) return
-
-      const { data } = await callApi({
-        route: "collection/removeCollaborator",
-        body: {
-          collaborationId,
-        },
-      })
-
-      if (!data.success) return showToast(data.message, "error")
-
-      showToast(data.message, "success")
-      setCollaborations(
-        [...collaborations].filter((c) => c.id !== collaborationId)
-      )
-    } catch (error: any) {
-      showToast(error.message, "error")
     }
   }
 
@@ -165,39 +192,29 @@ const collaborators = ({ settings, collection, collaborationsData }: any) => {
       </AppModal>
 
       <div className="collaborators">
-        <div className="container small-container">
+        <div className="container x-small-container">
           <div className="mb-5">
             <Button className="btn-xs" to={`/app/${collection?.id}`}>
               <AiOutlineArrowLeft /> Back to collection
             </Button>
           </div>
 
-          <h4 className="mb-4">Manage collaborations</h4>
-
           <div className="collaborators-box text-center">
             {collaborations && collaborations.length > 0 ? (
               <>
-                {collaborations.map((collaboration: any) => (
-                  <div className="collaboration-item">
-                    <div>
-                      <span className="name">{collaboration.user.name}</span>
-                      <span className="email">{collaboration.user.email}</span>
-                    </div>
+                <h5 className="text-start mb-4">Manage collaborations</h5>
 
-                    <div>
-                      <Button
-                        onClick={() => removeCollab(collaboration.id)}
-                        className="btn-sm"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
+                {collaborations.map((collaboration: any) => (
+                  <Item
+                    collaboration={collaboration}
+                    setCollaborations={setCollaborations}
+                    collaborations={collaborations}
+                  />
                 ))}
               </>
             ) : (
               <>
-                <div className="mb-3">
+                <div className="mb-3 collabs-icon">
                   <IoPeopleOutline size={55} />
                 </div>
 

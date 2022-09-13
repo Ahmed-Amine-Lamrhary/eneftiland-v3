@@ -29,6 +29,7 @@ import Pay from "../../payments/Pay"
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { useSession } from "next-auth/react"
+import { setTimeout } from "worker-timers"
 
 interface GeneratePanelProps {
   plans: any
@@ -92,10 +93,6 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
         }`}
       >
         <h6>{`${day} at ${time}`}</h6>
-        <p>
-          {historyItem.collectionSize} token
-          {historyItem.collectionSize > 1 && "s"}
-        </p>
 
         <div className="d-flex align-items-center">
           {!historyItem.completed && (
@@ -103,6 +100,11 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
               <p className="error-text me-4">Error while generating</p>
             </div>
           )}
+
+          <p className="me-3">
+            {historyItem.collectionSize} token
+            {historyItem.collectionSize > 1 && "s"}
+          </p>
 
           {/* {historyItem.completed && (
             <Button
@@ -591,7 +593,7 @@ const GeneratePanel = ({ plans, settings }: GeneratePanelProps) => {
       <AppModal
         show={showPayment}
         onHide={() => setShowPayment(false)}
-        size="lg"
+        size="sm"
       >
         <Pay
           description={collection?.collectionName}
