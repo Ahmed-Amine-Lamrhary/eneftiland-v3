@@ -73,7 +73,7 @@ export default function IndexPage({ settings, plans }: any) {
                 delay={100}
                 animateOnce
               >
-                <Image src={require("../assets/home/home.png")} />
+                <Image quality={50} src={require("../assets/home/home.png")} />
               </AnimationOnScroll>
             </div>
           </div>
@@ -283,7 +283,10 @@ export default function IndexPage({ settings, plans }: any) {
                 delay={200}
                 animateOnce
               >
-                <Image src={require("../assets/home/about/about.png")} />
+                <Image
+                  quality={50}
+                  src={require("../assets/home/about/about.png")}
+                />
               </AnimationOnScroll>
             </div>
           </div>
