@@ -2,7 +2,7 @@ import Heading from "../components/Heading"
 import FeatureBlock from "../components/FeatureBlock"
 import { BsCodeSlash } from "react-icons/bs"
 import { HiOutlineDocumentText } from "react-icons/hi"
-import { GoSettings } from "react-icons/go"
+// import { GoSettings } from "react-icons/go"
 
 import Page from "../components/Page"
 import { PrismaClient } from "@prisma/client"
@@ -17,9 +17,9 @@ import { FiArrowRight } from "react-icons/fi"
 import Devider from "../components/Devider"
 import { AnimationOnScroll } from "react-animation-on-scroll"
 
-import ethImg from "../assets/home/compatible/eth.png"
-import solImg from "../assets/home/compatible/sol.png"
-import polImg from "../assets/home/compatible/pol.png"
+// import ethImg from "../assets/home/compatible/eth.png"
+// import solImg from "../assets/home/compatible/sol.png"
+// import polImg from "../assets/home/compatible/pol.png"
 import LifetimePlan from "../components/LifetimePlan"
 
 declare var $crisp: any
@@ -81,7 +81,7 @@ export default function IndexPage({ settings, plans }: any) {
       </header>
 
       {/* Compatible with */}
-      <div className="compatible-with-section">
+      {/* <div className="compatible-with-section">
         <div className="container small-container">
           <p>Compatible with</p>
 
@@ -122,7 +122,7 @@ export default function IndexPage({ settings, plans }: any) {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* How it works */}
       <div id="how-it-works" className="how-it-works">
@@ -336,7 +336,7 @@ export default function IndexPage({ settings, plans }: any) {
                 animateOnce
               >
                 <FeatureBlock
-                  Icon={GoSettings}
+                  Icon={FaRegSave}
                   title="Attribute Rarity"
                   content="You can configure certain attributes to be more rare than others."
                 />
