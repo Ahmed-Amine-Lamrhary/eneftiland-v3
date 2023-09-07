@@ -1,9 +1,0 @@
--- AlterTable
-ALTER TABLE `collection` MODIFY `layers` VARCHAR(65535) NOT NULL,
-    MODIFY `galleryLayers` VARCHAR(65535) NOT NULL,
-    MODIFY `results` VARCHAR(65535) NOT NULL,
-    MODIFY `creators` VARCHAR(65535) NOT NULL;
-
--- AlterTable
-ALTER TABLE `history` MODIFY `layers` VARCHAR(65535) NOT NULL,
-    MODIFY `results` VARCHAR(65535) NOT NULL;

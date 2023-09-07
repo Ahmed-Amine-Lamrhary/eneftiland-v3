@@ -1,6 +1,6 @@
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 generator client {
@@ -13,12 +13,12 @@ model account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -65,7 +65,7 @@ model plan {
   id                     String  @id @default(cuid())
   price                  Float   @unique
   assetsNumber           Float   @unique
-  features               String  @db.VarChar(65535)
+  features               String 
   watermark              Boolean @default(false)
   priceToRemoveWatermark Float?
 }
@@ -108,13 +108,13 @@ model settings {
 model privacypage {
   id      String @id @default(cuid())
   title   String @default("Privacy Policy")
-  content String @db.VarChar(65535)
+  content String
 }
 
 model termspage {
   id      String @id @default(cuid())
   title   String @default("Terms and Services")
-  content String @db.VarChar(65535)
+  content String
 }
 
 model collection {
@@ -123,14 +123,14 @@ model collection {
   userId String?
   user   user?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  layers        String @db.VarChar(65535)
-  galleryLayers String @db.VarChar(65535)
-  results       String @db.VarChar(65535)
+  layers        String
+  galleryLayers String
+  results       String
 
   collectionDesc String
   collectionName String
   collectionSize Int
-  creators       String  @db.VarChar(65535)
+  creators       String 
   externalUrl    String
   network        String
   prefix         String
