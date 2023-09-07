@@ -2,6 +2,8 @@
 
 ## Steps to get started :
 
+Add environment variables, check .env.example for an example.
+
 ```
 npm install
 ```
