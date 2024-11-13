@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client"
-import { getSession } from "next-auth/react"
 import React, { useState } from "react"
 import Page from "../../../components/Page"
 import { parseCollection } from "../../../services/parser"
@@ -12,6 +11,7 @@ import { callApi, showToast } from "../../../helpers/utils"
 import swal from "sweetalert2"
 import SearchCollab from "../../../components/SearchCollab"
 import { AiOutlineArrowLeft } from "react-icons/ai"
+import { getSession } from "next-auth/react"
 
 const schema = Yup.object().shape({
   email: Yup.object().required("User email is required"),

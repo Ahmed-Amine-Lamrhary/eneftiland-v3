@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
-import { getSession } from "next-auth/react"
+import { getServerSession } from "next-auth/next"
+import authOptions from '../auth/[...nextauth]'
 import { parseCollection } from "../../../services/parser"
 
 const ioHandler = async (req: any, res: any) => {
-  const session: any = await getSession({ req })
+  const session: any = await getServerSession(req, res, authOptions)
 
   if (!session)
     return res.json({

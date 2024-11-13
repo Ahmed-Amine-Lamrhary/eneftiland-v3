@@ -1,5 +1,4 @@
 import React, { useEffect } from "react"
-import { useWeb3React } from "@web3-react/core"
 import { callApi, showToast } from "../../helpers/utils"
 import Page from "../../components/Page"
 import { PrismaClient } from "@prisma/client"
