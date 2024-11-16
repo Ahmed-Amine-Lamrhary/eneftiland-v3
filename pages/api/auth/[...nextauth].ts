@@ -8,6 +8,7 @@ import { DEMO_LAYERS, DEMO_RESULTS } from "../../../helpers/constants"
 const prisma = new PrismaClient()
 
 export default NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -22,17 +23,23 @@ export default NextAuth({
   pages: {
     signIn: "/",
   },
+  session: {
+    strategy: "jwt"
+  },
   callbacks: {
     async jwt({ token, user }) {
-      user && (token.user = user)
+      if (user) {
+        token.user = user;
+      }
+
       return token
     },
-    async session({ session, user }: any) {
+    async session({ session, token }: any) {    
       session = {
         ...session,
         user: {
-          id: user.id,
-          lifetime: user.lifetime,
+          id: token.user.id,
+          lifetime: token.user.lifetime,
           ...session.user,
         },
       }
