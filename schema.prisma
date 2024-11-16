@@ -14,11 +14,11 @@ model account {
   provider          String
   providerAccountId String
   refresh_token     String?
-  access_token      String?
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -123,9 +123,9 @@ model collection {
   userId String?
   user   user?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  layers        String
-  galleryLayers String
-  results       String
+  layers        String  @db.Text
+  galleryLayers String  @db.Text
+  results       String  @db.Text
 
   collectionDesc String
   collectionName String

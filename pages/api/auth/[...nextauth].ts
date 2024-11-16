@@ -14,6 +14,11 @@ export default NextAuth({
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          scope: 'openid profile email',
+        }
+      }
     }),
     GitHubProvider({
       clientId: process.env.NEXT_PUBLIC_GITHUB_ID || "",
@@ -34,7 +39,7 @@ export default NextAuth({
 
       return token
     },
-    async session({ session, token }: any) {    
+    async session({ session, token }: any) {
       session = {
         ...session,
         user: {
